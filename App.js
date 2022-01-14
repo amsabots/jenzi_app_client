@@ -12,8 +12,6 @@ import Geolocation from 'react-native-geolocation-service';
 import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
 
 const App = () => {
-  useEffect(() => {}, []);
-
   const hasLocationPermission = async () => {
     if (Platform.OS === 'android' && Platform.Version < 23) {
       return true;
@@ -34,7 +32,7 @@ const App = () => {
     return false;
   };
 
-  const getCurrentLocation = () => {
+  const getCurrentLocation = async () => {
     const permitted = await hasLocationPermission();
     if (!permitted) return;
 
@@ -48,6 +46,10 @@ const App = () => {
       {},
     );
   };
+
+  useEffect(() => {
+    getCurrentLocation();
+  }, []);
 
   return (
     <View style={styles.container}>
