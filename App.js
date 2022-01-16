@@ -8,53 +8,24 @@ import {
   ToastAndroid,
   Platform,
 } from 'react-native';
-import Geolocation from 'react-native-geolocation-service';
-import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
+
+import {Provider, useSelector} from 'react-redux';
+import {createStore} from 'redux';
+
+import {allReducers} from './store';
+
+const store = createStore(allReducers);
+
+// ui components
+import {PrimaryStatusBar} from './src/components';
 
 const App = () => {
-  const hasLocationPermission = async () => {
-    if (Platform.OS === 'android' && Platform.Version < 23) {
-      return true;
-    }
-
-    const status = await PermissionsAndroid.request(
-      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-    );
-
-    if (status === PermissionsAndroid.RESULTS.GRANTED) return true;
-    if (status === PermissionsAndroid.RESULTS.DENIED)
-      ToastAndroid.show('Location denied by the user', ToastAndroid.LONG);
-    else if (status === PermissionsAndroid.PERMISSIONS.RESULTS.NEVER_ASK_AGAIN)
-      ToastAndroid.show(
-        'Permissions will never be requested again',
-        ToastAndroid.LONG,
-      );
-    return false;
-  };
-
-  const getCurrentLocation = async () => {
-    const permitted = await hasLocationPermission();
-    if (!permitted) return;
-
-    Geolocation.getCurrentPosition(
-      position => {
-        console.log('Position Acquired', position);
-      },
-      error => {
-        console.log('position failed ', error);
-      },
-      {},
-    );
-  };
-
-  useEffect(() => {
-    getCurrentLocation();
-  }, []);
-
   return (
-    <View style={styles.container}>
-      <StatusBar translucent backgroundColor={'transparent'} />
-    </View>
+    <Provider store={store}>
+      <View style={styles.container}>
+        <PrimaryStatusBar />
+      </View>
+    </Provider>
   );
 };
 
