@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
-import {View, Text} from 'react-native';
-import {useDispatch, useSelector} from 'react-redux';
+import {View, Text, StyleSheet} from 'react-native';
+import {useDispatch} from 'react-redux';
 import {getCurrentLocation} from '../config/current-location';
 
 // redux store
@@ -42,7 +42,17 @@ const Home = () => {
     );
   }, []);
 
-  return <View></View>;
+  return (
+    <View>
+      <Text>hi</Text>
+    </View>
+  );
 };
+
+styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+  },
+});
 
 export default Home;

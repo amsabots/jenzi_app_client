@@ -1,2 +1,3 @@
 import * as theme from './themes';
-export {theme};
+import {screens} from './screens';
+export {theme, screens};

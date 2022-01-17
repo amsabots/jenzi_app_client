@@ -1,16 +1,15 @@
-import React, {useEffect} from 'react';
-import {
-  StatusBar,
-  StyleSheet,
-  View,
-  Linking,
-  PermissionsAndroid,
-  ToastAndroid,
-  Platform,
-} from 'react-native';
+import React from 'react';
+import {StyleSheet, View} from 'react-native';
 
-import {Provider, useSelector} from 'react-redux';
+import {Provider} from 'react-redux';
 import {createStore} from 'redux';
+//paper react native ui lib
+import {Provider as PaperProvider} from 'react-native-paper';
+//navigation
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+
+const Stack = createNativeStackNavigator();
 
 import {allReducers} from './store';
 
@@ -19,29 +18,31 @@ const store = createStore(allReducers);
 // ui components
 import {PrimaryStatusBar} from './src/components';
 
+//stack screen
+import {AppDrawerNavigator, AuthNavigator} from './src/navigation';
+import {screens} from './src/constants';
+
 const App = () => {
   return (
     <Provider store={store}>
-      <View style={styles.container}>
+      <PaperProvider>
         <PrimaryStatusBar />
-      </View>
+        <NavigationContainer>
+          <Stack.Navigator
+            initialRouteName={screens.stack_app}
+            screenOptions={{
+              headerShown: false,
+            }}>
+            <Stack.Screen
+              name={screens.stack_app}
+              component={AppDrawerNavigator}
+            />
+            <Stack.Screen name={screens.stack_auth} component={AuthNavigator} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </PaperProvider>
     </Provider>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    ...StyleSheet.absoluteFillObject,
-    height: '100%',
-    width: 400,
-  },
-  map: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  bt: {
-    height: 50,
-    backgroundColor: 'blue',
-  },
-});
 
 export default App;
