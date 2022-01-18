@@ -4,7 +4,7 @@ import {StyleSheet, View} from 'react-native';
 import {Provider} from 'react-redux';
 import {createStore} from 'redux';
 //paper react native ui lib
-import {Provider as PaperProvider} from 'react-native-paper';
+import {Provider as PaperProvider, DefaultTheme} from 'react-native-paper';
 //navigation
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -20,12 +20,22 @@ import {PrimaryStatusBar} from './src/components';
 
 //stack screen
 import {AppDrawerNavigator, AuthNavigator} from './src/navigation';
-import {screens} from './src/constants';
+import {screens, theme} from './src/constants';
+
+// app theme - colors and fonts
+const appTheme = {
+  ...DefaultTheme,
+  color: {
+    ...DefaultTheme.colors,
+    primary: theme.COLORS.primary,
+    accent: theme.COLORS.secondary,
+  },
+};
 
 const App = () => {
   return (
     <Provider store={store}>
-      <PaperProvider>
+      <PaperProvider theme={appTheme}>
         <PrimaryStatusBar />
         <NavigationContainer>
           <Stack.Navigator

@@ -7,6 +7,9 @@ import {getCurrentLocation} from '../config/current-location';
 
 import {UISettingsActions} from '../store-actions/ui-settings';
 
+//components
+import {CircularImage} from '../components/circular-image';
+
 const Home = () => {
   //component state
   const [longitude, setLongitude] = useState();
@@ -42,16 +45,14 @@ const Home = () => {
     );
   }, []);
 
-  return (
-    <View>
-      <Text>hi</Text>
-    </View>
-  );
+  return <View style={[styles.container]}></View>;
 };
 
-styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
+    height: '100%',
+    justifyContent: 'center',
   },
 });
 

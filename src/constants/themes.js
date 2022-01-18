@@ -44,7 +44,7 @@ export const SIZES = {
   size_96: 96,
   icon_Label: 10,
 
-  deviceSize: {
+  device: {
     width,
     height,
   },
@@ -73,13 +73,17 @@ export const FONTS = {
   h3: {fontFamily: 'Roboto-Bold', fontSize: fontSizes.h3},
   h4: {fontFamily: 'Roboto-Bold', fontSize: fontSizes.h4},
   h5: {fontFamily: 'Roboto-Medium', fontSize: fontSizes.h5},
-  h6: {fontFamily: 'Roboto-Medium', fontSize: fontSizes.h6, lineHeight: 20},
+  h6: {fontFamily: 'Roboto-Medium', fontSize: fontSizes.h6},
+
   body: {fontFamily: 'Roboto-Regular', fontSize: fontSizes.body},
-  body2: {fontFamily: 'Roboto-Medium', fontSize: fontSizes.bod},
-  body1: {fontFamily: 'Roboto-Regular', fontSize: SIZES.padding_16},
+  body_medium: {fontFamily: 'Roboto-Medium', fontSize: fontSizes.body},
+  body_bold: {fontFamily: 'Roboto-Bold', fontSize: fontSizes.body},
+  body_light: {fontFamily: 'Roboto-Light', fontSize: fontSizes.body},
+
+  body1: {fontFamily: 'Roboto-Medium', fontSize: SIZES.padding_16},
+
   caption: {fontFamily: 'Roboto-Regular', fontSize: fontSizes.caption},
   captionBold: {fontFamily: 'Roboto-Bold', fontSize: fontSizes.caption},
-  body_light: {fontFamily: 'Roboto-Light', fontSize: fontSizes.body},
 };
 
 export const UTILS = {
