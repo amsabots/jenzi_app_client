@@ -45,7 +45,11 @@ const Home = () => {
     );
   }, []);
 
-  return <View style={[styles.container]}></View>;
+  return (
+    <View style={[styles.container]}>
+      <View></View>
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({

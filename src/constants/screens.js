@@ -5,5 +5,6 @@ const screens = {
   home: 'Home',
   stack_app: 'AppStack',
   stack_auth: 'AuthStack',
+  projects: 'projects',
 };
 export {screens};

@@ -3,7 +3,7 @@ import {View, Text, StyleSheet, ImageBackground} from 'react-native';
 
 import {Button, useTheme} from 'react-native-paper';
 import {theme} from '../../constants';
-import {FONTS, SIZES} from '../../constants/themes';
+import {COLORS, FONTS, SIZES} from '../../constants/themes';
 //
 import {Chip} from 'react-native-paper';
 
@@ -24,7 +24,7 @@ const NavHeader = () => {
 
       <Button
         mode="contained"
-        style={{marginTop: SIZES.padding_16}}
+        style={{marginTop: SIZES.padding_16, backgroundColor: COLORS.secondary}}
         icon={'face-profile'}
         onPress={() => console.warn('open profile')}>
         Profile
