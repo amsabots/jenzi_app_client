@@ -1,7 +1,8 @@
 import React from 'react';
 import LottieView from 'lottie-react-native';
 
-import {StyleSheet} from 'react-native';
+import {StyleSheet, View, Text} from 'react-native';
+import {FONTS, SIZES} from '../constants/themes';
 
 const VinyLoader = ({size = 32, loading = false}) => {
   if (loading)
@@ -59,22 +60,30 @@ const DoubleRing = ({
   loading = false,
   innerLayer = 'red',
   outerLayer = 'black',
+  label = null,
 }) => {
   if (loading)
     return (
-      <LottieView
-        source={require('../animations_files/double_rings.json')}
-        autoPlay
-        loop
-        colorFilters={[
-          {
-            keypath: 'シェイプレイヤー 1',
-            color: innerLayer,
-          },
-          {keypath: 'シェイプレイヤー 2', color: outerLayer},
-        ]}
-        style={[styles.vl_container, {height: size, width: size}]}
-      />
+      <View style={styles.vl_container}>
+        <LottieView
+          source={require('../animations_files/double_rings.json')}
+          autoPlay
+          loop
+          colorFilters={[
+            {
+              keypath: 'シェイプレイヤー 1',
+              color: innerLayer,
+            },
+            {keypath: 'シェイプレイヤー 2', color: outerLayer},
+          ]}
+          style={[styles.vl_container, {height: size, width: size}]}
+        />
+        {label && (
+          <Text style={{...FONTS.body_medium, marginLeft: SIZES.base}}>
+            {label}
+          </Text>
+        )}
+      </View>
     );
   return null;
 };
@@ -93,7 +102,10 @@ const MainScreen = ({height = 32, width = 32, loading = false}) => {
 };
 
 const styles = StyleSheet.create({
-  vl_container: {},
+  vl_container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
 });
 
 export {VinyLoader, RingedLoader, ArcherLoader, DoubleRing, MainScreen};

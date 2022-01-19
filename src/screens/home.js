@@ -1,11 +1,10 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useCallback, useMemo, useRef} from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import {useDispatch} from 'react-redux';
 import {getCurrentLocation} from '../config/current-location';
 
 //bottom sheet
-import Animated from 'react-native-reanimated';
-import BottomSheet from 'reanimated-bottom-sheet';
+import BottomSheet from '@gorhom/bottom-sheet';
 
 // redux store
 import {UISettingsActions} from '../store-actions/ui-settings';
@@ -20,6 +19,7 @@ import MIcons from 'react-native-vector-icons/MaterialIcons';
 
 //building blocks
 import {HomeBottomSheetContent} from './ui-views';
+import {ScrollView} from 'react-native-gesture-handler';
 
 const Home = ({navigation}) => {
   //component state
@@ -49,6 +49,11 @@ const Home = ({navigation}) => {
     setLongitude(longi);
   };
 
+  //bottom sheet
+  const bottomSheetRef = useRef(null);
+  // variables
+  const snapPoints = useMemo(() => ['35%', '50%', '90%'], []);
+
   useEffect(() => {
     location();
   }, [find]);
@@ -64,31 +69,36 @@ const Home = ({navigation}) => {
 
   return (
     <View style={[styles.container]}>
-      <View style={[styles._hamburger, styles._fab_container]}>
-        <Icons
-          name="menu"
-          size={SIZES.icon_size_focused}
-          onPress={() => navigation.openDrawer()}
-          color={COLORS.primary}
+      {/* Map container */}
+      <View style={styles._map_container}>
+        <View style={[styles._hamburger, styles._fab_container]}>
+          <Icons
+            name="menu"
+            size={SIZES.icon_size_focused}
+            onPress={() => navigation.openDrawer()}
+            color={COLORS.primary}
+          />
+        </View>
+        <View style={[styles._returnTocurrentPosition, styles._fab_container]}>
+          <MIcons
+            name="my-location"
+            size={SIZES.icon_size}
+            color={COLORS.primary}
+            onPress={() => setFinder(s => s + 1)}
+          />
+        </View>
+        <MapView
+          coordinates={!latitude || !longitude ? {} : {latitude, longitude}}
         />
       </View>
-      <View style={[styles._returnTocurrentPosition, styles._fab_container]}>
-        <MIcons
-          name="my-location"
-          size={SIZES.icon_size}
-          color={COLORS.primary}
-          onPress={() => setFinder(s => s + 1)}
-        />
-      </View>
-      {/* <MapView
-        coordinates={!latitude || !longitude ? {} : {latitude, longitude}}
-      /> */}
       <BottomSheet
-        snapPoints={[500, 300, 0]}
-        initialSnap={1}
-        borderRadius={10}
-        renderContent={HomeBottomSheetContent}
-      />
+        ref={bottomSheetRef}
+        initialSnapIndex={1}
+        snapPoints={snapPoints}>
+        <ScrollView>
+          <HomeBottomSheetContent />
+        </ScrollView>
+      </BottomSheet>
     </View>
   );
 };
@@ -96,6 +106,9 @@ const Home = ({navigation}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  _map_container: {
+    height: '65%',
   },
   _hamburger: {
     top: SIZES.padding_32,
