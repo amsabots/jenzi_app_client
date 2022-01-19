@@ -4,14 +4,19 @@ import {View, StyleSheet, Text} from 'react-native';
 import {LoaderSpinner} from '.';
 import {COLORS, FONTS, SIZES} from '../constants/themes';
 
-const LoadingNothing = ({label, textColor = COLORS.secondary}) => {
+const LoadingNothing = ({
+  label,
+  textColor = COLORS.secondary,
+  height = SIZES.device.height / 3,
+  width = SIZES.device.width / 1.3,
+}) => {
   return (
     <View>
       <View style={styles.container}>
         <LoaderSpinner.MainScreen
           loading={true}
-          height={SIZES.device.height / 3}
-          width={SIZES.device.width / 1.3}
+          height={height}
+          width={width}
         />
       </View>
       {label && (

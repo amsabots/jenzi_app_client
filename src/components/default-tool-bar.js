@@ -3,7 +3,12 @@ import {Appbar} from 'react-native-paper';
 import {StyleSheet} from 'react-native';
 import {COLORS} from '../constants/themes';
 
-const DefaultToolBar = ({navigation, title = 'Jenzi App'}) => {
+const DefaultToolBar = ({
+  navigation,
+  title = 'Jenzi App',
+  plus,
+  onPlusClick,
+}) => {
   return (
     <Appbar style={styles.app_bar}>
       <Appbar.Action
@@ -12,6 +17,9 @@ const DefaultToolBar = ({navigation, title = 'Jenzi App'}) => {
         color={COLORS.white}
       />
       <Appbar.Content title={title} color={COLORS.white} />
+      {plus && (
+        <Appbar.Action icon="plus" onPress={onPlusClick} color={COLORS.white} />
+      )}
     </Appbar>
   );
 };

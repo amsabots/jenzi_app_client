@@ -7,6 +7,7 @@ import {LoadingNothing} from './nothing-loading';
 import {FundiDetails} from './fundi-profile';
 import {ReviewContainer} from './review-component';
 import {DefaultToolBar} from './default-tool-bar';
+import {InfoChips} from './info-chips';
 
 export {
   PrimaryStatusBar,
@@ -18,4 +19,5 @@ export {
   FundiDetails,
   ReviewContainer,
   DefaultToolBar,
+  InfoChips,
 };
