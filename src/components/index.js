@@ -6,6 +6,7 @@ import {MapView} from './mapview';
 import {LoadingNothing} from './nothing-loading';
 import {FundiDetails} from './fundi-profile';
 import {ReviewContainer} from './review-component';
+import {DefaultToolBar} from './default-tool-bar';
 
 export {
   PrimaryStatusBar,
@@ -16,4 +17,5 @@ export {
   LoadingNothing,
   FundiDetails,
   ReviewContainer,
+  DefaultToolBar,
 };

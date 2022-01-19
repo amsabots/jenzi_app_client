@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {View, Text, StyleSheet} from 'react-native';
-import {LoaderSpinner} from '.';
+import {LoaderSpinner, LoadingNothing} from '.';
 import {COLORS, FONTS, SIZES} from '../constants/themes';
 
 import {Card} from 'react-native-paper';
@@ -27,8 +27,11 @@ const ReviewContainer = ({details, source = 'client'}) => {
           <Text style={{...FONTS.body1, marginBottom: SIZES.padding_16}}>
             Reviews
           </Text>
-          <ReviewItem />
-          <ReviewItem />
+          {review.length ? (
+            <ReviewItem />
+          ) : (
+            <LoadingNothing label={'No reviews available'} />
+          )}
         </View>
       )}
     </View>

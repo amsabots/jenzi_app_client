@@ -59,12 +59,7 @@ const Home = ({navigation}) => {
   }, [find]);
 
   useEffect(() => {
-    dispatch(
-      UISettingsActions.status_bar({
-        translucent: true,
-        bg_color: 'transparent',
-      }),
-    );
+    dispatch(UISettingsActions.status_bar(true));
   }, []);
 
   return (
