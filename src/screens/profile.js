@@ -50,7 +50,6 @@ const Profile = ({navigation}) => {
   //===================== component functions ===========
   const handlePickedImages = imgs => {
     img_selector.current.snapTo(0);
-    console.log(imgs);
   };
 
   return (
@@ -69,7 +68,7 @@ const Profile = ({navigation}) => {
                 }
                 options={
                   <PopupOption
-                    onSelect={() => img_selector.current.snapTo(1)}
+                    onSelect={() => img_selector.current.snapTo(2)}
                   />
                 }
               />

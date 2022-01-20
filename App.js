@@ -5,6 +5,7 @@ import {Provider} from 'react-redux';
 import {createStore} from 'redux';
 //paper react native ui lib
 import {Provider as PaperProvider, DefaultTheme} from 'react-native-paper';
+import Toast from 'react-native-toast-message';
 //menu provider
 import {MenuProvider} from 'react-native-popup-menu';
 //navigation
@@ -36,29 +37,32 @@ const appTheme = {
 
 const App = () => {
   return (
-    <Provider store={store}>
-      <PaperProvider theme={appTheme}>
-        <MenuProvider>
-          <PrimaryStatusBar />
-          <NavigationContainer>
-            <Stack.Navigator
-              initialRouteName={screens.stack_app}
-              screenOptions={{
-                headerShown: false,
-              }}>
-              <Stack.Screen
-                name={screens.stack_app}
-                component={AppDrawerNavigator}
-              />
-              <Stack.Screen
-                name={screens.stack_auth}
-                component={AuthNavigator}
-              />
-            </Stack.Navigator>
-          </NavigationContainer>
-        </MenuProvider>
-      </PaperProvider>
-    </Provider>
+    <>
+      <Provider store={store}>
+        <PaperProvider theme={appTheme}>
+          <MenuProvider>
+            <PrimaryStatusBar />
+            <NavigationContainer>
+              <Stack.Navigator
+                initialRouteName={screens.stack_app}
+                screenOptions={{
+                  headerShown: false,
+                }}>
+                <Stack.Screen
+                  name={screens.stack_app}
+                  component={AppDrawerNavigator}
+                />
+                <Stack.Screen
+                  name={screens.stack_auth}
+                  component={AuthNavigator}
+                />
+              </Stack.Navigator>
+            </NavigationContainer>
+          </MenuProvider>
+        </PaperProvider>
+      </Provider>
+      <Toast />
+    </>
   );
 };
 

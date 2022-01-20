@@ -12,17 +12,18 @@ import DocumentPicker, {isInProgress} from 'react-native-document-picker';
 // flat list from gesture handler
 import {FlatList} from 'react-native-gesture-handler';
 
-const PickedImageItem = ({img}) => {
+const PickedImageItem = ({img, onItemClick}) => {
   const {name, type} = img;
   return (
     <View style={styles._img_wrapper}>
-      <Text>{name.substring(0, img.length > 16 ? 16 : img.length)}</Text>
+      <Text>{name.substring(0, name.length > 16 ? 16 : img.length)}</Text>
       <Text>{type}</Text>
       <TouchableOpacity>
         <AD
           name="delete"
           color={COLORS.danger}
           size={SIZES.icon_size_focused}
+          onPress={() => onItemClick(img)}
         />
       </TouchableOpacity>
     </View>
@@ -31,14 +32,14 @@ const PickedImageItem = ({img}) => {
 
 const ImageSelector = ({
   sheetRef,
-  selectMultiple = true,
+  selectMultiple = false,
   onImagesPicked,
   buttonLabel = 'Submit',
 }) => {
   const snapPoints = useMemo(() => [0, '20%', '60%', '90%'], []);
   const [images, setImages] = useState([]);
 
-  // component componets
+  // component functions
   const handleImagePicker = async () => {
     setImages([]);
     if (!selectMultiple) {
@@ -51,7 +52,10 @@ const ImageSelector = ({
       const r = await DocumentPicker.pickMultiple();
       setImages([...r]);
     }
-    console.log(images);
+  };
+
+  const handleDeleteImg = img => {
+    setImages(images.filter((_, idx) => images.indexOf(img) !== idx));
   };
 
   return (
@@ -72,19 +76,24 @@ const ImageSelector = ({
             data={images}
             key={item => item.name}
             renderItem={({item}) => {
-              return <PickedImageItem img={item} />;
+              return (
+                <PickedImageItem
+                  img={item}
+                  onItemClick={img => handleDeleteImg(img)}
+                />
+              );
             }}
           />
         </View>
-        {images.length && (
+        {images.length ? (
           <View style={{marginTop: SIZES.padding_32}}>
-            {/* <TouchableOpacity
+            <TouchableOpacity
               style={{marginBottom: 16}}
               onPress={() => setImages([])}>
               <Text style={{color: COLORS.danger, ...FONTS.body1}}>
                 Clear all
               </Text>
-            </TouchableOpacity> */}
+            </TouchableOpacity>
             <Button
               style={{backgroundColor: COLORS.secondary}}
               color={COLORS.white}
@@ -92,7 +101,7 @@ const ImageSelector = ({
               {buttonLabel}
             </Button>
           </View>
-        )}
+        ) : null}
       </View>
     </BottomSheet>
   );
