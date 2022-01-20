@@ -5,6 +5,8 @@ import {Provider} from 'react-redux';
 import {createStore} from 'redux';
 //paper react native ui lib
 import {Provider as PaperProvider, DefaultTheme} from 'react-native-paper';
+//menu provider
+import {MenuProvider} from 'react-native-popup-menu';
 //navigation
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -36,20 +38,25 @@ const App = () => {
   return (
     <Provider store={store}>
       <PaperProvider theme={appTheme}>
-        <PrimaryStatusBar />
-        <NavigationContainer>
-          <Stack.Navigator
-            initialRouteName={screens.stack_app}
-            screenOptions={{
-              headerShown: false,
-            }}>
-            <Stack.Screen
-              name={screens.stack_app}
-              component={AppDrawerNavigator}
-            />
-            <Stack.Screen name={screens.stack_auth} component={AuthNavigator} />
-          </Stack.Navigator>
-        </NavigationContainer>
+        <MenuProvider>
+          <PrimaryStatusBar />
+          <NavigationContainer>
+            <Stack.Navigator
+              initialRouteName={screens.stack_app}
+              screenOptions={{
+                headerShown: false,
+              }}>
+              <Stack.Screen
+                name={screens.stack_app}
+                component={AppDrawerNavigator}
+              />
+              <Stack.Screen
+                name={screens.stack_auth}
+                component={AuthNavigator}
+              />
+            </Stack.Navigator>
+          </NavigationContainer>
+        </MenuProvider>
       </PaperProvider>
     </Provider>
   );

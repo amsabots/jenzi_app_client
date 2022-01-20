@@ -8,6 +8,9 @@ import {FundiDetails} from './fundi-profile';
 import {ReviewContainer} from './review-component';
 import {DefaultToolBar} from './default-tool-bar';
 import {InfoChips} from './info-chips';
+import {LoadingModal} from './loading-modal';
+import {MenuPopUp} from './menu-popup';
+import {ImageSelector} from './image-selector';
 
 export {
   PrimaryStatusBar,
@@ -20,4 +23,7 @@ export {
   ReviewContainer,
   DefaultToolBar,
   InfoChips,
+  LoadingModal,
+  MenuPopUp,
+  ImageSelector,
 };

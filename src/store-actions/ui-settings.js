@@ -19,6 +19,7 @@ const UISettingsActions = {
       },
     };
   },
+  // modal settings
 };
 
 export {UISettingsActions};

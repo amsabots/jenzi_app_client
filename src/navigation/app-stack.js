@@ -1,7 +1,7 @@
 import React from 'react';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 
-import {HomeView, Projects} from '../screens';
+import {HomeView, Projects, Profile} from '../screens';
 import {screens} from '../constants/screens';
 const Drawer = createDrawerNavigator();
 
@@ -37,6 +37,15 @@ const AppDrawerNavigator = () => {
         options={{
           drawerIcon: ({color}) => (
             <F5 name="tasks" size={SIZES.icon_size} color={color} />
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name={screens.profile}
+        component={Profile}
+        options={{
+          drawerIcon: ({color}) => (
+            <F5 name="user-circle-o" size={SIZES.icon_size} color={color} />
           ),
         }}
       />
