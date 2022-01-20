@@ -14,10 +14,11 @@ import {FlatList} from 'react-native-gesture-handler';
 
 const PickedImageItem = ({img, onItemClick}) => {
   const {name, type} = img;
+  const name_lenght = name.split('.').length;
   return (
     <View style={styles._img_wrapper}>
       <Text>{name.substring(0, name.length > 16 ? 16 : img.length)}</Text>
-      <Text>{type}</Text>
+      <Text>{name.split('.')[name_lenght - 1] || 'unknown'}</Text>
       <TouchableOpacity>
         <AD
           name="delete"
@@ -35,6 +36,7 @@ const ImageSelector = ({
   selectMultiple = false,
   onImagesPicked,
   buttonLabel = 'Submit',
+  pickerLabel = 'Pick file',
 }) => {
   const snapPoints = useMemo(() => [0, '20%', '60%', '90%'], []);
   const [images, setImages] = useState([]);
@@ -67,7 +69,7 @@ const ImageSelector = ({
             handleImagePicker();
           }}>
           <EIcons name="image" size={SIZES.size_48} color={COLORS.secondary} />
-          <Text style={{...FONTS.body_medium}}>Pick images</Text>
+          <Text style={{...FONTS.body_medium}}>{pickerLabel}</Text>
         </TouchableOpacity>
 
         {/* flat list */}

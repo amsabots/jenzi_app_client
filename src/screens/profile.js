@@ -1,6 +1,15 @@
 import React, {useState, useEffect, useRef} from 'react';
-import {View, Text, StyleSheet, ScrollView, Alert} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Alert,
+  ToastAndroid,
+} from 'react-native';
 import {Button, Caption, TextInput} from 'react-native-paper';
+//toast
+import Toast from 'react-native-toast-message';
 import {
   LoadingModal,
   DefaultToolBar,
@@ -50,6 +59,17 @@ const Profile = ({navigation}) => {
   //===================== component functions ===========
   const handlePickedImages = imgs => {
     img_selector.current.snapTo(0);
+    imgs.forEach(element => {
+      const type_array = element.split('.');
+      const type = type_array[type_array.length - 1];
+      if (!['png', 'jpeg', 'webp', 'jpg'].includes(type))
+        return Toast.show({
+          type: 'error',
+          text1: 'File type error',
+          text2: 'Make sure the file selected is of type jpg, png or jpeg',
+          position: 'bottom',
+        });
+    });
   };
 
   return (
@@ -168,6 +188,7 @@ const Profile = ({navigation}) => {
         <ImageSelector
           sheetRef={img_selector}
           onImagesPicked={imgs => handlePickedImages(imgs)}
+          pickerLabel="Select profile image"
         />
       </View>
     </>
