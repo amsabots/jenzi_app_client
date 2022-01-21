@@ -17,8 +17,15 @@ const fundiActions = {
       payload: fundiObject,
     };
   },
+
   test_store: function () {
     return {type: 'TEST_FUNDI'};
+  },
+  set_selected_fundi: function (selected_fundi) {
+    return {
+      type: 'SET_FUNDI',
+      payload: selected_fundi,
+    };
   },
 };
 export {fundiActions};
