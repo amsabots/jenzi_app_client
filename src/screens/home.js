@@ -56,6 +56,7 @@ const Home = ({navigation, fundis}) => {
     setLongitude(longi);
   };
 
+  // handle clicked user maker on the map
   const handleCalloutClick = f => {
     bottomSheetRef.current.snapTo(2);
     dispatch(fundiActions.set_selected_fundi(f));

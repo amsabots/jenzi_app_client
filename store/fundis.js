@@ -28,6 +28,7 @@ const fundisData = (state = initialState, action) => {
       console.log('fundi store is listening');
       return state;
     case 'SET_FUNDI':
+      console.log('redux: setting  selected fundi....');
       return {...state, selected_fundi: payload};
     default:
       return state;

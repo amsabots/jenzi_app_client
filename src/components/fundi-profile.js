@@ -1,12 +1,23 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 
 import {Button} from 'react-native-paper';
 import {View, Text, StyleSheet} from 'react-native';
 import {CircularImage, ReviewContainer} from '.';
 import {COLORS, FONTS, SIZES} from '../constants/themes';
+import {connect} from 'react-redux';
 
-const FundiDetails = ({fundi, isCallable = false}) => {
-  return (
+//components
+import {LoadingNothing} from '.';
+
+const mapStateToProps = state => {
+  const {fundis} = state;
+  return {fundis};
+};
+
+const DetailsView = ({leadinglabel = 'No details available', fundis}) => {
+  const {selected_fundi: fundi} = fundis;
+
+  return Object.keys(fundi).length ? (
     <View style={styles.container}>
       <CircularImage size={100} />
       {/*  */}
@@ -30,6 +41,8 @@ const FundiDetails = ({fundi, isCallable = false}) => {
         <ReviewContainer />
       </View>
     </View>
+  ) : (
+    <LoadingNothing label={leadinglabel} />
   );
 };
 
@@ -46,4 +59,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export {FundiDetails};
+export const FundiDetails = connect(mapStateToProps)(DetailsView);

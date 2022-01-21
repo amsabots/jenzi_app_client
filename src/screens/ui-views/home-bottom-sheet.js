@@ -23,17 +23,26 @@ const users = [
   {
     id: 1,
     name: 'Andrew Mwebbi',
-    longitude: 36.8886897,
-    latitude: -1.219586,
+    longitude: 36.9095934,
+    latitude: -1.2116835,
     desc: '1Kms away',
   },
   {
     id: 2,
     name: 'Lameck Owesi',
-    longitude: 36.8886697,
-    latitude: -1.217586,
+    longitude: 36.9096934,
+    latitude: -1.2216635,
     desc: '3Kms away',
   },
+];
+
+const services = [
+  {id: 1, name: 'All', selected: true},
+  {id: 2, name: 'Plumber', selected: false},
+  {id: 3, name: 'Roofers', selected: false},
+  {id: 4, name: 'Casual workers', selected: false},
+  {id: 5, name: 'Foundation', selected: false},
+  {id: 6, name: 'Welders', selected: false},
 ];
 
 const mapsStateToProps = state => {
@@ -45,6 +54,7 @@ const ServiceType = ({onChipClick, item}) => {
   return (
     <View style={{marginRight: SIZES.padding_12}}>
       <Chip
+        icon={item.selected && 'check'}
         style={{
           paddingVertical: 4,
         }}
@@ -67,14 +77,20 @@ const Providers = ({details, itemClick}) => {
         </View>
 
         <Rating ratingCount={5} imageSize={SIZES.icon_size} startingValue={0} />
-        <View style={{width: '100%'}}>
+        <View
+          style={{width: '100%', flexDirection: 'row', alignItems: 'center'}}>
+          <OIcons
+            name="milestone"
+            size={SIZES.icon_size}
+            style={{marginRight: SIZES.base}}
+          />
           <Text
             style={{
               ...FONTS.body,
               marginVertical: SIZES.base,
               color: COLORS.secondary,
             }}>
-            <OIcons name="milestone" size={SIZES.icon_size} /> 8 Kilometers
+            {desc}
           </Text>
         </View>
       </View>
@@ -83,41 +99,44 @@ const Providers = ({details, itemClick}) => {
 };
 
 const PageContent = ({fundis: f}) => {
-  console.log(f);
   const [load, setLoading] = useState(true);
-  const [selectedType, setSelectedType] = useState('All');
-  const [selectedUser, setSelectedUser] = useState({});
+  const [selectedType, setSelectedType] = useState({
+    name: 'All',
+    selected: true,
+  });
   const [fundis, setFundis] = useState([]);
+  const [renderNull, setRenderNull] = useState(false);
+  const [categories, setCategories] = useState(services);
 
   //store
   const dispatch = useDispatch();
 
   //render types of profession
   const renderProfessionTypes = ({item}) => (
-    <ServiceType item={item} onChipClick={i => setSelectedType(i)} />
+    <ServiceType item={item} onChipClick={i => handleClickedType(i)} />
   );
   //render available users
   const renderFundis = ({item}) => (
     <Providers
       details={item}
-      itemClick={s => dispatch(fundiActions.set_selected_fundi(item))}
+      itemClick={() => dispatch(fundiActions.set_selected_fundi(item))}
     />
   );
 
+  function handleClickedType(i) {
+    setSelectedType(i);
+    const clicked_index = categories.indexOf(i);
+    const clone_arr = categories.map(el => {
+      return {...el, selected: false};
+    });
+    clone_arr[clicked_index] = {...clone_arr[clicked_index], selected: true};
+    setCategories(clone_arr);
+  }
+
   useEffect(() => {
     dispatch(fundiActions.add_fundi(users));
-    setSelectedUser(f.selected_fundi);
-    setFundis(f.fundis);
+    setFundis(users);
   }, []);
-
-  const services = [
-    {id: 1, name: 'All', selected: false},
-    {id: 2, name: 'Plumber', selected: false},
-    {id: 3, name: 'Roofers', selected: false},
-    {id: 4, name: 'Casual workers', selected: false},
-    {id: 5, name: 'Foundation', selected: false},
-    {id: 6, name: 'Welders', selected: false},
-  ];
 
   return (
     <View style={styles.container}>
@@ -127,7 +146,7 @@ const PageContent = ({fundis: f}) => {
           Available services
         </Text>
         <FlatList
-          data={services}
+          data={categories}
           renderItem={renderProfessionTypes}
           key={item => item.name}
           style={{marginVertical: SIZES.padding_16}}
@@ -137,12 +156,12 @@ const PageContent = ({fundis: f}) => {
       </View>
       {/* Available users */}
       <Text style={{...FONTS.body_medium, color: COLORS.secondary}}>
-        Available providers
+        Available {selectedType.name == 'All' ? 'providers' : selectedType.name}
       </Text>
       {/* <LoadingNothing label={'No services providers found'} /> */}
       {fundis.length ? (
         <FlatList
-          data={services}
+          data={fundis}
           renderItem={renderFundis}
           keyExtractor={i => i.id}
           style={{marginVertical: SIZES.padding_16}}
@@ -157,13 +176,7 @@ const PageContent = ({fundis: f}) => {
       )}
 
       <View style={styles._section_selected_user}>
-        {Object.keys(selectedUser).length ? (
-          <FundiDetails fundi={selectedUser} />
-        ) : (
-          <LoadingNothing
-            label={'Click any available fundi above to view details'}
-          />
-        )}
+        <FundiDetails renderNull={v => setRenderNull(v)} />
       </View>
     </View>
   );
