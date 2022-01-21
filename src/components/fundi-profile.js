@@ -12,7 +12,7 @@ const FundiDetails = ({fundi, isCallable = false}) => {
       {/*  */}
       <View style={styles._details}>
         <Text style={{...FONTS.body_bold, marginBottom: SIZES.base}}>
-          Fundi name
+          {fundi.name}
         </Text>
         <Button mode="contained" style={{backgroundColor: COLORS.primary}}>
           Send a message

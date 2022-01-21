@@ -38,6 +38,7 @@ const users = [
 
 const mapsStateToProps = state => {
   const {fundis} = state;
+  return {fundis};
 };
 
 const ServiceType = ({onChipClick, item}) => {
@@ -55,12 +56,13 @@ const ServiceType = ({onChipClick, item}) => {
 };
 
 const Providers = ({details, itemClick}) => {
+  const {name, desc, photoUrl} = details;
   return (
     <Card style={styles.card_container} onPress={() => itemClick(details)}>
       <View style={styles._card_content}>
         <CircularImage size={70} />
         <View style={{marginVertical: SIZES.base, alignItems: 'center'}}>
-          <Text style={{...FONTS.body_bold}}>Andrew Mwebbi</Text>
+          <Text style={{...FONTS.body_bold}}>{name}</Text>
           <Text style={{...FONTS.caption}}>Plumber</Text>
         </View>
 
@@ -80,11 +82,12 @@ const Providers = ({details, itemClick}) => {
   );
 };
 
-const PageContent = () => {
+const PageContent = ({fundis: f}) => {
+  console.log(f);
   const [load, setLoading] = useState(true);
   const [selectedType, setSelectedType] = useState('All');
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [fundis, setFundis] = useState([1]);
+  const [selectedUser, setSelectedUser] = useState({});
+  const [fundis, setFundis] = useState([]);
 
   //store
   const dispatch = useDispatch();
@@ -95,11 +98,16 @@ const PageContent = () => {
   );
   //render available users
   const renderFundis = ({item}) => (
-    <Providers details={item} itemClick={s => setSelectedUser(s)} />
+    <Providers
+      details={item}
+      itemClick={s => dispatch(fundiActions.set_selected_fundi(item))}
+    />
   );
 
   useEffect(() => {
     dispatch(fundiActions.add_fundi(users));
+    setSelectedUser(f.selected_fundi);
+    setFundis(f.fundis);
   }, []);
 
   const services = [
@@ -149,7 +157,7 @@ const PageContent = () => {
       )}
 
       <View style={styles._section_selected_user}>
-        {selectedUser ? (
+        {Object.keys(selectedUser).length ? (
           <FundiDetails fundi={selectedUser} />
         ) : (
           <LoadingNothing
