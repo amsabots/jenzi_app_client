@@ -7,5 +7,9 @@ const screens = {
   stack_auth: 'AuthStack',
   projects: 'projects',
   profile: 'profile',
+  app_screen: 'app_navigation',
+  chats_screen: 'chats',
+  conversation: 'conversation',
 };
+
 export {screens};

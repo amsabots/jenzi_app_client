@@ -2,7 +2,7 @@ import React from 'react';
 import {View, Text, StyleSheet, ImageBackground} from 'react-native';
 
 import {Button, useTheme} from 'react-native-paper';
-import {theme} from '../../constants';
+import {screens, theme} from '../../constants';
 import {COLORS, FONTS, SIZES} from '../../constants/themes';
 //
 import {Chip} from 'react-native-paper';
@@ -10,11 +10,13 @@ import {Chip} from 'react-native-paper';
 //
 import {CircularImage} from '../circular-image';
 
-const NavHeader = () => {
-  const handleProfileOpener = () => {
-    console.log('open profile');
-  };
+const NavHeader = ({navigation}) => {
   const {colors} = useTheme();
+
+  const navigateToRoute = () => {
+    navigation.closeDrawer();
+    navigation.navigate(screens.profile);
+  };
   return (
     <View style={[styles.container]}>
       <CircularImage size={100} />
@@ -26,7 +28,7 @@ const NavHeader = () => {
         mode="contained"
         style={{marginTop: SIZES.padding_16, backgroundColor: COLORS.secondary}}
         icon={'face-profile'}
-        onPress={() => console.warn('open profile')}>
+        onPress={() => navigateToRoute()}>
         Profile
       </Button>
     </View>

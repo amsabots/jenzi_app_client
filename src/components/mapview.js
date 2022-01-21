@@ -1,10 +1,20 @@
-import React, {useEffect, useRef} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 
 import {View, StyleSheet, Text} from 'react-native';
 import RNMapView, {Marker, Circle} from 'react-native-maps';
 import {COLORS} from '../constants/themes';
+//
+import {connect} from 'react-redux';
 
-const MapView = ({coordinates}) => {
+//ui components
+import {MapMarker} from '.';
+
+const mapStateToProps = state => {
+  const {fundis} = state;
+  return {fundis};
+};
+
+const Mapview = ({coordinates, onMarkerClicked, fundis}) => {
   const {latitude, longitude} = coordinates;
   const mapRef = useRef(null);
 
@@ -44,6 +54,21 @@ const MapView = ({coordinates}) => {
           </View>
         </Marker>
       )} */}
+      {fundis.length
+        ? fundis.map((element, idx) => {
+            const {latitude, longitude, desc, name} = element;
+            return (
+              <Marker
+                coordinate={{latitude, longitude}}
+                title={name}
+                onCalloutPress={() => onMarkerClicked(element)}
+                description={desc}
+                key={idx}>
+                <MapMarker avatar_size={40} />
+              </Marker>
+            );
+          })
+        : null}
     </RNMapView>
   );
 };
@@ -83,4 +108,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export {MapView};
+export const MapView = connect(mapStateToProps)(Mapview);

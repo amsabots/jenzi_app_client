@@ -11,6 +11,7 @@ import {InfoChips} from './info-chips';
 import {LoadingModal} from './loading-modal';
 import {MenuPopUp} from './menu-popup';
 import {ImageSelector} from './image-selector';
+import {MapMarker} from './google-map-fundi-marker';
 
 export {
   PrimaryStatusBar,
@@ -26,4 +27,5 @@ export {
   LoadingModal,
   MenuPopUp,
   ImageSelector,
+  MapMarker,
 };

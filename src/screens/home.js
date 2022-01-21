@@ -1,6 +1,5 @@
 import React, {useEffect, useState, useCallback, useMemo, useRef} from 'react';
 import {View, Text, StyleSheet} from 'react-native';
-import {useDispatch} from 'react-redux';
 import {getCurrentLocation} from '../config/current-location';
 
 //bottom sheet
@@ -8,6 +7,7 @@ import BottomSheet from '@gorhom/bottom-sheet';
 
 // redux store
 import {UISettingsActions} from '../store-actions/ui-settings';
+import {useDispatch, connect} from 'react-redux';
 
 //components
 import {MapView} from '../components';
@@ -21,12 +21,18 @@ import MIcons from 'react-native-vector-icons/MaterialIcons';
 import {HomeBottomSheetContent} from './ui-views';
 import {ScrollView} from 'react-native-gesture-handler';
 
-const Home = ({navigation}) => {
+const mapStateToProps = state => {
+  const {fundis} = state;
+  return {fundis};
+};
+
+const Home = ({navigation, fundis}) => {
   //component state
   const [longitude, setLongitude] = useState();
   const [latitude, setLatitude] = useState();
   const [accuracy, setAccuracy] = useState();
   const [altitude, setAlt] = useState();
+  const [nearbyFundis, setNearbyFundis] = useState();
 
   //const refresh
   const [find, setFinder] = useState(0);
@@ -36,7 +42,8 @@ const Home = ({navigation}) => {
 
   //   get current map location
   const location = async () => {
-    l = await getCurrentLocation();
+    const l = await getCurrentLocation();
+
     const {
       accuracy: acc,
       altitude: alt,
@@ -49,6 +56,10 @@ const Home = ({navigation}) => {
     setLongitude(longi);
   };
 
+  const handleCalloutClick = f => {
+    bottomSheetRef.current.snapTo(2);
+  };
+
   //bottom sheet
   const bottomSheetRef = useRef(null);
   // variables
@@ -57,10 +68,6 @@ const Home = ({navigation}) => {
   useEffect(() => {
     location();
   }, [find]);
-
-  useEffect(() => {
-    dispatch(UISettingsActions.status_bar(true));
-  }, []);
 
   return (
     <View style={[styles.container]}>
@@ -84,6 +91,8 @@ const Home = ({navigation}) => {
         </View>
         <MapView
           coordinates={!latitude || !longitude ? {} : {latitude, longitude}}
+          nearbyProviders={nearbyFundis}
+          onMarkerClicked={f => handleCalloutClick(f)}
         />
       </View>
       <BottomSheet
@@ -132,4 +141,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Home;
+export default connect(mapStateToProps)(Home);

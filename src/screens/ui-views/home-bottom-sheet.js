@@ -12,13 +12,27 @@ import {LoadingNothing, CircularImage, FundiDetails} from '../../components';
 import {Rating} from 'react-native-ratings';
 //icons
 import OIcons from 'react-native-vector-icons/Octicons';
+// redux store
+import {useDispatch} from 'react-redux';
+import {fundiActions} from '../../store-actions';
+///// constants
+import {delay} from '../../constants';
 
 const users = [
-  {id: 1, name: 'andrew mwebi'},
-  {id: 2, name: 'andrew mwebi'},
-  {id: 3, name: 'andrew mwebi'},
-  {id: 4, name: 'andrew mwebi'},
-  {id: 5, name: 'andrew mwebi'},
+  {
+    id: 1,
+    name: 'Andrew Mwebbi',
+    longitude: 36.8886897,
+    latitude: -1.219586,
+    desc: '1Kms away',
+  },
+  {
+    id: 2,
+    name: 'Lameck Owesi',
+    longitude: 36.8886697,
+    latitude: -1.217586,
+    desc: '3Kms away',
+  },
 ];
 
 const ServiceType = ({onChipClick, item}) => {
@@ -67,6 +81,9 @@ const HomeBottomSheetContent = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [fundis, setFundis] = useState([1]);
 
+  //store
+  const dispatch = useDispatch();
+
   //render types of profession
   const renderProfessionTypes = ({item}) => (
     <ServiceType item={item} onChipClick={i => setSelectedType(i)} />
@@ -75,6 +92,10 @@ const HomeBottomSheetContent = () => {
   const renderFundis = ({item}) => (
     <Providers details={item} itemClick={s => setSelectedUser(s)} />
   );
+
+  useEffect(() => {
+    dispatch(fundiActions.add_fundi(users));
+  }, []);
 
   const services = [
     {id: 1, name: 'All', selected: false},

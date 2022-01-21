@@ -8,5 +8,8 @@ const appTheme = () => {
   const {colors} = useTheme();
   return colors;
 };
+const delay = (duration = 3000) => {
+  return new Promise(res => setTimeout(res, duration));
+};
 
-export {theme, screens, appTheme};
+export {theme, screens, appTheme, delay};

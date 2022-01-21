@@ -19,7 +19,7 @@ const CustomDrawer = props => {
       <DrawerContentScrollView
         {...props}
         contentContainerStyle={[styles.drawer_conatiner]}>
-        <NavHeader />
+        <NavHeader navigation={props.navigation} />
         <View style={[styles.list_item, {backgroundColor: theme.COLORS.white}]}>
           <DrawerItemList {...props} />
         </View>

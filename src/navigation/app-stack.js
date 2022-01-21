@@ -1,9 +1,12 @@
 import React from 'react';
 import {createDrawerNavigator} from '@react-navigation/drawer';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
-import {HomeView, Projects, Profile} from '../screens';
+import {HomeView, Projects, Profile, ChatScreen} from '../screens';
 import {screens} from '../constants/screens';
+//navigation components
 const Drawer = createDrawerNavigator();
+const Stack = createNativeStackNavigator();
 
 // components
 import {CustomDrawer} from '../components/custom-drawer';
@@ -12,7 +15,7 @@ import AntIcons from 'react-native-vector-icons/AntDesign';
 import F5 from 'react-native-vector-icons/FontAwesome';
 import {COLORS, SIZES} from '../constants/themes';
 
-const AppDrawerNavigator = () => {
+const DrawerNavigator = () => {
   return (
     <Drawer.Navigator
       initialRouteName={screens.home}
@@ -27,7 +30,11 @@ const AppDrawerNavigator = () => {
         component={HomeView}
         options={{
           drawerIcon: ({color}) => (
-            <AntIcons name="home" size={SIZES.icon_size} color={color} />
+            <AntIcons
+              name="home"
+              size={SIZES.icon_size_focused}
+              color={color}
+            />
           ),
         }}
       />
@@ -36,20 +43,37 @@ const AppDrawerNavigator = () => {
         component={Projects}
         options={{
           drawerIcon: ({color}) => (
-            <F5 name="tasks" size={SIZES.icon_size} color={color} />
+            <F5 name="tasks" size={SIZES.icon_size_focused} color={color} />
           ),
         }}
       />
       <Drawer.Screen
-        name={screens.profile}
-        component={Profile}
+        name={screens.chats_screen}
+        component={ChatScreen}
         options={{
           drawerIcon: ({color}) => (
-            <F5 name="user-circle-o" size={SIZES.icon_size} color={color} />
+            <AntIcons
+              name="wechat"
+              size={SIZES.icon_size_focused}
+              color={color}
+            />
           ),
         }}
       />
     </Drawer.Navigator>
+  );
+};
+
+const AppDrawerNavigator = () => {
+  return (
+    <Stack.Navigator
+      initialRouteName={screens.app_screen}
+      screenOptions={{
+        headerShown: false,
+      }}>
+      <Stack.Screen name={screens.app_screen} component={DrawerNavigator} />
+      <Stack.Screen name={screens.profile} component={Profile} />
+    </Stack.Navigator>
   );
 };
 
