@@ -13,8 +13,9 @@ import {Rating} from 'react-native-ratings';
 //icons
 import OIcons from 'react-native-vector-icons/Octicons';
 // redux store
-import {useDispatch} from 'react-redux';
+import {useDispatch, connect} from 'react-redux';
 import {fundiActions} from '../../store-actions';
+
 ///// constants
 import {delay} from '../../constants';
 
@@ -34,6 +35,10 @@ const users = [
     desc: '3Kms away',
   },
 ];
+
+const mapsStateToProps = state => {
+  const {fundis} = state;
+};
 
 const ServiceType = ({onChipClick, item}) => {
   return (
@@ -75,7 +80,7 @@ const Providers = ({details, itemClick}) => {
   );
 };
 
-const HomeBottomSheetContent = () => {
+const PageContent = () => {
   const [load, setLoading] = useState(true);
   const [selectedType, setSelectedType] = useState('All');
   const [selectedUser, setSelectedUser] = useState(null);
@@ -176,4 +181,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export {HomeBottomSheetContent};
+export const HomeBottomSheetContent = connect(mapsStateToProps)(PageContent);

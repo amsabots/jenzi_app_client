@@ -6,8 +6,8 @@ import {getCurrentLocation} from '../config/current-location';
 import BottomSheet from '@gorhom/bottom-sheet';
 
 // redux store
-import {UISettingsActions} from '../store-actions/ui-settings';
 import {useDispatch, connect} from 'react-redux';
+import {fundiActions, UISettingsActions} from '../store-actions';
 
 //components
 import {MapView} from '../components';
@@ -58,6 +58,7 @@ const Home = ({navigation, fundis}) => {
 
   const handleCalloutClick = f => {
     bottomSheetRef.current.snapTo(2);
+    dispatch(fundiActions.set_selected_fundi(f));
   };
 
   //bottom sheet

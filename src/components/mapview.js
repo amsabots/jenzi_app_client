@@ -54,8 +54,8 @@ const Mapview = ({coordinates, onMarkerClicked, fundis}) => {
           </View>
         </Marker>
       )} */}
-      {fundis.length
-        ? fundis.map((element, idx) => {
+      {fundis.fundis.length
+        ? fundis.fundis.map((element, idx) => {
             const {latitude, longitude, desc, name} = element;
             return (
               <Marker
