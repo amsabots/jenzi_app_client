@@ -1,4 +1,5 @@
 import React, {useEffect, useState, useCallback, useMemo, useRef} from 'react';
+import {useFocusEffect} from '@react-navigation/native';
 import {View, Text, StyleSheet} from 'react-native';
 import {getCurrentLocation} from '../config/current-location';
 
@@ -20,6 +21,10 @@ import MIcons from 'react-native-vector-icons/MaterialIcons';
 //building blocks
 import {HomeBottomSheetContent} from './ui-views';
 import {ScrollView} from 'react-native-gesture-handler';
+
+// subscribtions
+import {mainChannel} from '../pusher';
+import Pusher from 'pusher-js/react-native';
 
 const mapStateToProps = state => {
   const {fundis} = state;
@@ -70,6 +75,15 @@ const Home = ({navigation, fundis}) => {
   useEffect(() => {
     location();
   }, [find]);
+
+  //run on the first screen render
+  useEffect(() => {
+    mainChannel.consumeUserInfo();
+  }, []);
+  // on screen coming back to view
+  useFocusEffect(() => {
+    console.log('Screen view has been resumed');
+  });
 
   return (
     <View style={[styles.container]}>

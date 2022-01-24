@@ -1,3 +1,4 @@
 import {getCurrentLocation} from './current-location';
+import * as app_config from './keys';
 
-export {getCurrentLocation};
+export {getCurrentLocation, app_config};
