@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 
 import {Button, Chip} from 'react-native-paper';
 import {View, Text, StyleSheet} from 'react-native';
@@ -40,18 +40,10 @@ const DetailsView = ({leadinglabel = 'No details available', fundis}) => {
   const [time, setTimer] = useState(0);
   const [showRequestStatus, setRequestStatus] = useState(false);
 
-  const startTimer = setInterval(() => {
-    setTimer(c => c + 1);
-  }, 1000);
-  useEffect(() => {
-    if (time >= 10) clearInterval(startTimer);
-  }, [time]);
-
   const {selected_fundi: fundi} = fundis;
 
   const handleSendRequest = user => {
     setRequestStatus(true);
-    startTimer();
   };
 
   return Object.keys(fundi).length ? (
