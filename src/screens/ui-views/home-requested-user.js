@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import {Button, Caption} from 'react-native-paper';
 import {FlatList} from 'react-native-gesture-handler';
-import {FONTS, SIZES} from '../../constants/themes';
+import {COLORS, FONTS, SIZES} from '../../constants/themes';
 //components
 import {LoaderSpinner} from '../../components';
 //redux
@@ -41,7 +41,12 @@ const PendingRequestsView = ({timer, show, cancel, fundis}) => {
           <Text style={{marginHorizontal: SIZES.base, ...FONTS.body_medium}}>
             Waiting for response....
           </Text>
-          <MIcons name="cancel" size={SIZES.padding_32} onPress={cancel} />
+          <MIcons
+            name="cancel"
+            size={SIZES.padding_32}
+            onPress={cancel}
+            color={COLORS.secondary}
+          />
         </View>
       </View>
     )

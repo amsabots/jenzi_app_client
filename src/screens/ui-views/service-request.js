@@ -5,7 +5,8 @@ import {View, Text, StyleSheet} from 'react-native';
 import {SIZES} from '../../constants/themes';
 import {COLORS} from '../../constants/themes';
 
-const RequestTitle = ({onAccept, show = falsen, onHide, user}) => {
+const RequestTitle = ({onAccept, show = false, onHide}) => {
+  const [title, setTitle] = useState('');
   return (
     <Portal>
       <Modal
@@ -19,6 +20,7 @@ const RequestTitle = ({onAccept, show = falsen, onHide, user}) => {
             mode="outlined"
             outlineColor={COLORS.secondary}
             activeOutlineColor={COLORS.secondary}
+            multiline={true}
           />
           <View
             style={{
@@ -29,7 +31,7 @@ const RequestTitle = ({onAccept, show = falsen, onHide, user}) => {
             <Button onPress={onHide} color={COLORS.primary}>
               Cancel
             </Button>
-            <Button onPress={onAccept} color={COLORS.secondary}>
+            <Button onPress={onAccept(title)} color={COLORS.secondary}>
               Send Request
             </Button>
           </View>
@@ -39,12 +41,12 @@ const RequestTitle = ({onAccept, show = falsen, onHide, user}) => {
   );
 };
 
-const ServiceRequest = ({user, sendRequest, disableBtn = false}) => {
+const ServiceRequest = ({sendRequest, disableBtn = false}) => {
   const [showModal, setShowModal] = useState(false);
 
-  const handleAccept = () => {
+  const handleAccept = t => {
     setShowModal(false);
-    sendRequest(user);
+    sendRequest(t);
   };
   return (
     <View style={{marginVertical: SIZES.padding_16}}>
@@ -59,7 +61,6 @@ const ServiceRequest = ({user, sendRequest, disableBtn = false}) => {
         show={showModal}
         onHide={() => setShowModal(false)}
         onAccept={handleAccept}
-        user={user}
       />
     </View>
   );

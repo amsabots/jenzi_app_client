@@ -42,8 +42,9 @@ const DetailsView = ({leadinglabel = 'No details available', fundis}) => {
 
   const {selected_fundi: fundi} = fundis;
 
-  const handleSendRequest = user => {
-    setRequestStatus(true);
+  const handleSendRequest = () => {};
+  const handleCancelRequest = () => {
+    setRequestStatus(false);
   };
 
   return Object.keys(fundi).length ? (
@@ -111,14 +112,12 @@ const DetailsView = ({leadinglabel = 'No details available', fundis}) => {
         </View>
       </View>
       {/*  */}
-      <ServiceRequest sendRequest={user => handleSendRequest(user)} />
+      <ServiceRequest sendRequest={() => handleSendRequest()} />
       {/* =================== component to show the request sending status =============== */}
       <PendingRequests
         timer={time}
         show={showRequestStatus}
-        cancel={() => {
-          setRequestStatus(false);
-        }}
+        cancel={() => handleCancelRequest}
       />
       <View style={styles._border_line}></View>
       {/*  */}
