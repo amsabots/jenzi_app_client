@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {View, Text, StyleSheet} from 'react-native';
-import {Button} from 'react-native-paper';
+import {Button, Caption} from 'react-native-paper';
 import {FlatList} from 'react-native-gesture-handler';
 import {FONTS, SIZES} from '../../constants/themes';
 //components
@@ -27,20 +27,24 @@ const requests = [
   },
 ];
 
-const PendingRequestsView = ({timer, show, cancel}) => {
+const PendingRequestsView = ({timer, show, cancel, fundis}) => {
+  const {selected_fundi} = fundis;
   return (
-    <View style={styles.container}>
-      <View style={styles._item_wrapper}>
-        <LoaderSpinner.DoubleRing loading={true} />
-        <Text style={{marginLeft: SIZES.base, ...FONTS.body_medium}}>
-          {timer} / 60
-        </Text>
-        <Text style={{marginHorizontal: SIZES.base, ...FONTS.body_medium}}>
-          Waiting for response....
-        </Text>
-        <MIcons name="cancel" size={SIZES.padding_32} onPress={cancel} />
+    show && (
+      <View style={styles.container}>
+        <Caption>Contacting {selected_fundi.name}</Caption>
+        <View style={styles._item_wrapper}>
+          <LoaderSpinner.DoubleRing loading={true} />
+          <Text style={{marginLeft: SIZES.base, ...FONTS.body_medium}}>
+            {timer} / 60
+          </Text>
+          <Text style={{marginHorizontal: SIZES.base, ...FONTS.body_medium}}>
+            Waiting for response....
+          </Text>
+          <MIcons name="cancel" size={SIZES.padding_32} onPress={cancel} />
+        </View>
       </View>
-    </View>
+    )
   );
 };
 

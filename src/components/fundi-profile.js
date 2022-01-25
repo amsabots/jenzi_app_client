@@ -116,9 +116,10 @@ const DetailsView = ({leadinglabel = 'No details available', fundis}) => {
       <PendingRequests
         timer={time}
         show={showRequestStatus}
-        cancel={() => clearInterval(startTimer)}
+        cancel={() => {
+          setRequestStatus(false);
+        }}
       />
-
       <View style={styles._border_line}></View>
       {/*  */}
       <View style={styles._reviews}>
