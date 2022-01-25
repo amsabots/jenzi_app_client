@@ -39,16 +39,18 @@ const RequestTitle = ({onAccept, show = falsen, onHide, user}) => {
   );
 };
 
-const ServiceRequest = ({user}) => {
+const ServiceRequest = ({user, sendRequest, disableBtn = false}) => {
   const [showModal, setShowModal] = useState(false);
 
   const handleAccept = () => {
     setShowModal(false);
+    sendRequest(user);
   };
   return (
     <View style={{marginVertical: SIZES.padding_16}}>
       <Button
         mode="contained"
+        disabled={disableBtn}
         style={{backgroundColor: COLORS.secondary}}
         onPress={() => setShowModal(true)}>
         request service

@@ -6,7 +6,7 @@ import {COLORS, FONTS, SIZES} from '../constants/themes';
 import {connect} from 'react-redux';
 
 //UI sub components
-import {ServiceRequest} from '../screens/ui-views/service-request';
+import {ServiceRequest, PendingRequests} from '../screens/ui-views';
 
 //components
 import {
@@ -36,8 +36,23 @@ const DetailsView = ({leadinglabel = 'No details available', fundis}) => {
   const [load, setLoad] = useState(false);
   const [trainedBy, setTraineddBy] = useState([]);
   const [projects, setLoadProjects] = useState([]);
+  // timer to track the request validity period -
+  const [time, setTimer] = useState(0);
+  const [showRequestStatus, setRequestStatus] = useState(false);
+
+  const startTimer = setInterval(() => {
+    setTimer(c => c + 1);
+  }, 1000);
+  useEffect(() => {
+    if (time >= 10) clearInterval(startTimer);
+  }, [time]);
 
   const {selected_fundi: fundi} = fundis;
+
+  const handleSendRequest = user => {
+    setRequestStatus(true);
+    startTimer();
+  };
 
   return Object.keys(fundi).length ? (
     <View style={styles.container}>
@@ -104,8 +119,13 @@ const DetailsView = ({leadinglabel = 'No details available', fundis}) => {
         </View>
       </View>
       {/*  */}
-      <ServiceRequest />
-      {/*  */}
+      <ServiceRequest sendRequest={user => handleSendRequest(user)} />
+      {/* =================== component to show the request sending status =============== */}
+      <PendingRequests
+        timer={time}
+        show={showRequestStatus}
+        cancel={() => clearInterval(startTimer)}
+      />
 
       <View style={styles._border_line}></View>
       {/*  */}
@@ -122,6 +142,7 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     paddingVertical: SIZES.padding_12,
+    paddingHorizontal: SIZES.padding_16,
   },
   _details: {
     marginVertical: SIZES.base,
