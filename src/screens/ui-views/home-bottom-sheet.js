@@ -98,7 +98,7 @@ const Providers = ({details, itemClick}) => {
   );
 };
 
-const PageContent = ({fundis: f}) => {
+const PageContent = ({fundis: f, bottomSheetTop}) => {
   const [load, setLoading] = useState(true);
   const [selectedType, setSelectedType] = useState({
     name: 'All',
@@ -119,7 +119,10 @@ const PageContent = ({fundis: f}) => {
   const renderFundis = ({item}) => (
     <Providers
       details={item}
-      itemClick={() => dispatch(fundiActions.set_selected_fundi(item))}
+      itemClick={() => {
+        dispatch(fundiActions.set_selected_fundi(item));
+        bottomSheetTop();
+      }}
     />
   );
 

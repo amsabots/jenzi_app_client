@@ -1,20 +1,42 @@
 import React, {useState, useEffect} from 'react';
 
-import {Button} from 'react-native-paper';
+import {Button, Chip} from 'react-native-paper';
 import {View, Text, StyleSheet} from 'react-native';
-import {CircularImage, ReviewContainer} from '.';
 import {COLORS, FONTS, SIZES} from '../constants/themes';
 import {connect} from 'react-redux';
 
-//components
-import {LoadingNothing} from '.';
+//UI sub components
+import {ServiceRequest} from '../screens/ui-views/service-request';
 
+//components
+import {
+  CircularImage,
+  ReviewContainer,
+  InfoChips,
+  LoaderSpinner,
+  LoadingNothing,
+} from '.';
+//icons
+import MIcon from 'react-native-vector-icons/MaterialIcons';
 const mapStateToProps = state => {
   const {fundis} = state;
   return {fundis};
 };
 
+const Loader = ({type = 'a', label = 'Fetching........'}) => {
+  return (
+    <View style={{flexDirection: 'row', alignItems: 'center'}}>
+      <LoaderSpinner.ArcherLoader loading={true} />
+      <Text>{label}</Text>
+    </View>
+  );
+};
+
 const DetailsView = ({leadinglabel = 'No details available', fundis}) => {
+  const [load, setLoad] = useState(false);
+  const [trainedBy, setTraineddBy] = useState([]);
+  const [projects, setLoadProjects] = useState([]);
+
   const {selected_fundi: fundi} = fundis;
 
   return Object.keys(fundi).length ? (
@@ -25,18 +47,68 @@ const DetailsView = ({leadinglabel = 'No details available', fundis}) => {
         <Text style={{...FONTS.body_bold, marginBottom: SIZES.base}}>
           {fundi.name}
         </Text>
-        <Button mode="contained" style={{backgroundColor: COLORS.primary}}>
-          Send a message
-        </Button>
+        {/* NCA section */}
+        <View>
+          <Text style={{...FONTS.captionBold}}>NCA no</Text>
+          <Text style={{...FONTS.body_medium}}>1234567890</Text>
+        </View>
+        {/* ====================== */}
+        <View
+          style={{
+            marginVertical: SIZES.base,
+            width: '100%',
+          }}>
+          <Text style={styles._section_header}>Trained by</Text>
+          <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
+            {load ? (
+              <Loader label="Loading training organizations........" />
+            ) : projects.length ? (
+              [1, 2].map((el, idx) => (
+                <InfoChips
+                  key={idx}
+                  text={'NIBS College'}
+                  textColor={COLORS.blue_deep}
+                  containerStyles={{
+                    marginRight: SIZES.padding_4,
+                    marginBottom: SIZES.padding_4,
+                  }}
+                />
+              ))
+            ) : (
+              <LoadingNothing label={'Training not available'} width={100} />
+            )}
+          </View>
+          {/* ============= projects */}
+          <View style={{marginVertical: SIZES.padding_12}}>
+            <Text style={styles._section_header}>Completed projects</Text>
+            <View
+              style={{
+                flexDirection: 'row',
+                flexWrap: 'wrap',
+                marginTop: SIZES.base,
+              }}>
+              {load ? (
+                <Loader label="Loading user projects]........" />
+              ) : trainedBy.length ? (
+                [1, 2, 3, 4, 5, 6].map((el, idx) => (
+                  <Chip
+                    style={{marginBottom: 4, marginRight: SIZES.padding_16}}>
+                    SGR construction
+                  </Chip>
+                ))
+              ) : (
+                <LoadingNothing label={'0 Projects done'} width={100} />
+              )}
+            </View>
+          </View>
+        </View>
       </View>
       {/*  */}
-      <View style={{marginVertical: SIZES.padding_16}}>
-        <Button mode="contained" style={{backgroundColor: COLORS.secondary}}>
-          request service
-        </Button>
-      </View>
+      <ServiceRequest />
       {/*  */}
 
+      <View style={styles._border_line}></View>
+      {/*  */}
       <View style={styles._reviews}>
         <ReviewContainer />
       </View>
@@ -53,9 +125,22 @@ const styles = StyleSheet.create({
   },
   _details: {
     marginVertical: SIZES.base,
+    width: '100%',
+    alignItems: 'center',
   },
   _reviews: {
     width: '100%',
+  },
+  _section_header: {
+    color: COLORS.secondary,
+    ...FONTS.captionBold,
+    marginBottom: SIZES.base,
+  },
+  _border_line: {
+    borderColor: COLORS.light_secondary,
+    borderWidth: SIZES.stroke,
+    width: '100%',
+    marginVertical: SIZES.padding_12,
   },
 });
 

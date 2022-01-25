@@ -116,7 +116,9 @@ const Home = ({navigation, fundis}) => {
         initialSnapIndex={1}
         snapPoints={snapPoints}>
         <ScrollView>
-          <HomeBottomSheetContent />
+          <HomeBottomSheetContent
+            bottomSheetTop={() => bottomSheetRef.current.snapTo(2)}
+          />
         </ScrollView>
       </BottomSheet>
     </View>

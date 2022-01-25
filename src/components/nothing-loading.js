@@ -22,7 +22,7 @@ const LoadingNothing = ({
       {label && (
         <Text
           style={{
-            ...FONTS.body1,
+            ...FONTS.caption,
             marginVertical: SIZES.padding_16,
             textAlign: 'center',
             color: textColor,

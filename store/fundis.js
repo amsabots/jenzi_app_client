@@ -1,6 +1,7 @@
 const initialState = {
   fundis: [],
   selected_fundi: {},
+  sent_requests: [],
 };
 
 const fundisData = (state = initialState, action) => {
