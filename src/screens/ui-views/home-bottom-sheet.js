@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 
 import {View, Text, StyleSheet} from 'react-native';
 import {LoaderSpinner} from '../../components';
@@ -19,6 +19,12 @@ import {fundiActions} from '../../store-actions';
 
 ///// constants
 import {delay} from '../../constants';
+import {concat} from 'react-native-reanimated';
+import axios from 'axios';
+import {endpoints} from '../../endpoints';
+
+//Toast
+import Toast from 'react-native-toast-message';
 
 const users = [
   {
@@ -142,7 +148,26 @@ const PageContent = ({fundis: f, bottomSheetTop}) => {
     setFundis(users);
   }, []);
 
-  const handleCancelRequest = request => {};
+  //call the requests delete endpoint when the cancel icon has been clicked on the requests sent component
+  const handleCancelRequest = useCallback(el => {
+    axios
+      .delete(`${endpoints.notification_server}/notify/${el.requestId}`)
+      .then(res => {
+        dispatch(fundiActions.delete_current_requests(el));
+        Toast.show({
+          type: 'success',
+          text2: 'Request has been cancelled',
+        });
+      })
+      .catch(e => {
+        console.log(e);
+        Toast.show({
+          type: 'error',
+          text2:
+            'Request cannot be completed at this time, please try again later',
+        });
+      });
+  });
 
   return (
     <View style={styles.container}>
@@ -165,7 +190,7 @@ const PageContent = ({fundis: f, bottomSheetTop}) => {
         {/* <LoadingNothing label={'No services providers found'} /> */}
 
         {/* =================== component to show the request sending status =============== */}
-        <PendingRequests cancel={request => handleCancelRequest(request)} />
+        <PendingRequests onCancel={el => handleCancelRequest(el)} />
         {/* ============= ============================= */}
       </View>
 

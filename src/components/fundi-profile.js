@@ -3,7 +3,8 @@ import React, {useState, useEffect, useCallback} from 'react';
 import {Button, Chip} from 'react-native-paper';
 import {View, Text, StyleSheet} from 'react-native';
 import {COLORS, FONTS, SIZES} from '../constants/themes';
-import {connect} from 'react-redux';
+import {connect, useDispatch} from 'react-redux';
+import {fundiActions} from '../store-actions';
 
 //UI sub components
 import {ServiceRequest, PendingRequests} from '../screens/ui-views';
@@ -15,12 +16,15 @@ import {
   InfoChips,
   LoaderSpinner,
   LoadingNothing,
+  LoadingModal,
 } from '.';
 //icons
 import MIcon from 'react-native-vector-icons/MaterialIcons';
 
 //toast
 import Toast from 'react-native-toast-message';
+import axios from 'axios';
+import {endpoints} from '../endpoints';
 const mapStateToProps = state => {
   const {fundis} = state;
   return {fundis};
@@ -36,15 +40,15 @@ const Loader = ({type = 'a', label = 'Fetching........'}) => {
 };
 
 const DetailsView = ({leadinglabel = 'No details available', fundis}) => {
+  const dispatch = useDispatch();
+
   const [load, setLoad] = useState(false);
   const [trainedBy, setTraineddBy] = useState([]);
   const [projects, setLoadProjects] = useState([]);
   // timer to track the request validity period -
-  const [time, setTimer] = useState(0);
-  const [showRequestStatus, setRequestStatus] = useState(true);
 
   const {selected_fundi: fundi} = fundis;
-  const [jobTitle, setJobTitle] = useState('');
+  const [modal_loader, set_modal_loader] = useState(false);
 
   //get the title provided and validate
   const handleSendRequest = title => {
@@ -54,15 +58,41 @@ const DetailsView = ({leadinglabel = 'No details available', fundis}) => {
         text1: 'Title missing',
         text2: 'You have not provided any valid job title',
       });
-    setJobTitle(title);
-  };
 
-  const handleCancelRequest = () => {
-    setRequestStatus(false);
+    const payload = {
+      payload: {title},
+      sourceAddress: 'andrewmwebi',
+      destinationAddress: 'lameckowesi',
+      filterType: 'request_user',
+    };
+    set_modal_loader(true);
+    axios
+      .post(`${endpoints.notification_server}/notify`, payload)
+      .then(res => {
+        payload.requestId = res.data.requestId;
+        dispatch(fundiActions.get_all_Sent_requests([payload]));
+        return Toast.show({
+          type: 'success',
+          text2: 'Request sent, Please wait response.....',
+        });
+      })
+      .catch(e => {
+        return Toast.show({
+          type: 'error',
+          text2: 'Failed Retry later.....',
+        });
+      })
+      .finally(() => set_modal_loader(false));
   };
 
   return Object.keys(fundi).length ? (
     <View style={styles.container}>
+      {/* ===== loading modal */}
+      <LoadingModal
+        show={modal_loader}
+        onDismiss={() => set_modal_loader(false)}
+        label="Sending........"
+      />
       <CircularImage size={100} />
       {/*  */}
       <View style={styles._details}>

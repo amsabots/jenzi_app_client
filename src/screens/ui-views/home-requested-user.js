@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, memo} from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import {Button, Caption} from 'react-native-paper';
 import {FlatList} from 'react-native-gesture-handler';
@@ -11,40 +11,30 @@ import {useDispatch, connect} from 'react-redux';
 import MIcons from 'react-native-vector-icons/MaterialIcons';
 import axios from 'axios';
 import {fundiActions} from '../../store-actions';
+import {endpoints} from '../../endpoints';
 
 const mapStateToProps = state => {
   const {fundis} = state;
   return {fundis};
 };
 
-const requests = [
-  {
-    requestId: 'efe78ed87af872fb67',
-    sourceAddress: 'andrewmwebi',
-    destinationAddress: 'lameckowesi',
-    filterType: 'fundi_requested',
-    payload: {
-      jobTitle: 'Account opening and configuration',
-    },
-  },
-];
-
-const PendingRequestsView = ({timer, show, cancel, fundis}) => {
-  console.log(fundis.sent_requests);
+const PendingRequestsView = memo(({onCancel, fundis}) => {
   const dispatch = useDispatch();
   useEffect(() => {
     axios
-      .get('http://3.129.148.239:27500/realtime-server/notify/andrewmwebi')
+      .get(`${endpoints.notification_server}/notify/andrewmwebi`)
       .then(res => {
         dispatch(fundiActions.get_all_Sent_requests(res.data));
       })
       .catch(err => console.log(err));
   }, []);
 
-  const {selected_fundi, sent_requests} = fundis;
+  const {sent_requests} = fundis;
   return sent_requests.length ? (
     <View>
-      <Text>Sent requests</Text>
+      <Text style={{...FONTS.body_medium, color: COLORS.secondary}}>
+        Sent requests
+      </Text>
       {sent_requests.map((el, idx) => {
         return (
           <View style={styles.container} key={idx}>
@@ -57,7 +47,7 @@ const PendingRequestsView = ({timer, show, cancel, fundis}) => {
               <MIcons
                 name="cancel"
                 size={SIZES.padding_32}
-                onPress={cancel}
+                onPress={() => onCancel(el)}
                 color={COLORS.secondary}
               />
             </View>
@@ -66,7 +56,7 @@ const PendingRequestsView = ({timer, show, cancel, fundis}) => {
       })}
     </View>
   ) : null;
-};
+});
 
 const styles = StyleSheet.create({
   container: {

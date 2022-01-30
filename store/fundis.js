@@ -1,4 +1,5 @@
 import axios from 'axios';
+import _ from 'lodash';
 
 const initialState = {
   fundis: [],
@@ -36,8 +37,9 @@ const fundisData = (state = initialState, action) => {
     case 'GET_SENT_REQUESTS':
       return {...state, sent_requests: [...state.sent_requests, ...payload]};
     case 'REMOVE_SENT_REQUEST':
-      const sr_index = state.fundis.indexOf(payload);
-      return {...state, sent_requests: state.sent_requests.splice(sr_index, 1)};
+      const a = state.sent_requests;
+      _.remove(a, el => el.requestId === payload.requestId);
+      return {...state, sent_requests: a};
     default:
       return state;
   }
