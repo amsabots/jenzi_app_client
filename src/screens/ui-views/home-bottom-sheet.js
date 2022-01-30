@@ -7,6 +7,7 @@ import {Chip, Card, Divider} from 'react-native-paper';
 import {FlatList} from 'react-native-gesture-handler';
 
 import {LoadingNothing, CircularImage, FundiDetails} from '../../components';
+import {PendingRequests} from '../ui-views';
 
 //rating
 import {Rating} from 'react-native-ratings';
@@ -141,6 +142,8 @@ const PageContent = ({fundis: f, bottomSheetTop}) => {
     setFundis(users);
   }, []);
 
+  const handleCancelRequest = request => {};
+
   return (
     <View style={styles.container}>
       <LoaderSpinner.DoubleRing loading={load} size={40} />
@@ -157,11 +160,19 @@ const PageContent = ({fundis: f, bottomSheetTop}) => {
           showsHorizontalScrollIndicator={false}
         />
       </View>
+
+      <View>
+        {/* <LoadingNothing label={'No services providers found'} /> */}
+
+        {/* =================== component to show the request sending status =============== */}
+        <PendingRequests cancel={request => handleCancelRequest(request)} />
+        {/* ============= ============================= */}
+      </View>
+
       {/* Available users */}
       <Text style={{...FONTS.body_medium, color: COLORS.secondary}}>
         Available {selectedType.name == 'All' ? 'providers' : selectedType.name}
       </Text>
-      {/* <LoadingNothing label={'No services providers found'} /> */}
       {fundis.length ? (
         <FlatList
           data={fundis}

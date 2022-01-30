@@ -1,7 +1,9 @@
+import axios from 'axios';
+
 const initialState = {
   fundis: [],
   selected_fundi: {},
-  sent_requests: {},
+  sent_requests: [],
 };
 
 const fundisData = (state = initialState, action) => {
@@ -31,6 +33,11 @@ const fundisData = (state = initialState, action) => {
     case 'SET_FUNDI':
       console.log('redux: setting  selected fundi....');
       return {...state, selected_fundi: payload};
+    case 'GET_SENT_REQUESTS':
+      return {...state, sent_requests: [...state.sent_requests, ...payload]};
+    case 'REMOVE_SENT_REQUEST':
+      const sr_index = state.fundis.indexOf(payload);
+      return {...state, sent_requests: state.sent_requests.splice(sr_index, 1)};
     default:
       return state;
   }

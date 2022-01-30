@@ -1,11 +1,11 @@
-import React, {useState, useEffect, useMemo} from 'react';
+import React, {useState, useEffect, useMemo, memo, useCallback} from 'react';
 import {Button, Portal, Modal, TextInput} from 'react-native-paper';
 import {View, Text, StyleSheet} from 'react-native';
 // constants
 import {SIZES} from '../../constants/themes';
 import {COLORS} from '../../constants/themes';
 
-const RequestTitle = ({onAccept, show = false, onHide}) => {
+const RequestTitle = memo(({onAccept, show = false, onHide}) => {
   const [title, setTitle] = useState('');
   return (
     <Portal>
@@ -21,6 +21,7 @@ const RequestTitle = ({onAccept, show = false, onHide}) => {
             outlineColor={COLORS.secondary}
             activeOutlineColor={COLORS.secondary}
             multiline={true}
+            onChangeText={t => setTitle(t)}
           />
           <View
             style={{
@@ -31,7 +32,7 @@ const RequestTitle = ({onAccept, show = false, onHide}) => {
             <Button onPress={onHide} color={COLORS.primary}>
               Cancel
             </Button>
-            <Button onPress={onAccept(title)} color={COLORS.secondary}>
+            <Button onPress={() => onAccept(title)} color={COLORS.secondary}>
               Send Request
             </Button>
           </View>
@@ -39,28 +40,33 @@ const RequestTitle = ({onAccept, show = false, onHide}) => {
       </Modal>
     </Portal>
   );
-};
+});
 
 const ServiceRequest = ({sendRequest, disableBtn = false}) => {
   const [showModal, setShowModal] = useState(false);
 
-  const handleAccept = t => {
-    setShowModal(false);
-    sendRequest(t);
-  };
+  const handleAccept = useCallback(
+    t => {
+      sendRequest(t);
+      setShowModal(false);
+    },
+    [showModal],
+  );
   return (
     <View style={{marginVertical: SIZES.padding_16}}>
       <Button
         mode="contained"
         disabled={disableBtn}
         style={{backgroundColor: COLORS.secondary}}
-        onPress={() => setShowModal(true)}>
+        onPress={() => {
+          setShowModal(true);
+        }}>
         request service
       </Button>
       <RequestTitle
         show={showModal}
         onHide={() => setShowModal(false)}
-        onAccept={handleAccept}
+        onAccept={d => handleAccept(d)}
       />
     </View>
   );

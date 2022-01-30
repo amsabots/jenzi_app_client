@@ -18,6 +18,9 @@ import {
 } from '.';
 //icons
 import MIcon from 'react-native-vector-icons/MaterialIcons';
+
+//toast
+import Toast from 'react-native-toast-message';
 const mapStateToProps = state => {
   const {fundis} = state;
   return {fundis};
@@ -38,11 +41,22 @@ const DetailsView = ({leadinglabel = 'No details available', fundis}) => {
   const [projects, setLoadProjects] = useState([]);
   // timer to track the request validity period -
   const [time, setTimer] = useState(0);
-  const [showRequestStatus, setRequestStatus] = useState(false);
+  const [showRequestStatus, setRequestStatus] = useState(true);
 
   const {selected_fundi: fundi} = fundis;
+  const [jobTitle, setJobTitle] = useState('');
 
-  const handleSendRequest = () => {};
+  //get the title provided and validate
+  const handleSendRequest = title => {
+    if (!title)
+      return Toast.show({
+        type: 'error',
+        text1: 'Title missing',
+        text2: 'You have not provided any valid job title',
+      });
+    setJobTitle(title);
+  };
+
   const handleCancelRequest = () => {
     setRequestStatus(false);
   };
@@ -112,13 +126,7 @@ const DetailsView = ({leadinglabel = 'No details available', fundis}) => {
         </View>
       </View>
       {/*  */}
-      <ServiceRequest sendRequest={() => handleSendRequest()} />
-      {/* =================== component to show the request sending status =============== */}
-      <PendingRequests
-        timer={time}
-        show={showRequestStatus}
-        cancel={() => handleCancelRequest}
-      />
+      <ServiceRequest sendRequest={title => handleSendRequest(title)} />
       <View style={styles._border_line}></View>
       {/*  */}
       <View style={styles._reviews}>

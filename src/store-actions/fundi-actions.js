@@ -27,5 +27,17 @@ const fundiActions = {
       payload: selected_fundi,
     };
   },
+  get_all_Sent_requests: function (sent_requests) {
+    return {
+      type: 'GET_SENT_REQUESTS',
+      payload: sent_requests,
+    };
+  },
+  delete_current_requests: function (request) {
+    return {
+      type: 'REMOVE_SENT_REQUEST',
+      payload: request,
+    };
+  },
 };
 export {fundiActions};
