@@ -5,13 +5,13 @@ import {
   DrawerItemList,
 } from '@react-navigation/drawer';
 
-import {} from 'react-native-paper';
+import {Button} from 'react-native-paper';
 //sub components
 import {NavHeader} from './sub-components';
 
 //
-import {appTheme, theme} from '../constants';
-import {COLORS} from '../constants/themes';
+import {appTheme, screens, theme} from '../constants';
+import {COLORS, SIZES} from '../constants/themes';
 
 const CustomDrawer = props => {
   return (
@@ -27,7 +27,18 @@ const CustomDrawer = props => {
 
       {/* bottom text */}
       <View>
-        <Text>Bottom text</Text>
+        <Button
+          mode="outlined"
+          color={COLORS.secondary}
+          style={{
+            marginHorizontal: SIZES.padding_12,
+            marginBottom: SIZES.padding_16,
+            borderColor: COLORS.secondary,
+            borderWidth: 1,
+          }}
+          onPress={() => props.navigation.navigate(screens.logout)}>
+          Logout
+        </Button>
       </View>
     </View>
   );

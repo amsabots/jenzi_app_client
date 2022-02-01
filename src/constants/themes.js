@@ -72,8 +72,9 @@ export const FONTS = {
   h2: {fontFamily: 'Roboto-Bold', fontSize: fontSizes.h2},
   h3: {fontFamily: 'Roboto-Bold', fontSize: fontSizes.h3},
   h4: {fontFamily: 'Roboto-Bold', fontSize: fontSizes.h4},
-  h5: {fontFamily: 'Roboto-Medium', fontSize: fontSizes.h5},
+  h5: {fontFamily: 'Roboto-Regular', fontSize: fontSizes.h5},
   h6: {fontFamily: 'Roboto-Medium', fontSize: fontSizes.h6},
+  h6: {fontFamily: 'Roboto-Regular', fontSize: fontSizes.h6},
 
   body: {fontFamily: 'Roboto-Regular', fontSize: fontSizes.body},
   body_medium: {fontFamily: 'Roboto-Medium', fontSize: fontSizes.body},

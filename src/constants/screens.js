@@ -5,11 +5,13 @@ const screens = {
   home: 'Home',
   stack_app: 'AppStack',
   stack_auth: 'AuthStack',
-  projects: 'projects',
+  projects: 'Projects',
   profile: 'profile',
   app_screen: 'app_navigation',
-  chats_screen: 'chats',
+  chats_screen: 'Chats',
   conversation: 'conversation',
+  payments: 'Payments',
+  logout: 'Logout',
 };
 
 export {screens};
