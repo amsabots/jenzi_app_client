@@ -9,10 +9,6 @@ import Toast from 'react-native-toast-message';
 //menu provider
 import {MenuProvider} from 'react-native-popup-menu';
 //navigation
-import {NavigationContainer} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-
-const Stack = createNativeStackNavigator();
 
 import {allReducers} from './store';
 
@@ -22,7 +18,7 @@ const store = createStore(allReducers);
 import {PrimaryStatusBar} from './src/components';
 
 //stack screen
-import {AppDrawerNavigator, AuthNavigator} from './src/navigation';
+import {NavigationContainerWrapper} from './src/navigation';
 import {screens, theme} from './src/constants';
 
 // app theme - colors and fonts
@@ -42,22 +38,7 @@ const App = () => {
         <PaperProvider theme={appTheme}>
           <MenuProvider>
             <PrimaryStatusBar />
-            <NavigationContainer>
-              <Stack.Navigator
-                initialRouteName={screens.stack_app}
-                screenOptions={{
-                  headerShown: false,
-                }}>
-                <Stack.Screen
-                  name={screens.stack_app}
-                  component={AppDrawerNavigator}
-                />
-                <Stack.Screen
-                  name={screens.stack_auth}
-                  component={AuthNavigator}
-                />
-              </Stack.Navigator>
-            </NavigationContainer>
+            <NavigationContainerWrapper />
           </MenuProvider>
         </PaperProvider>
       </Provider>

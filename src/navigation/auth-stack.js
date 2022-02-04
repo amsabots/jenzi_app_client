@@ -7,7 +7,11 @@ import {screens} from '../constants/screens';
 
 const AuthStackNavigator = () => {
   return (
-    <Stack.Navigator initialRouteName={screens.login}>
+    <Stack.Navigator
+      initialRouteName={screens.login}
+      screenOptions={{
+        headerShown: false,
+      }}>
       <Stack.Screen name={screens.login} component={Login} />
       <Stack.Screen name={screens.register} component={Register} />
       <Stack.Screen name={screens.reset_pass} component={ResetPass} />
