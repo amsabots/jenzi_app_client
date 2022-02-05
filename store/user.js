@@ -2,6 +2,8 @@ import _ from 'lodash';
 
 const initialState = {
   user: {},
+  coordinates: {},
+  scanRadius: 10,
 };
 
 const user_data = (state = initialState, action) => {
@@ -12,7 +14,15 @@ const user_data = (state = initialState, action) => {
     case 'UPDATE_USER':
       return {...state, user: {...state.user, ...payload}};
     case 'REMOVE_USER':
-      return {...state, user: {}};
+      return initialState;
+    case 'UPDATE_POINTS': {
+      return {
+        ...state,
+        coordinates: {latitude: payload.latitude, longitude: payload.longitude},
+      };
+    }
+    case 'UPDATE_SEARCH_RADIUS':
+      return {...state, scanRadius: payload};
     default:
       return state;
   }

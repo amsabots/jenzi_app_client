@@ -12,4 +12,8 @@ const delay = (duration = 3000) => {
   return new Promise(res => setTimeout(res, duration));
 };
 
-export {theme, screens, appTheme, delay};
+const offline_data = {
+  user: '@user',
+};
+
+export {theme, screens, appTheme, delay, offline_data};

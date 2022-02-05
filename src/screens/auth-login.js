@@ -10,6 +10,8 @@ import {LoaderSpinner, LoadingNothing} from '../components';
 import {TextInput, Button} from 'react-native-paper';
 //axios network request
 import axios from 'axios';
+//sqlite
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 //icon
 import MIcon from 'react-native-vector-icons/MaterialIcons';
@@ -36,8 +38,9 @@ const Login = ({navigation}) => {
     setLoading(true);
     axios
       .post(`${endpoints.fundi_service}/accounts/login`, {email, password})
-      .then(res => {
-        console.log(res);
+      .then(async res => {
+        await AsyncStorage.setItem(offline_data.user, JSON.stringify(res.data));
+        ToastAndroid.show('Welcome to Jenzi', ToastAndroid.LONG);
       })
       .catch(err => {
         errorMessage(err);

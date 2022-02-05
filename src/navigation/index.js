@@ -1,13 +1,16 @@
-import React from 'react';
+import React, {useEffect} from 'react';
+//sqlite
+import storage from '@react-native-async-storage/async-storage';
 
 import AuthNavigator from './auth-stack';
 import AppDrawerNavigator from './app-stack';
-import {screens} from '../constants';
+import {offline_data, screens} from '../constants';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 //redux
 import {useDispatch, connect} from 'react-redux';
+import {user_data_actions} from '../store-actions';
 
 const mapStateToProps = state => {
   const {user_data} = state;
@@ -17,21 +20,34 @@ const mapStateToProps = state => {
 const Stack = createNativeStackNavigator();
 
 const NavigationContainerWrapperView = ({user_data}) => {
+  const dispatch = useDispatch();
   const user_exists = () => {
+    if (!user_data.user) return false;
     return Object.keys(user_data.user).length > 0;
   };
-  console.log(user_exists());
+  useEffect(() => {
+    storage
+      .getItem(offline_data.user)
+      .then(d => {
+        dispatch(user_data_actions.create_user(JSON.parse(d)));
+      })
+      .catch(err => dispatch(user_data_actions.delete_user()));
+  }, []);
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName={
-          user_exists() ? screens.stack_app : screens.stack_auth
-        }
+        initialRouteName={screens.stack_app}
         screenOptions={{
           headerShown: false,
         }}>
-        <Stack.Screen name={screens.stack_app} component={AppDrawerNavigator} />
-        <Stack.Screen name={screens.stack_auth} component={AuthNavigator} />
+        {user_exists() ? (
+          <Stack.Screen
+            name={screens.stack_app}
+            component={AppDrawerNavigator}
+          />
+        ) : (
+          <Stack.Screen name={screens.stack_auth} component={AuthNavigator} />
+        )}
       </Stack.Navigator>
     </NavigationContainer>
   );

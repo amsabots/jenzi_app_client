@@ -8,7 +8,11 @@ import BottomSheet from '@gorhom/bottom-sheet';
 
 // redux store
 import {useDispatch, connect} from 'react-redux';
-import {fundiActions, UISettingsActions} from '../store-actions';
+import {
+  fundiActions,
+  UISettingsActions,
+  user_data_actions,
+} from '../store-actions';
 
 //components
 import {MapView} from '../components';
@@ -27,11 +31,11 @@ import {mainChannel} from '../pusher';
 import Pusher from 'pusher-js/react-native';
 
 const mapStateToProps = state => {
-  const {fundis} = state;
-  return {fundis};
+  const {fundis, user_data} = state;
+  return {fundis, user_data};
 };
 
-const Home = ({navigation, fundis}) => {
+const Home = ({navigation, fundis, user_data}) => {
   //component state
   const [longitude, setLongitude] = useState();
   const [latitude, setLatitude] = useState();
@@ -59,6 +63,10 @@ const Home = ({navigation, fundis}) => {
     setLatitude(lat);
     setAlt(alt);
     setLongitude(longi);
+
+    //update coordinates
+    if (lat && longi)
+      dispatch(user_data_actions.update_coordinates(lat, longi));
   };
 
   // handle clicked user maker on the map

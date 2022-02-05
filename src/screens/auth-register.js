@@ -1,28 +1,61 @@
 import React, {useEffect, useState} from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  KeyboardAvoidingView,
-  ScrollView,
-} from 'react-native';
+import {View, Text, StyleSheet, ToastAndroid, ScrollView} from 'react-native';
+import Toast from 'react-native-toast-message';
+
+//sqlite
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 //redux
 import {useDispatch} from 'react-redux';
 import {COLORS, FONTS, SIZES} from '../constants/themes';
-import {UISettingsActions} from '../store-actions';
+import {UISettingsActions, user_data_actions} from '../store-actions';
 
 import {LoaderSpinner, LoadingNothing} from '../components';
 import {TextInput, Button} from 'react-native-paper';
+import {endpoints, errorMessage} from '../endpoints';
+//axios
+import axios from 'axios';
 
 //icon
-import {screens} from '../constants';
+import {offline_data, screens} from '../constants';
 
 const Register = ({navigation}) => {
+  //app state
+  const [name, setName] = useState('');
+  const [password, setPassword] = useState('');
+  const [pass1, setPass1] = useState('');
+  const [email, setEmail] = useState('');
+  const [load, setLoading] = useState(false);
+
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(UISettingsActions.status_bar(false));
   }, []);
+
+  const handleRegistration = () => {
+    if (!name || !password || !email)
+      return Toast.show({
+        type: 'error',
+        text1: 'Please all the fields before submission',
+        position: 'bottom',
+      });
+    if (pass1 !== password)
+      return Toast.show({
+        type: 'error',
+        text1: 'Passwords do not match',
+        position: 'bottom',
+      });
+    setLoading(true);
+    axios
+      .post(`${endpoints.client_service}/clients`, {name, email, password})
+      .then(async res => {
+        dispatch(user_data_actions.create_user(res.data));
+        await AsyncStorage.setItem(offline_data.user, JSON.stringify(res.data));
+        ToastAndroid.show('Welcome to Jenzi', ToastAndroid.LONG);
+      })
+      .catch(err => errorMessage(err))
+      .finally(() => setLoading(false));
+  };
 
   return (
     <ScrollView style={{backgroundColor: COLORS.white}}>
@@ -53,6 +86,7 @@ const Register = ({navigation}) => {
               />
             }
             placeholder="Official Name"
+            onChangeText={txt => setName(txt)}
           />
           <TextInput
             dense={true}
@@ -66,6 +100,7 @@ const Register = ({navigation}) => {
               />
             }
             placeholder="phonenumber/email"
+            onChangeText={txt => setEmail(txt)}
           />
           <TextInput
             dense={true}
@@ -80,6 +115,7 @@ const Register = ({navigation}) => {
             }
             placeholder="Password"
             secureTextEntry={true}
+            onChangeText={txt => setPassword(txt)}
           />
           <TextInput
             dense={true}
@@ -94,6 +130,7 @@ const Register = ({navigation}) => {
             }
             placeholder="Confirm password"
             secureTextEntry={true}
+            onChangeText={txt => setPass1(txt)}
           />
           <Text style={{...FONTS.caption, marginTop: SIZES.padding_12}}>
             By signing you agree to our{' '}
@@ -103,6 +140,8 @@ const Register = ({navigation}) => {
           </Text>
           <Button
             mode="contained"
+            loading={load}
+            onPress={handleRegistration}
             style={{
               backgroundColor: COLORS.secondary,
               marginTop: SIZES.size_48,

@@ -5,16 +5,31 @@ const user_data_actions = {
       payload,
     };
   },
-  create_user: function (user_object) {
+  update_user: function (user_object) {
     return {
       type: 'UPDATE_USER',
-      payload,
+      payload: user_object,
     };
   },
-  create_user: function () {
+  delete_user: function () {
     return {
       type: 'REMOVE_USER',
-      payload,
+    };
+  },
+  update_coordinates: function (latitude, longitude) {
+    return {
+      type: 'UPDATE_POINTS',
+      payload: {
+        latitude,
+        longitude,
+      },
+    };
+  },
+
+  update_scan_radius: function (scan_radius) {
+    return {
+      type: 'UPDATE_SEARCH_RADIUS',
+      payload: scan_radius,
     };
   },
 };

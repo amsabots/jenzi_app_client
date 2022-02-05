@@ -10,7 +10,7 @@ export const errorMessage = err => {
     const {data, status} = err.response;
     Toast.show({
       type: 'error',
-      text1: status === 403 ? 'Bad credetials' : 'Unknown Entity',
+      text1: status === 403 ? 'Bad credetials' : 'Request failed',
       text2:
         status === 403
           ? 'Invalid email/phone and password provided'
@@ -18,6 +18,7 @@ export const errorMessage = err => {
       position: 'bottom',
     });
   } else {
+    console.log('AXIOS CALL ERROR: ', err);
     Toast.show({
       type: 'error',
       text1: 'System error',
