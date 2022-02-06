@@ -10,7 +10,15 @@ import {Chip} from 'react-native-paper';
 //
 import {CircularImage} from '../circular-image';
 
-const NavHeader = ({navigation}) => {
+//redux
+import {connect} from 'react-redux';
+
+const stateToProps = state => {
+  const {user_data} = state;
+  return {user_data};
+};
+
+const NavHeaderView = ({navigation, user_data}) => {
   const {colors} = useTheme();
 
   const navigateToRoute = () => {
@@ -20,9 +28,9 @@ const NavHeader = ({navigation}) => {
   return (
     <View style={[styles.container]}>
       <CircularImage size={100} />
-      <Text style={[styles.color, styles.txt1]}>Andrew Mwebbi</Text>
+      <Text style={[styles.color, styles.txt1]}>{user_data.user.name}</Text>
       {/*  */}
-      <Text style={[styles.color, styles._email]}>andymwebi@gmail.com</Text>
+      <Text style={[styles.color, styles._email]}>{user_data.user.email}</Text>
 
       <Button
         mode="contained"
@@ -53,4 +61,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export {NavHeader};
+export const NavHeader = connect(stateToProps)(NavHeaderView);

@@ -4,7 +4,7 @@ import {View, Text, StyleSheet, ToastAndroid, ScrollView} from 'react-native';
 //redux
 import {useDispatch} from 'react-redux';
 import {COLORS, FONTS, SIZES} from '../constants/themes';
-import {UISettingsActions} from '../store-actions';
+import {UISettingsActions, user_data_actions} from '../store-actions';
 
 import {LoaderSpinner, LoadingNothing} from '../components';
 import {TextInput, Button} from 'react-native-paper';
@@ -15,7 +15,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 //icon
 import MIcon from 'react-native-vector-icons/MaterialIcons';
-import {screens} from '../constants';
+import {offline_data, screens} from '../constants';
 import {endpoints, errorMessage} from '../endpoints';
 
 const Login = ({navigation}) => {
@@ -27,6 +27,9 @@ const Login = ({navigation}) => {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(UISettingsActions.status_bar(false));
+    return () => {
+      setLoading(false);
+    };
   }, []);
 
   const handleLogin = () => {
@@ -37,9 +40,13 @@ const Login = ({navigation}) => {
       );
     setLoading(true);
     axios
-      .post(`${endpoints.fundi_service}/accounts/login`, {email, password})
+      .post(`${endpoints.client_service}/clients/details-email`, {
+        email: email.toLowerCase(),
+        password,
+      })
       .then(async res => {
         await AsyncStorage.setItem(offline_data.user, JSON.stringify(res.data));
+        dispatch(user_data_actions.create_user(res.data));
         ToastAndroid.show('Welcome to Jenzi', ToastAndroid.LONG);
       })
       .catch(err => {

@@ -36,6 +36,9 @@ const Logout = ({navigation, user_data}) => {
 
   useEffect(() => {
     dispatch(UISettingsActions.status_bar(false));
+    return () => {
+      setModalShow(false);
+    };
   }, []);
 
   const handleLogout = () => {

@@ -24,10 +24,18 @@ import Icons from 'react-native-vector-icons/SimpleLineIcons';
 import MI from 'react-native-vector-icons/MaterialIcons';
 // redux store
 import {UISettingsActions} from '../store-actions/ui-settings';
-import {useDispatch} from 'react-redux';
+import {useDispatch, connect} from 'react-redux';
+
+const stateToProps = state => {
+  const {user_data} = state;
+  return {user_data};
+};
 
 //pop menu
 import {MenuOption} from 'react-native-popup-menu';
+import axios from 'axios';
+import {endpoints, errorMessage} from '../endpoints';
+import {user_data_actions} from '../store-actions';
 
 const PopupOption = ({onSelect}) => (
   <MenuOption onSelect={onSelect}>
@@ -35,7 +43,20 @@ const PopupOption = ({onSelect}) => (
   </MenuOption>
 );
 
-const Profile = ({navigation}) => {
+const Profile = ({navigation, user_data}) => {
+  const {
+    accountBalance: acc_b,
+    accountType: acc_t,
+    active: actv,
+    clientId,
+    createdAt: cr_at,
+    email: em,
+    name: nm,
+    phoneNumber: phn,
+    secondaryPhonenumber: ph_s,
+    verified: ve,
+    userBackgroundColor,
+  } = user_data.user;
   // ui variables - transient
   const [showLoader, setShowModal] = useState(false);
   const [name, setName] = useState('');
@@ -72,12 +93,36 @@ const Profile = ({navigation}) => {
     });
   };
 
+  const handleEditsUpdate = () => {
+    setShowModal(true);
+    let user = user_data.user;
+    user = {
+      ...user,
+      name: name || nm,
+      phoneNumber: phonenumber || phn,
+      secondaryPhonenumber: phone2 || ph_s,
+    };
+    axios
+      .put(endpoints.client_service + '/clients/' + user_data.user.id, user)
+      .then(res => {
+        dispatch(
+          user_data_actions.create_user({...user, id: user_data.user.id}),
+        );
+        ToastAndroid.show(
+          'Account details update successfully',
+          ToastAndroid.LONG,
+        );
+      })
+      .catch(er => errorMessage(er))
+      .finally(() => setShowModal(false));
+  };
+
   return (
     <>
       {/* toolbar */}
       <DefaultToolBar navigation={navigation} title="Profile" />
       <View style={styles.container}>
-        <LoadingModal show={showLoader} />
+        <LoadingModal show={showLoader} onDismiss={() => setShowModal(false)} />
         <ScrollView>
           {/* section one - details preview */}
           <View style={[styles._section_card, styles._current_profile]}>
@@ -94,14 +139,20 @@ const Profile = ({navigation}) => {
               />
             </View>
             <CircularImage size={72} />
-            <Text style={{...FONTS.body1}}>Andrew Mwebi</Text>
-            <Caption>andymwebi@gmail.com</Caption>
+            <Text style={{...FONTS.body1}}>{nm}</Text>
+            <Caption>{em}</Caption>
             <View style={styles._account_state}>
-              <InfoChips text={'Verified'} textColor={COLORS.info} />
-              <InfoChips text={'Active'} textColor={COLORS.secondary} />
+              <InfoChips
+                text={ve ? 'Verified' : 'Unverified'}
+                textColor={COLORS.info}
+              />
+              <InfoChips
+                text={actv ? 'Active' : 'Disabled'}
+                textColor={COLORS.secondary}
+              />
             </View>
             {/*  */}
-            <Text>Contact: 0712345678</Text>
+            <Text>Contact: {phn || 'Not available'}</Text>
           </View>
           {/* Section two - Edit the details above */}
           <Text style={styles._section_text}>Edit profile</Text>
@@ -115,6 +166,7 @@ const Profile = ({navigation}) => {
               style={[styles._std_margin]}
               activeOutlineColor={COLORS.secondary}
               activeUnderlineColor={COLORS.secondary}
+              placeholder={nm}
             />
             <TextInput
               label="Phone number"
@@ -123,6 +175,7 @@ const Profile = ({navigation}) => {
               dense={true}
               style={[styles._std_margin]}
               activeUnderlineColor={COLORS.secondary}
+              placeholder={phn}
             />
             <TextInput
               label="Phone Secondary phone number"
@@ -131,13 +184,14 @@ const Profile = ({navigation}) => {
               onChangeText={text => setPhone2(text)}
               style={[styles._std_margin]}
               activeUnderlineColor={COLORS.secondary}
+              placeholder={ph_s}
             />
             <View>
               <Button
                 mode="outlined"
                 icon="pencil"
                 color={COLORS.secondary}
-                onPress={() => setShowModal(true)}>
+                onPress={handleEditsUpdate}>
                 Edit basic details
               </Button>
             </View>
@@ -217,6 +271,7 @@ const styles = StyleSheet.create({
   },
   _std_margin: {
     marginBottom: SIZES.padding_16,
+    backgroundColor: COLORS.white,
   },
   _section_text: {
     ...FONTS.body1,
@@ -230,4 +285,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Profile;
+export default connect(stateToProps)(Profile);
