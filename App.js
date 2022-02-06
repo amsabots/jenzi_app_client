@@ -1,5 +1,7 @@
 import React from 'react';
 import {StyleSheet, View} from 'react-native';
+//
+import SplashScreen from 'react-native-splash-screen';
 
 import {Provider} from 'react-redux';
 import {createStore} from 'redux';
@@ -12,7 +14,7 @@ import {MenuProvider} from 'react-native-popup-menu';
 
 import {allReducers} from './store';
 
-const store = createStore(allReducers);
+export const store = createStore(allReducers);
 
 // ui components
 import {PrimaryStatusBar} from './src/components';
@@ -30,8 +32,16 @@ const appTheme = {
     accent: theme.COLORS.secondary,
   },
 };
+const delay = duration => {
+  return new Promise(res => setTimeout(res, duration));
+};
 
 const App = () => {
+  const [splashDone, setSplashDone] = React.useState(false);
+
+  React.useEffect(() => {
+    delay(3000).then(e => SplashScreen.hide());
+  }, []);
   return (
     <>
       <Provider store={store}>

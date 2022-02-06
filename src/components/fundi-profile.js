@@ -26,8 +26,8 @@ import Toast from 'react-native-toast-message';
 import axios from 'axios';
 import {endpoints} from '../endpoints';
 const mapStateToProps = state => {
-  const {fundis} = state;
-  return {fundis};
+  const {fundis, user_data} = state;
+  return {fundis, user_data};
 };
 
 const Loader = ({type = 'a', label = 'Fetching........'}) => {
@@ -39,9 +39,12 @@ const Loader = ({type = 'a', label = 'Fetching........'}) => {
   );
 };
 
-const DetailsView = ({leadinglabel = 'No details available', fundis}) => {
+const DetailsView = ({
+  leadinglabel = 'No details available',
+  fundis,
+  user_data,
+}) => {
   const dispatch = useDispatch();
-
   const [load, setLoad] = useState(false);
   const [trainedBy, setTraineddBy] = useState([]);
   const [projects, setLoadProjects] = useState([]);
@@ -58,11 +61,11 @@ const DetailsView = ({leadinglabel = 'No details available', fundis}) => {
         text1: 'Title missing',
         text2: 'You have not provided any valid job title',
       });
-
+    const {clientId} = user_data.user;
     const payload = {
       payload: {title},
-      sourceAddress: 'andrewmwebi',
-      destinationAddress: 'lameckowesi',
+      sourceAddress: clientId,
+      destinationAddress: fundi.account.accountId,
       filterType: 'request_user',
     };
     set_modal_loader(true);
@@ -85,6 +88,27 @@ const DetailsView = ({leadinglabel = 'No details available', fundis}) => {
       .finally(() => set_modal_loader(false));
   };
 
+  //call the requests delete endpoint when the cancel icon has been clicked on the requests sent component
+  const handleCancelRequest = useCallback(el => {
+    axios
+      .delete(`${endpoints.notification_server}/notify/${el.requestId}`)
+      .then(res => {
+        dispatch(fundiActions.delete_current_requests(el));
+        Toast.show({
+          type: 'success',
+          text2: 'Request has been cancelled',
+        });
+      })
+      .catch(e => {
+        console.log(e);
+        Toast.show({
+          type: 'error',
+          text2:
+            'Request cannot be completed at this time, please try again later',
+        });
+      });
+  });
+
   return Object.keys(fundi).length ? (
     <View style={styles.container}>
       {/* ===== loading modal */}
@@ -93,11 +117,11 @@ const DetailsView = ({leadinglabel = 'No details available', fundis}) => {
         onDismiss={() => set_modal_loader(false)}
         label="Sending........"
       />
-      <CircularImage size={100} />
+      <CircularImage size={100} url={fundi.account.photo_url} />
       {/*  */}
       <View style={styles._details}>
         <Text style={{...FONTS.body_bold, marginBottom: SIZES.base}}>
-          {fundi.name}
+          {fundi.account.name || 'Not Available'}
         </Text>
         {/* NCA section */}
         <View>
@@ -154,9 +178,16 @@ const DetailsView = ({leadinglabel = 'No details available', fundis}) => {
             </View>
           </View>
         </View>
+
+        {/* =================== component to show the request sending status =============== */}
+        <PendingRequests onCancel={el => handleCancelRequest(el)} />
+        {/* ============= ============================= */}
+        <View style={styles._border_line}></View>
       </View>
       {/*  */}
-      <ServiceRequest sendRequest={title => handleSendRequest(title)} />
+      {fundis.sent_requests.length < 1 && (
+        <ServiceRequest sendRequest={title => handleSendRequest(title)} />
+      )}
       <View style={styles._border_line}></View>
       {/*  */}
       <View style={styles._reviews}>

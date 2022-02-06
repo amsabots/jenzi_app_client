@@ -14,6 +14,8 @@ target 'jenzi_client' do
 
   pod 'BVLinearGradient', :path => '../node_modules/react-native-linear-gradient'
 
+  pod 'react-native-splash-screen', :path => '../node_modules/react-native-splash-screen'
+
   target 'jenzi_clientTests' do
     inherit! :complete
     # Pods for testing

@@ -11,7 +11,7 @@ const fundisData = (state = initialState, action) => {
   switch (type) {
     case 'ADD_FUNDIS':
       console.log('fundis added.....');
-      return {...state, fundis: [...state.fundis, ...payload]};
+      return {...state, fundis: payload};
     case 'UPDATE_FUNDI':
       console.log('updating.....');
       const index = state.fundis.indexOf(payload);

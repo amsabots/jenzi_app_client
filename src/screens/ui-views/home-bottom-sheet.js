@@ -21,27 +21,10 @@ import {fundiActions} from '../../store-actions';
 import {delay} from '../../constants';
 import {concat} from 'react-native-reanimated';
 import axios from 'axios';
-import {endpoints} from '../../endpoints';
+import {endpoints, errorMessage} from '../../endpoints';
 
 //Toast
 import Toast from 'react-native-toast-message';
-
-const users = [
-  {
-    id: 1,
-    name: 'Andrew Mwebbi',
-    longitude: 36.9095934,
-    latitude: -1.2116835,
-    desc: '1Kms away',
-  },
-  {
-    id: 2,
-    name: 'Lameck Owesi',
-    longitude: 36.9096934,
-    latitude: -1.2216635,
-    desc: '3Kms away',
-  },
-];
 
 const services = [
   {id: 1, name: 'All', selected: true},
@@ -53,8 +36,8 @@ const services = [
 ];
 
 const mapsStateToProps = state => {
-  const {fundis} = state;
-  return {fundis};
+  const {fundis, user_data} = state;
+  return {fundis, user_data};
 };
 
 const ServiceType = ({onChipClick, item}) => {
@@ -73,14 +56,14 @@ const ServiceType = ({onChipClick, item}) => {
 };
 
 const Providers = ({details, itemClick}) => {
-  const {name, desc, photoUrl} = details;
+  const {name, photoUrl} = details.account;
+  const d = details.distance;
   return (
     <Card style={styles.card_container} onPress={() => itemClick(details)}>
       <View style={styles._card_content}>
         <CircularImage size={70} />
         <View style={{marginVertical: SIZES.base, alignItems: 'center'}}>
-          <Text style={{...FONTS.body_bold}}>{name}</Text>
-          <Text style={{...FONTS.caption}}>Plumber</Text>
+          <Text style={{...FONTS.body_bold}}>{name || 'Not Available'}</Text>
         </View>
 
         <Rating ratingCount={5} imageSize={SIZES.icon_size} startingValue={0} />
@@ -97,7 +80,7 @@ const Providers = ({details, itemClick}) => {
               marginVertical: SIZES.base,
               color: COLORS.secondary,
             }}>
-            {desc}
+            {d < 1 ? (d * 1000).toFixed(2) + ' Meter(s)' : d + ' Kms'}
           </Text>
         </View>
       </View>
@@ -105,13 +88,16 @@ const Providers = ({details, itemClick}) => {
   );
 };
 
-const PageContent = ({fundis: f, bottomSheetTop}) => {
-  const [load, setLoading] = useState(true);
+const PageContent = ({fundis: f, bottomSheetTop, user_data}) => {
+  const [load, setLoading] = useState(false);
+  const {
+    coordinates: {latitude, longitude},
+    scanRadius,
+  } = user_data;
   const [selectedType, setSelectedType] = useState({
     name: 'All',
     selected: true,
   });
-  const [fundis, setFundis] = useState([]);
   const [renderNull, setRenderNull] = useState(false);
   const [categories, setCategories] = useState(services);
 
@@ -123,15 +109,17 @@ const PageContent = ({fundis: f, bottomSheetTop}) => {
     <ServiceType item={item} onChipClick={i => handleClickedType(i)} />
   );
   //render available users
-  const renderFundis = ({item}) => (
-    <Providers
-      details={item}
-      itemClick={() => {
-        dispatch(fundiActions.set_selected_fundi(item));
-        bottomSheetTop();
-      }}
-    />
-  );
+  const renderFundis = ({item}) => {
+    return (
+      <Providers
+        details={item}
+        itemClick={() => {
+          dispatch(fundiActions.set_selected_fundi(item));
+          bottomSheetTop();
+        }}
+      />
+    );
+  };
 
   function handleClickedType(i) {
     setSelectedType(i);
@@ -143,31 +131,27 @@ const PageContent = ({fundis: f, bottomSheetTop}) => {
     setCategories(clone_arr);
   }
 
-  useEffect(() => {
-    dispatch(fundiActions.add_fundi(users));
-    setFundis(users);
-  }, []);
+  // axios calls
+  const fecthNearbyFundis = () => {
+    setLoading(true);
+    if (latitude && longitude) {
+      axios
+        .get(
+          `${endpoints.fundi_service}/accounts/find-nearby?longitude=${longitude}&latitude=${latitude}&scanRadius=${scanRadius}`,
+        )
+        .then(res => {
+          dispatch(fundiActions.add_fundi(res.data));
+        })
+        .catch(err => {
+          console.log(err.response.data);
+        })
+        .finally(() => setLoading(false));
+    }
+  };
 
-  //call the requests delete endpoint when the cancel icon has been clicked on the requests sent component
-  const handleCancelRequest = useCallback(el => {
-    axios
-      .delete(`${endpoints.notification_server}/notify/${el.requestId}`)
-      .then(res => {
-        dispatch(fundiActions.delete_current_requests(el));
-        Toast.show({
-          type: 'success',
-          text2: 'Request has been cancelled',
-        });
-      })
-      .catch(e => {
-        console.log(e);
-        Toast.show({
-          type: 'error',
-          text2:
-            'Request cannot be completed at this time, please try again later',
-        });
-      });
-  });
+  useEffect(() => {
+    fecthNearbyFundis();
+  }, [latitude, longitude]);
 
   return (
     <View style={styles.container}>
@@ -188,21 +172,17 @@ const PageContent = ({fundis: f, bottomSheetTop}) => {
 
       <View>
         {/* <LoadingNothing label={'No services providers found'} /> */}
-
-        {/* =================== component to show the request sending status =============== */}
-        <PendingRequests onCancel={el => handleCancelRequest(el)} />
-        {/* ============= ============================= */}
       </View>
 
       {/* Available users */}
       <Text style={{...FONTS.body_medium, color: COLORS.secondary}}>
         Available {selectedType.name == 'All' ? 'providers' : selectedType.name}
       </Text>
-      {fundis.length ? (
+      {f.fundis.length ? (
         <FlatList
-          data={fundis}
+          data={f.fundis}
           renderItem={renderFundis}
-          keyExtractor={i => i.id}
+          keyExtractor={i => i.account.accountId}
           style={{marginVertical: SIZES.padding_16}}
           horizontal={true}
           showsHorizontalScrollIndicator={false}

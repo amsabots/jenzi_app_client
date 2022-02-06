@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState, memo} from 'react';
 
 import {View, StyleSheet, Text} from 'react-native';
 import RNMapView, {Marker, Circle} from 'react-native-maps';
@@ -8,6 +8,7 @@ import {connect} from 'react-redux';
 
 //ui components
 import {MapMarker} from '.';
+import {DoubleRing} from './loading-animated';
 
 const mapStateToProps = state => {
   const {fundis} = state;
@@ -46,24 +47,34 @@ const Mapview = ({coordinates, onMarkerClicked, fundis}) => {
       toolbarEnabled={false}
       loadingBackgroundColor={COLORS.white}>
       {/* current user maker */}
-      {/* {coordinates && (
+      {Object.values(coordinates).filter(Boolean).length > 1 && (
         <Marker coordinate={coordinates} title="Your current location">
           <View style={styles.dotContainer}>
             <View style={[styles.arrow]} />
             <View style={styles.dot} />
           </View>
         </Marker>
-      )} */}
+      )}
       {fundis.fundis.length
         ? fundis.fundis.map((element, idx) => {
-            const {latitude, longitude, desc, name} = element;
+            const {
+              account: {latitude, longitude, accountId, name},
+              distance,
+            } = element;
             return (
               <Marker
-                coordinate={{latitude, longitude}}
-                title={name}
+                coordinate={{
+                  latitude: parseFloat(latitude),
+                  longitude: parseFloat(longitude),
+                }}
+                title={name || 'Not available'}
                 onCalloutPress={() => onMarkerClicked(element)}
-                description={desc}
-                key={idx}>
+                description={
+                  distance < 1
+                    ? (distance * 1000).toFixed(2) + ' Meters away'
+                    : distance + 'KMs away'
+                }
+                key={accountId}>
                 <MapMarker avatar_size={40} />
               </Marker>
             );
@@ -79,9 +90,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   dot: {
-    backgroundColor: COLORS.secondary,
-    width: 24,
-    height: 24,
+    backgroundColor: COLORS.blue_deep,
+    width: 16,
+    height: 16,
     borderWidth: 3,
     borderColor: 'white',
     borderRadius: 12,
@@ -104,8 +115,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: 10,
     borderLeftColor: 'transparent',
     borderRightColor: 'transparent',
-    borderBottomColor: COLORS.secondary,
+    borderBottomColor: COLORS.blue_deep,
   },
 });
 
-export const MapView = connect(mapStateToProps)(Mapview);
+export const MapView = connect(mapStateToProps)(memo(Mapview));

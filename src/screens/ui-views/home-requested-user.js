@@ -33,16 +33,18 @@ const PendingRequestsView = memo(({onCancel, fundis}) => {
   return sent_requests.length ? (
     <View>
       <Text style={{...FONTS.body_medium, color: COLORS.secondary}}>
-        Sent requests
+        Contacting Fundi
       </Text>
       {sent_requests.map((el, idx) => {
         return (
           <View style={styles.container} key={idx}>
-            <Caption>Contacting {el.destinationAddress}</Caption>
+            <Caption>
+              Contacting {el.destinationAddress.substring(0, 16)}
+            </Caption>
             <View style={styles._item_wrapper}>
               <LoaderSpinner.DoubleRing loading={true} />
               <Text style={{...FONTS.body_medium}}>
-                Waiting for response....
+                Waiting for fundi response....
               </Text>
               <MIcons
                 name="cancel"

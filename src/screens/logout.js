@@ -1,8 +1,8 @@
 import React, {useState, useEffect} from 'react';
-import {View, StyleSheet, Text} from 'react-native';
+import {View, StyleSheet, Text, ToastAndroid} from 'react-native';
 //redux store
 import {useDispatch, connect} from 'react-redux';
-import {UISettingsActions} from '../store-actions';
+import {UISettingsActions, user_data_actions} from '../store-actions';
 
 //iocns
 import MIcons from 'react-native-vector-icons/MaterialIcons';
@@ -10,20 +10,29 @@ import EIcons from 'react-native-vector-icons/Entypo';
 //Ui components
 import {COLORS, FONTS, SIZES} from '../constants/themes';
 import {CircularImage} from '../components';
+import {endpoints, errorMessage} from '../endpoints';
+
 import {Button, Dialog, Portal, Paragraph} from 'react-native-paper';
 //
 import Toast from 'react-native-toast-message';
+//UI components
+import {LoadingModal} from '../components';
+import axios from 'axios';
+import asyncStorage from '@react-native-async-storage/async-storage';
+import {offline_data} from '../constants';
 
 const mapStateToProps = state => {
-  return {state};
+  const {user_data} = state;
+  return {user_data};
 };
 
-const Logout = ({navigation}) => {
+const Logout = ({navigation, user_data}) => {
   const dispatch = useDispatch();
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [confirmText, setConfirmText] = useState('');
   const [confirmBtn, setConfirmBtn] = useState('');
   const [type, setType] = useState('');
+  const [modalShow, setModalShow] = useState(false);
 
   useEffect(() => {
     dispatch(UISettingsActions.status_bar(false));
@@ -53,8 +62,21 @@ const Logout = ({navigation}) => {
 
   const handleOnAccept = () => {
     setShowConfirmation(false);
+    setModalShow(true);
     if (type === 'logout') {
-      Toast.show({type: 'info', text2: 'Logged out successfully'});
+      const l = {...user_data.user, active: false};
+      delete l['id'];
+      axios
+        .put(`${endpoints.client_service}/clients/${user_data.user.id}`, l)
+        .then(async res => {
+          ToastAndroid.show('Logged out', ToastAndroid.LONG);
+          dispatch(user_data_actions.delete_user());
+          await asyncStorage.removeItem(offline_data.user);
+        })
+        .catch(e => {
+          errorMessage(e);
+        })
+        .finally(() => setModalShow(false));
     } else if (type === 'delete') {
       Toast.show({type: 'error', text2: 'Deleted account successfully'});
     }
@@ -68,12 +90,15 @@ const Logout = ({navigation}) => {
         size={SIZES.padding_32}
         onPress={() => navigation.goBack()}
       />
+      <LoadingModal show={modalShow} label={'Updating account state....'} />
       <View style={styles.content_wrapper}>
         <CircularImage size={120} />
         <Text style={{...FONTS.body1, marginVertical: SIZES.base}}>
-          NAME GOES HERE
+          {user_data.user.name || 'Not Available'}
         </Text>
-        <Text style={{...FONTS.body_medium}}>email@gmail.com</Text>
+        <Text style={{...FONTS.body_medium}}>
+          {user_data.user.email || 'Invalid Account'}
+        </Text>
         <Button
           mode="contained"
           style={{

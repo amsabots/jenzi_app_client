@@ -5,6 +5,7 @@ import {getCurrentLocation} from '../config/current-location';
 
 //bottom sheet
 import BottomSheet from '@gorhom/bottom-sheet';
+import {Banner} from 'react-native-paper';
 
 // redux store
 import {useDispatch, connect} from 'react-redux';
@@ -39,9 +40,7 @@ const Home = ({navigation, fundis, user_data}) => {
   //component state
   const [longitude, setLongitude] = useState();
   const [latitude, setLatitude] = useState();
-  const [accuracy, setAccuracy] = useState();
-  const [altitude, setAlt] = useState();
-  const [nearbyFundis, setNearbyFundis] = useState();
+  const [bannerVisible, setBannerVisible] = useState(false);
 
   //const refresh
   const [find, setFinder] = useState(0);
@@ -52,16 +51,13 @@ const Home = ({navigation, fundis, user_data}) => {
   //   get current map location
   const location = async () => {
     const l = await getCurrentLocation();
-
     const {
       accuracy: acc,
       altitude: alt,
       latitude: lat,
       longitude: longi,
     } = l.coords;
-    setAccuracy(acc);
     setLatitude(lat);
-    setAlt(alt);
     setLongitude(longi);
 
     //update coordinates
@@ -70,10 +66,10 @@ const Home = ({navigation, fundis, user_data}) => {
   };
 
   // handle clicked user maker on the map
-  const handleCalloutClick = f => {
+  const handleCalloutClick = useCallback(f => {
     bottomSheetRef.current.snapTo(2);
     dispatch(fundiActions.set_selected_fundi(f));
-  };
+  });
 
   //bottom sheet
   const bottomSheetRef = useRef(null);
@@ -86,11 +82,11 @@ const Home = ({navigation, fundis, user_data}) => {
 
   //run on the first screen render
   useEffect(() => {
-    mainChannel.consumeUserInfo();
+    mainChannel.consumeUserInfo(user_data.user.clientId);
   }, []);
   // on screen coming back to view
   useFocusEffect(() => {
-    console.log('Screen view has been resumed');
+    //do something
   });
 
   return (
@@ -98,13 +94,20 @@ const Home = ({navigation, fundis, user_data}) => {
       {/* Map container */}
       <View style={styles._map_container}>
         <View style={[styles._hamburger, styles._fab_container]}>
-          <Icons
+          <MIcons
             name="menu"
-            size={SIZES.icon_size_focused}
-            onPress={() => navigation.openDrawer()}
+            size={SIZES.icon_size}
             color={COLORS.primary}
+            onPress={() => navigation.openDrawer()}
           />
         </View>
+        {/* banner section to display state of fundis */}
+        {fundis.fundis.length < 1 && (
+          <Banner style={{top: 64}} visible={bannerVisible} actions={[]}>
+            There are no available fundis within your location.
+          </Banner>
+        )}
+        {/* ============================= */}
         <View style={[styles._returnTocurrentPosition, styles._fab_container]}>
           <MIcons
             name="my-location"
@@ -115,7 +118,7 @@ const Home = ({navigation, fundis, user_data}) => {
         </View>
         <MapView
           coordinates={!latitude || !longitude ? {} : {latitude, longitude}}
-          nearbyProviders={nearbyFundis}
+          nearbyProviders={fundis.fundis}
           onMarkerClicked={f => handleCalloutClick(f)}
         />
       </View>
