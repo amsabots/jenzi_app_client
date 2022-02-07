@@ -15,7 +15,7 @@ const fundisData = (state = initialState, action) => {
     case 'UPDATE_FUNDI':
       console.log('updating.....');
       const index = state.fundis.indexOf(payload);
-      if (i < 0) {
+      if (i > -1) {
         console.log('fundi entry updated.....');
         const newfundi = {...state.fundis[index], ...payload};
         state.fundis[index] = newfundi;

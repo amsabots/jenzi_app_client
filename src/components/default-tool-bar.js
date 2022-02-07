@@ -7,6 +7,10 @@ const DefaultToolBar = ({
   navigation,
   title = 'Jenzi App',
   plus,
+  del,
+  refresh,
+  onRefreshClicked,
+  onDeleteClicked,
   onPlusClick,
 }) => {
   return (
@@ -19,6 +23,20 @@ const DefaultToolBar = ({
       <Appbar.Content title={title} color={COLORS.white} />
       {plus && (
         <Appbar.Action icon="plus" onPress={onPlusClick} color={COLORS.white} />
+      )}
+      {refresh && (
+        <Appbar.Action
+          icon="refresh"
+          onPress={onRefreshClicked}
+          color={COLORS.white}
+        />
+      )}
+      {del && (
+        <Appbar.Action
+          icon="delete-outline"
+          onPress={onDeleteClicked}
+          color={COLORS.white}
+        />
       )}
     </Appbar>
   );

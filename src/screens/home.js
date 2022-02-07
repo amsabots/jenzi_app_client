@@ -86,7 +86,7 @@ const Home = ({navigation, fundis, user_data}) => {
   }, []);
   // on screen coming back to view
   useFocusEffect(() => {
-    //do something
+    //do something when you navigati back to this screen
   });
 
   return (
