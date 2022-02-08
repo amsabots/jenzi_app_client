@@ -1,10 +1,15 @@
 import React, {useState, useMemo, useRef, useEffect} from 'react';
 import BottomSheet from '@gorhom/bottom-sheet';
 import {View, Text, StyleSheet} from 'react-native';
-import {connect} from 'react-redux';
-import {Picker} from '@react-native-picker/picker';
+//redux
+import {connect, useDispatch} from 'react-redux';
+import {task_actions} from '../../store-actions';
+import DropDownPicker from 'react-native-dropdown-picker';
+
 import {COLORS, FONTS, SIZES} from '../../constants/themes';
 import {TextInput, Button} from 'react-native-paper';
+
+//
 
 import {LoadingModal} from '../../components';
 
@@ -20,52 +25,65 @@ const pickers = [
   {label: 'Cancel the project', value: 'CANCELLED'},
 ];
 
-const TaskUpdateView = ({sheetRef, tasks}) => {
-  const [status, setStatus] = useState('');
+const TaskUpdateView = ({sheetRef, tasks, updateDone}) => {
   const [loader, setLoader] = useState(false);
-  //
+  const [force_rerender, setRerender] = useState(null);
+  const [reason, setReason] = useState('');
+  /////////////////////////
+  const [items, setItems] = useState(pickers);
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState(0);
+
   const {selected_job} = tasks;
   const snapPoints = useMemo(() => [0, '25%', '70%'], []);
 
   const show_reasons_view = () => {
-    return status === 'PENDING' || status === 'CANCELLED';
+    return value === 'PENDING' || value === 'CANCELLED';
   };
 
   const handleOnPress = () => {
-    console.log(selected_job);
+    let job = selected_job;
+    job = {...job, taskState: value};
     setLoader(true);
+    if (show_reasons_view) updateDone(job);
   };
 
   useEffect(() => {
     show_reasons_view();
-  }, [status]);
+  }, [value]);
 
   return (
-    <BottomSheet ref={sheetRef} index={0} snapPoints={snapPoints}>
+    <BottomSheet
+      ref={sheetRef}
+      index={0}
+      snapPoints={snapPoints}
+      onChange={index => {
+        if (index === 0) {
+          setRerender(Math.random());
+        }
+      }}>
       <LoadingModal
         show={loader}
         onDismiss={() => setLoader(false)}
         label={'Updating work state'}
       />
+      <View
+        style={{
+          paddingVertical: SIZES.padding_32,
+          paddingHorizontal: SIZES.padding_16,
+        }}>
+        <DropDownPicker
+          open={open}
+          value={value}
+          items={items}
+          disabledItemContainerStyle={true}
+          setOpen={setOpen}
+          setValue={setValue}
+          setItems={setItems}
+          placeholder={'Set current task state'}
+        />
+      </View>
       <View style={styles.wrapper}>
-        <Picker
-          mode="dropdown"
-          style={{borderColor: COLORS.disabled_grey, borderWidth: 1}}
-          prompt="Select the status of the project"
-          selectedValue={status}
-          onValueChange={(itemValue, itemIndex) => {
-            setStatus(itemValue);
-          }}>
-          {pickers.map((el, idx) => (
-            <Picker.Item
-              label={el.label}
-              value={el.value}
-              style={{color: COLORS.primary, ...FONTS.body_medium}}
-              key={idx}
-            />
-          ))}
-        </Picker>
-
         {show_reasons_view() && (
           <View style={styles._reasons_wrapper}>
             <TextInput
@@ -73,6 +91,8 @@ const TaskUpdateView = ({sheetRef, tasks}) => {
               multiline={true}
               numberOfLines={3}
               mode="outlined"
+              onChangeText={txt => setReason(text)}
+              value={reason}
               outlineColor={COLORS.secondary}
               activeOutlineColor={COLORS.secondary}
             />
@@ -101,4 +121,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export const TaskUpdate = connect(mapStateToProps)(React.memo(TaskUpdateView));
+export const TaskUpdate = connect(mapStateToProps)(TaskUpdateView);

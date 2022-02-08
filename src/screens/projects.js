@@ -33,6 +33,7 @@ import axios from 'axios';
 import {endpoints, errorMessage} from '../endpoints';
 import {task_actions} from '../store-actions/task-actions';
 import {ProjectOptions, TaskUpdate} from './ui-views';
+import bottomSheet from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheet';
 
 //assigned fundis
 const FundiItem = ({project}) => {
@@ -123,14 +124,13 @@ const Projects = ({navigation, tasks, user_data}) => {
   const [deletable, showDeletable] = useState(false);
   const [options, setOptions] = useState(false);
   const [selectedOption, setSelectedOption] = useState();
+  const [re_render, setRerender] = useState(0);
 
   //redux
   const dispatch = useDispatch();
 
   //bottom sheet
   const btm_sheet = useRef(null);
-
-  const bref = useRef(null);
 
   const handleLongPress = p => {
     setOptions(true);
@@ -139,38 +139,30 @@ const Projects = ({navigation, tasks, user_data}) => {
   };
 
   //render project item
-  const project_item = ({item}) => (
-    <ProjectItem
-      project={item}
-      onSelected={s => showDeletable(s)}
-      longPress={p => handleLongPress(p)}
-    />
-  );
 
-  function loadProjects() {
+  async function loadProjects() {
     setLoading(true);
-    axios
-      .get(
+    try {
+      const res = await axios.get(
         `${endpoints.client_service}/jobs/owner/${user_data.user.id}?page=0&pageSize=100`,
-      )
-      .then(res => {
-        const t = res.data.data;
-        if (t.length) {
-          t.forEach(element => {
-            t[t.indexOf(element)] = {...element, selected: false};
-          });
-          dispatch(task_actions.load_jobs(t));
-        }
-      })
-      .catch(err => errorMessage(err))
-      .finally(() => setLoading(false));
+        {timeout: 15000},
+      );
+      setLoading(false);
+      const t = res.data.data;
+      if (t.length) {
+        t.forEach(element => {
+          t[t.indexOf(element)] = {...element, selected: false};
+        });
+        dispatch(task_actions.load_jobs(t));
+      }
+    } catch (error) {
+      setLoading(false);
+      errorMessage(error);
+    }
   }
 
   useEffect(() => {
     loadProjects();
-  }, []);
-
-  useEffect(() => {
     dispatch(UISettingsActions.status_bar(false));
   }, []);
   return (
@@ -206,7 +198,15 @@ const Projects = ({navigation, tasks, user_data}) => {
             {jobs.length ? (
               <FlatList
                 data={jobs}
-                renderItem={project_item}
+                renderItem={({item}) => {
+                  return (
+                    <ProjectItem
+                      project={item}
+                      onSelected={s => showDeletable(s)}
+                      longPress={p => handleLongPress(p)}
+                    />
+                  );
+                }}
                 key={item => item.taskId}
                 onRefresh={() => loadProjects()}
                 refreshing={true}
@@ -226,7 +226,14 @@ const Projects = ({navigation, tasks, user_data}) => {
           />
         )}
       </View>
-      <TaskUpdate sheetRef={btm_sheet} />
+      <TaskUpdate
+        sheetRef={btm_sheet}
+        updateDone={j => {
+          dispatch(task_actions.update_job(j));
+          setRerender(Math.random());
+          btm_sheet.current.snapTo(0);
+        }}
+      />
     </View>
   );
 };

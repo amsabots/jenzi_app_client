@@ -7,6 +7,7 @@ import {COLORS, FONTS, SIZES} from '../../constants/themes';
 import {LoaderSpinner} from '../../components';
 //redux
 import {useDispatch, connect} from 'react-redux';
+import {store} from '../../../App';
 //components
 import MIcons from 'react-native-vector-icons/MaterialIcons';
 import axios from 'axios';
@@ -20,6 +21,12 @@ const mapStateToProps = state => {
 
 const PendingRequestsView = memo(({onCancel, fundis}) => {
   const dispatch = useDispatch();
+
+  const get_user_name = () => {
+    const s = store.getState();
+    const {selected_fundi} = s.fundis;
+    return selected_fundi;
+  };
   useEffect(() => {
     axios
       .get(`${endpoints.notification_server}/notify/andrewmwebi`)
@@ -39,11 +46,14 @@ const PendingRequestsView = memo(({onCancel, fundis}) => {
         return (
           <View style={styles.container} key={idx}>
             <Caption>
-              Contacting {el.destinationAddress.substring(0, 16)}
+              Contacting{' '}
+              <Text style={{fontWeight: 'bold'}}>
+                {get_user_name().account.name || 'Not Available'}
+              </Text>
             </Caption>
             <View style={styles._item_wrapper}>
               <LoaderSpinner.DoubleRing loading={true} />
-              <Text style={{...FONTS.body_medium}}>
+              <Text style={{...FONTS.body_medium, marginRight: SIZES.base}}>
                 Waiting for fundi response....
               </Text>
               <MIcons

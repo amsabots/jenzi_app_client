@@ -19,7 +19,13 @@ const UISettingsActions = {
       },
     };
   },
-  // modal settings
+  // UI REFRESH
+  refresh_component: () => {
+    return {
+      type: 'REFRESH_COMPONENT',
+      payload: '',
+    };
+  },
 };
 
 export {UISettingsActions};

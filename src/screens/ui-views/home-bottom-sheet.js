@@ -132,20 +132,21 @@ const PageContent = ({fundis: f, bottomSheetTop, user_data}) => {
   }
 
   // axios calls
-  const fecthNearbyFundis = () => {
+  const fecthNearbyFundis = async () => {
     setLoading(true);
     if (latitude && longitude) {
-      axios
-        .get(
+      try {
+        const res = await axios.get(
           `${endpoints.fundi_service}/accounts/find-nearby?longitude=${longitude}&latitude=${latitude}&scanRadius=${scanRadius}`,
-        )
-        .then(res => {
-          dispatch(fundiActions.add_fundi(res.data));
-        })
-        .catch(err => {
-          console.log(err.response.data);
-        })
-        .finally(() => setLoading(false));
+          {timeout: 1500},
+        );
+        dispatch(fundiActions.add_fundi(res.data));
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
+        dispatch(fundiActions.add_fundi([]));
+        errorMessage(error);
+      }
     }
   };
 

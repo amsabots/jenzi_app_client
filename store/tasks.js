@@ -19,9 +19,9 @@ const tasks = (state = initialState, action) => {
       _.remove(e, e => e.taskId === payload.taskId);
       return {...state, jobs: selected};
     case 'UPDATE_TASK':
-      console.log('updating job task');
       const s_index = _.findIndex(state.jobs, o => o.taskId === payload.taskId);
       if (s_index > -1) {
+        console.log('updating job task');
         selected = state.jobs[s_index];
         state.jobs[s_index] = {...selected, ...payload};
       }

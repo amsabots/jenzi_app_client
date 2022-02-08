@@ -87,6 +87,7 @@ const Home = ({navigation, fundis, user_data}) => {
   // on screen coming back to view
   useFocusEffect(() => {
     //do something when you navigati back to this screen
+    if (!fundis.fundis.length) setBannerVisible(true);
   });
 
   return (

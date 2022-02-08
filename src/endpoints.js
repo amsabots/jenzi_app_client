@@ -21,8 +21,8 @@ export const errorMessage = err => {
     console.log('AXIOS CALL ERROR: ', err);
     Toast.show({
       type: 'error',
-      text1: 'System error',
-      text2: 'Please try again later, System unavailable',
+      text1: 'Service unavailable',
+      text2: 'Check your network and try again later',
     });
   }
 };
