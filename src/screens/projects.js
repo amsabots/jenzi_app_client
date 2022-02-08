@@ -33,7 +33,6 @@ import axios from 'axios';
 import {endpoints, errorMessage} from '../endpoints';
 import {task_actions} from '../store-actions/task-actions';
 import {ProjectOptions, TaskUpdate} from './ui-views';
-import bottomSheet from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheet';
 
 //assigned fundis
 const FundiItem = ({project}) => {

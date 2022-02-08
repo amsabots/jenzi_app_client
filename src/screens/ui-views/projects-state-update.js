@@ -1,9 +1,9 @@
 import React, {useState, useMemo, useRef, useEffect} from 'react';
 import BottomSheet from '@gorhom/bottom-sheet';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet, ToastAndroid} from 'react-native';
 //redux
 import {connect, useDispatch} from 'react-redux';
-import {task_actions} from '../../store-actions';
+
 import DropDownPicker from 'react-native-dropdown-picker';
 
 import {COLORS, FONTS, SIZES} from '../../constants/themes';
@@ -12,6 +12,8 @@ import {TextInput, Button} from 'react-native-paper';
 //
 
 import {LoadingModal} from '../../components';
+import axios from 'axios';
+import {endpoints, errorMessage} from '../../endpoints';
 
 const mapStateToProps = state => {
   const {tasks} = state;
@@ -29,6 +31,7 @@ const TaskUpdateView = ({sheetRef, tasks, updateDone}) => {
   const [loader, setLoader] = useState(false);
   const [force_rerender, setRerender] = useState(null);
   const [reason, setReason] = useState('');
+  const [job_title, setJobTitle] = useState('');
   /////////////////////////
   const [items, setItems] = useState(pickers);
   const [open, setOpen] = useState(false);
@@ -41,11 +44,33 @@ const TaskUpdateView = ({sheetRef, tasks, updateDone}) => {
     return value === 'PENDING' || value === 'CANCELLED';
   };
 
-  const handleOnPress = () => {
+  const handleOnPress = async () => {
     let job = selected_job;
-    job = {...job, taskState: value};
+    job = {...job, taskState: value, title: job_title || selected_job.title};
+    if (show_reasons_view() && !reason)
+      return ToastAndroid.show(
+        'Kindly provide a reason for your task status selection to help us with reconciliation of disputes for both parties',
+        ToastAndroid.LONG,
+      );
     setLoader(true);
-    if (show_reasons_view) updateDone(job);
+    delete job['id'];
+    try {
+      await axios.put(
+        `${endpoints.client_service}/jobs/${selected_job.id}`,
+        job,
+        {timeout: 30000},
+      );
+      updateDone(job);
+      ToastAndroid.showWithGravity(
+        'Job entry updated successfully',
+        ToastAndroid.LONG,
+        ToastAndroid.CENTER,
+      );
+    } catch (error) {
+      errorMessage(error);
+    } finally {
+      setLoader(false);
+    }
   };
 
   useEffect(() => {
@@ -72,6 +97,16 @@ const TaskUpdateView = ({sheetRef, tasks, updateDone}) => {
           paddingVertical: SIZES.padding_32,
           paddingHorizontal: SIZES.padding_16,
         }}>
+        <TextInput
+          defaultValue={selected_job.title}
+          onChangeText={txt => setJobTitle(txt)}
+          dense={true}
+          multiline={true}
+          numberOfLines={3}
+          mode="outlined"
+          activeOutlineColor={COLORS.secondary}
+          style={{marginBottom: SIZES.padding_16}}
+        />
         <DropDownPicker
           open={open}
           value={value}
@@ -91,7 +126,7 @@ const TaskUpdateView = ({sheetRef, tasks, updateDone}) => {
               multiline={true}
               numberOfLines={3}
               mode="outlined"
-              onChangeText={txt => setReason(text)}
+              onChangeText={txt => setReason(txt)}
               value={reason}
               outlineColor={COLORS.secondary}
               activeOutlineColor={COLORS.secondary}
