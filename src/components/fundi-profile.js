@@ -20,6 +20,7 @@ import {
 } from '.';
 //icons
 import MIcon from 'react-native-vector-icons/MaterialIcons';
+import {pusher_filters} from '../constants';
 
 //toast
 import Toast from 'react-native-toast-message';
@@ -66,7 +67,7 @@ const DetailsView = ({
       payload: {title},
       sourceAddress: clientId,
       destinationAddress: fundi.account.accountId,
-      filterType: 'request_user',
+      filterType: pusher_filters.request_user,
     };
     set_modal_loader(true);
     axios

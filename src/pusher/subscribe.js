@@ -7,6 +7,9 @@ import Toast from 'react-native-toast-message';
 //
 import Pusher from 'pusher-js/react-native';
 import {ToastAndroid} from 'react-native';
+import {pusher_filters} from '../constants';
+import axios from 'axios';
+import {endpoints} from '../endpoints';
 
 const {PUSHER_CLUSTER, PUSHER_KEY} = app_config.pusher_config;
 
@@ -21,10 +24,38 @@ const consumeUserInfo = c => {
 
   const binder = connectToChannel(c);
   binder.bind('pusher:subscription_succeeded', () => {
-    binder.bind('user_accepted', data => {
-      console.log(data);
+    //  USER ACCEPTED
+    binder.bind(pusher_filters.user_accepted, data => {
+      const {payload, sourceAddress, destinationAddress, requestId} = data;
+      const delete_request = axios.delete(
+        `${endpoints.notification_server}/notify/${requestId}`,
+      );
+      const create_project = axios.post(
+        `${endpoints.client_service}/jobs`,
+        {
+          title: payload.title,
+          client: {
+            id: store.getState().user_data.user.id,
+          },
+        },
+        {timeout: 60000},
+      );
+
+      Promise.all([create_project])
+        .then(d => {
+          console.log(d[0].data);
+        })
+        .catch(err => {
+          console.log(err);
+          ToastAndroid.showWithGravity(
+            'Project cannot be initiated at this time',
+            ToastAndroid.LONG,
+            ToastAndroid.CENTER,
+          );
+        });
     });
-    binder.bind('requesting_fundi_timedout', data => {
+    // USER REQUEST TIMEDOUT
+    binder.bind(pusher_filters.request_user_timedout, data => {
       store.dispatch(fundiActions.delete_current_requests(data));
       Toast.show({
         type: 'info',

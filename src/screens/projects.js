@@ -260,6 +260,7 @@ const styles = StyleSheet.create({
   },
   _content_card: {
     padding: SIZES.base,
+    marginBottom: SIZES.base,
   },
   _card_timeline_status: {
     flexDirection: 'row',

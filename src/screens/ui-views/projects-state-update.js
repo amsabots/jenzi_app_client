@@ -35,7 +35,7 @@ const TaskUpdateView = ({sheetRef, tasks, updateDone}) => {
   /////////////////////////
   const [items, setItems] = useState(pickers);
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState(0);
+  const [value, setValue] = useState();
 
   const {selected_job} = tasks;
   const snapPoints = useMemo(() => [0, '25%', '70%'], []);
@@ -46,7 +46,11 @@ const TaskUpdateView = ({sheetRef, tasks, updateDone}) => {
 
   const handleOnPress = async () => {
     let job = selected_job;
-    job = {...job, taskState: value, title: job_title || selected_job.title};
+    job = {
+      ...job,
+      taskState: value || selected_job.taskState,
+      title: job_title || selected_job.title,
+    };
     if (show_reasons_view() && !reason)
       return ToastAndroid.show(
         'Kindly provide a reason for your task status selection to help us with reconciliation of disputes for both parties',

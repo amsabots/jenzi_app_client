@@ -27,16 +27,16 @@ const ProjectOptions = ({
           contentContainerStyle={styles.container}>
           <View>
             <Text style={styles.title}>{project.title}</Text>
+            <View
+              style={{
+                width: '100%',
+                borderWidth: SIZES.stroke,
+                borderColor: COLORS.disabled_grey,
+              }}></View>
             <Menu.Item
               onPress={() => onUpdateState()}
               title="Update State"
               icon={'update'}
-            />
-            <Divider />
-            <Menu.Item
-              onPress={onDeleteRequested}
-              title="Delete job entry"
-              icon={'delete'}
             />
           </View>
         </Modal>

@@ -16,4 +16,11 @@ const offline_data = {
   user: '@user',
 };
 
-export {theme, screens, appTheme, delay, offline_data};
+const pusher_filters = {
+  request_user: 'request_user',
+  request_user_timedout: 'requesting_fundi_timedout',
+  user_accepted: 'user_accepted',
+  project_created: 'new_project',
+};
+
+export {theme, screens, appTheme, delay, offline_data, pusher_filters};
