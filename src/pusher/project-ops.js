@@ -40,7 +40,8 @@ const consumeUserInfo = c => {
               {timeout: 30000},
             )
             .then(f => {
-              store.dispatch(task_actions.add_job_entry([f]));
+              store.dispatch(task_actions.add_job_entry([f.data]));
+              store.dispatch(UISettingsActions.show_project_banner(f.data));
               return ToastAndroid.showWithGravity(
                 'Connection between you and the fundi has been set - You can freely chat on our messenger platform and track the project independently',
                 ToastAndroid.LONG,

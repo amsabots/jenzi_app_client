@@ -26,15 +26,6 @@ import {endpoints, errorMessage} from '../../endpoints';
 //Toast
 import Toast from 'react-native-toast-message';
 
-const services = [
-  {id: 1, name: 'All', selected: true},
-  {id: 2, name: 'Plumber', selected: false},
-  {id: 3, name: 'Roofers', selected: false},
-  {id: 4, name: 'Casual workers', selected: false},
-  {id: 5, name: 'Foundation', selected: false},
-  {id: 6, name: 'Welders', selected: false},
-];
-
 const mapsStateToProps = state => {
   const {fundis, user_data} = state;
   return {fundis, user_data};
@@ -49,7 +40,7 @@ const ServiceType = ({onChipClick, item}) => {
           paddingVertical: 4,
         }}
         onPress={() => onChipClick(item)}>
-        {item.name}
+        {item.title}
       </Chip>
     </View>
   );
@@ -96,10 +87,11 @@ const PageContent = ({fundis: f, bottomSheetTop, user_data}) => {
   } = user_data;
   const [selectedType, setSelectedType] = useState({
     name: 'All',
+    id: null,
     selected: true,
   });
   const [renderNull, setRenderNull] = useState(false);
-  const [categories, setCategories] = useState(services);
+  const [categories, setCategories] = useState([]);
 
   //store
   const dispatch = useDispatch();
@@ -136,16 +128,26 @@ const PageContent = ({fundis: f, bottomSheetTop, user_data}) => {
     setLoading(true);
     if (latitude && longitude) {
       try {
-        const res = await axios.get(
-          `${endpoints.fundi_service}/accounts/find-nearby?longitude=${longitude}&latitude=${latitude}&scanRadius=${scanRadius}`,
-          {timeout: 1500},
+        const categories = axios.get(
+          `${endpoints.client_service}/tasks-category`,
         );
-        dispatch(fundiActions.add_fundi(res.data));
-        setLoading(false);
+        const users = axios.get(
+          `${endpoints.fundi_service}/accounts/find-nearby?longitude=${longitude}&latitude=${latitude}&scanRadius=${scanRadius}`,
+          {timeout: 15000},
+        );
+        const req = await Promise.all([categories, users]);
+        dispatch(fundiActions.add_fundi(req[1].data));
+
+        let cats = req[0].data.map(el => {
+          return {id: el.id, title: el.title, selected: false};
+        });
+        cats = [...[{id: null, title: 'All', selected: true}], ...cats];
+        setCategories(cats);
       } catch (error) {
-        setLoading(false);
         dispatch(fundiActions.add_fundi([]));
         errorMessage(error);
+      } finally {
+        setLoading(false);
       }
     }
   };

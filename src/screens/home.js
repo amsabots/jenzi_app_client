@@ -30,6 +30,7 @@ import {ScrollView} from 'react-native-gesture-handler';
 // subscribtions
 import {connectToChannel, consume_from_pusher} from '../pusher';
 import Pusher from 'pusher-js/react-native';
+import {screens} from '../constants';
 
 const mapStateToProps = state => {
   const {fundis, user_data, ui_settings} = state;
@@ -37,12 +38,12 @@ const mapStateToProps = state => {
 };
 
 const Home = ({navigation, fundis, user_data, ui_settings}) => {
-  console.log(user_data);
   const {project_banner} = ui_settings;
   //component state
   const [longitude, setLongitude] = useState();
   const [latitude, setLatitude] = useState();
   const [bannerVisible, setBannerVisible] = useState(false);
+  const [project_banner_visible, setProjectBannerVisibility] = useState(false);
 
   //const refrproject_banneresh
   const [find, setFinder] = useState(0);
@@ -90,7 +91,9 @@ const Home = ({navigation, fundis, user_data, ui_settings}) => {
   useFocusEffect(() => {
     //do something when you navigati back to this screen
     if (!fundis.fundis.length) setBannerVisible(true);
-    console.log(project_banner);
+    Object.keys(project_banner).length
+      ? setProjectBannerVisibility(true)
+      : setProjectBannerVisibility(false);
   });
 
   return (
@@ -108,19 +111,26 @@ const Home = ({navigation, fundis, user_data, ui_settings}) => {
         {/* ====================== BANNER SECTION ======================= */}
         {/*  banner to show when new project has been initiated*/}
         <Banner
-          visible={Object.keys(project_banner).length ? true : false}
+          visible={project_banner_visible}
           actions={[
             {
               label: 'Connect',
-              onPress: () => setVisible(false),
+              onPress: () => {
+                dispatch(UISettingsActions.hide_project_banner());
+                navigation.navigate(screens.projects);
+              },
+            },
+            {
+              label: 'Close',
+              onPress: () => {
+                dispatch(UISettingsActions.hide_project_banner());
+              },
             },
           ]}
           style={{
             marginTop: SIZES.device.height / 8,
           }}>
-          {`${
-            project_banner.email || 'The fundi you requested'
-          } has accepted your job offer, You can click connect to open chats and initiate a conversation`}
+          {`${'The fundi you just requested'} has accepted your job offer. Click connect to open the project and connect`}
         </Banner>
         {/* banner section to display state of fundis */}
         {fundis.fundis.length < 1 && (

@@ -19,7 +19,7 @@ const UISettings = (s = state, action) => {
     case 'SHOW_PROJECT_BANNER':
       return {...s, project_banner: payload};
     case 'HIDE_PROJECT_BANNER':
-      return {...s, project_banner: ''};
+      return {...s, project_banner: {}};
     default:
       return state;
   }
