@@ -28,21 +28,23 @@ import {HomeBottomSheetContent} from './ui-views';
 import {ScrollView} from 'react-native-gesture-handler';
 
 // subscribtions
-import {mainChannel} from '../pusher';
+import {connectToChannel, consume_from_pusher} from '../pusher';
 import Pusher from 'pusher-js/react-native';
 
 const mapStateToProps = state => {
-  const {fundis, user_data} = state;
-  return {fundis, user_data};
+  const {fundis, user_data, ui_settings} = state;
+  return {fundis, user_data, ui_settings};
 };
 
-const Home = ({navigation, fundis, user_data}) => {
+const Home = ({navigation, fundis, user_data, ui_settings}) => {
+  console.log(user_data);
+  const {project_banner} = ui_settings;
   //component state
   const [longitude, setLongitude] = useState();
   const [latitude, setLatitude] = useState();
   const [bannerVisible, setBannerVisible] = useState(false);
 
-  //const refresh
+  //const refrproject_banneresh
   const [find, setFinder] = useState(0);
 
   // react dispatch
@@ -82,12 +84,13 @@ const Home = ({navigation, fundis, user_data}) => {
 
   //run on the first screen render
   useEffect(() => {
-    mainChannel.consumeUserInfo(user_data.user.clientId);
+    consume_from_pusher(user_data.user.clientId);
   }, []);
   // on screen coming back to view
   useFocusEffect(() => {
     //do something when you navigati back to this screen
     if (!fundis.fundis.length) setBannerVisible(true);
+    console.log(project_banner);
   });
 
   return (
@@ -102,6 +105,23 @@ const Home = ({navigation, fundis, user_data}) => {
             onPress={() => navigation.openDrawer()}
           />
         </View>
+        {/* ====================== BANNER SECTION ======================= */}
+        {/*  banner to show when new project has been initiated*/}
+        <Banner
+          visible={Object.keys(project_banner).length ? true : false}
+          actions={[
+            {
+              label: 'Connect',
+              onPress: () => setVisible(false),
+            },
+          ]}
+          style={{
+            marginTop: SIZES.device.height / 8,
+          }}>
+          {`${
+            project_banner.email || 'The fundi you requested'
+          } has accepted your job offer, You can click connect to open chats and initiate a conversation`}
+        </Banner>
         {/* banner section to display state of fundis */}
         {fundis.fundis.length < 1 && (
           <Banner style={{top: 64}} visible={bannerVisible} actions={[]}>

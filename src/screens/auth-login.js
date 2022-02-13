@@ -13,8 +13,6 @@ import axios from 'axios';
 //sqlite
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-//icon
-import MIcon from 'react-native-vector-icons/MaterialIcons';
 import {offline_data, screens} from '../constants';
 import {endpoints, errorMessage} from '../endpoints';
 

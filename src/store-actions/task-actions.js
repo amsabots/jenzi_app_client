@@ -30,4 +30,9 @@ export const task_actions = {
       payload: job_item,
     };
   },
+  reset_store: function () {
+    return {
+      type: 'RESET_TASKS',
+    };
+  },
 };

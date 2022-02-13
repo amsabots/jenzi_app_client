@@ -36,10 +36,29 @@ import {ProjectOptions, TaskUpdate} from './ui-views';
 
 //assigned fundis
 const FundiItem = ({project}) => {
+  //use effect hook to call db and get assigned fundis
+  const {taskId} = project;
   const [fundis, setFundis] = useState([]);
   const [load, setLoading] = useState(false);
 
-  //use effect hook to call db and get assigned fundis
+  useEffect(() => {
+    setLoading(true);
+    axios
+      .get(`${endpoints.fundi_service}/projects/client/${taskId}`)
+      .then(d => {
+        if (d.data.length) {
+          setFundis(d.data);
+        }
+      })
+      .catch(e => {
+        console.log('Fetching fundi error', e);
+      })
+      .finally(() => setLoading(false));
+
+    return () => {
+      setLoading(false);
+    };
+  }, []);
   return load ? (
     <View style={{flexDirection: 'row', alignItems: 'center'}}>
       <LoaderSpinner.ArcherLoader loading={load} />
@@ -47,11 +66,25 @@ const FundiItem = ({project}) => {
     </View>
   ) : fundis.length ? (
     <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
-      {new Array(3).fill(0).map((el, idx) => (
+      {fundis.map((el, idx) => (
         <Text
           style={{marginBottom: SIZES.base, marginRight: SIZES.base}}
           key={idx}>
-          <Chip avatar={<CircularImage />}>Andrew Mwebi</Chip>
+          <Chip
+            avatar={<CircularImage size={40} />}
+            style={{}}
+            onPress={() => {
+              console.log(el);
+            }}>
+            <View>
+              <Text style={{...FONTS.captionBold}}>
+                {el.account.name || 'Not Available'}
+              </Text>
+              <Text style={{...FONTS.caption, color: COLORS.secondary}}>
+                Click to open Chats
+              </Text>
+            </View>
+          </Chip>
         </Text>
       ))}
     </View>
@@ -79,7 +112,7 @@ const ProjectItem = ({project, onSelected, longPress}) => {
 
   return (
     <TouchableOpacity
-      activeOpacity={0.7}
+      activeOpacity={0.9}
       onPress={() =>
         ToastAndroid.show('Long press for options', ToastAndroid.SHORT)
       }
@@ -104,7 +137,7 @@ const ProjectItem = ({project, onSelected, longPress}) => {
           <Text style={{...FONTS.body_medium, marginBottom: SIZES.base}}>
             Assigned to the following
           </Text>
-          <View style={{flexDirectioPENDINGn: 'row', flexWrap: 'wrap'}}>
+          <View style={{flexDirectioPENDING: 'row', flexWrap: 'wrap'}}>
             <FundiItem project={project} />
           </View>
         </View>
@@ -153,6 +186,8 @@ const Projects = ({navigation, tasks, user_data}) => {
           t[t.indexOf(element)] = {...element, selected: false};
         });
         dispatch(task_actions.load_jobs(t));
+      } else {
+        dispatch(task_actions.reset_store());
       }
     } catch (error) {
       setLoading(false);
@@ -197,6 +232,7 @@ const Projects = ({navigation, tasks, user_data}) => {
             {jobs.length ? (
               <FlatList
                 data={jobs}
+                showsVerticalScrollIndicator={false}
                 renderItem={({item}) => {
                   return (
                     <ProjectItem

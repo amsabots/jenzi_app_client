@@ -28,6 +28,8 @@ const tasks = (state = initialState, action) => {
       return state;
     case 'SET_SELECTED':
       return {...state, selected_job: payload};
+    case 'RESET_TASKS':
+      return initialState;
     default:
       return state;
   }

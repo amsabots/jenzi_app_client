@@ -26,6 +26,18 @@ const UISettingsActions = {
       payload: '',
     };
   },
+
+  show_project_banner: banner_message => {
+    return {
+      type: 'SHOW_PROJECT_BANNER',
+      payload: banner_message,
+    };
+  },
+  hide_project_banner: () => {
+    return {
+      type: 'HIDE_PROJECT_BANNER',
+    };
+  },
 };
 
 export {UISettingsActions};
