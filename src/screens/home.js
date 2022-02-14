@@ -1,6 +1,6 @@
 import React, {useEffect, useState, useCallback, useMemo, useRef} from 'react';
 import {useFocusEffect} from '@react-navigation/native';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, StyleSheet, BackHandler, ToastAndroid} from 'react-native';
 import {getCurrentLocation} from '../config/current-location';
 
 //bottom sheet
@@ -20,7 +20,6 @@ import {MapView} from '../components';
 import {COLORS, SIZES} from '../constants/themes';
 
 //icons
-import Icons from 'react-native-vector-icons/Feather';
 import MIcons from 'react-native-vector-icons/MaterialIcons';
 
 //building blocks
@@ -29,7 +28,6 @@ import {ScrollView} from 'react-native-gesture-handler';
 
 // subscribtions
 import {connectToChannel, consume_from_pusher} from '../pusher';
-import Pusher from 'pusher-js/react-native';
 import {screens} from '../constants';
 
 const mapStateToProps = state => {
@@ -39,6 +37,7 @@ const mapStateToProps = state => {
 
 const Home = ({navigation, fundis, user_data, ui_settings}) => {
   const {project_banner} = ui_settings;
+
   //component state
   const [longitude, setLongitude] = useState();
   const [latitude, setLatitude] = useState();
@@ -79,6 +78,27 @@ const Home = ({navigation, fundis, user_data, ui_settings}) => {
   // variables
   const snapPoints = useMemo(() => ['35%', '50%', '90%'], []);
 
+  // back button Handler
+  let backHandlerClickCount = 0;
+  const backButtonHandler = () => {
+    const shortToast = message => {
+      ToastAndroid.show(message, ToastAndroid.SHORT);
+    };
+    backHandlerClickCount += 1;
+    if (backHandlerClickCount < 2) {
+      shortToast('Press again to quit the application');
+    } else {
+      BackHandler.exitApp();
+    }
+
+    // timeout for fade and exit
+    setTimeout(() => {
+      backHandlerClickCount = 0;
+    }, 1000);
+
+    return true;
+  };
+
   useEffect(() => {
     location();
   }, [find]);
@@ -86,15 +106,21 @@ const Home = ({navigation, fundis, user_data, ui_settings}) => {
   //run on the first screen render
   useEffect(() => {
     consume_from_pusher(user_data.user.clientId);
+    BackHandler.addEventListener('hardwareBackPress', backButtonHandler);
   }, []);
-  // on screen coming back to view
-  useFocusEffect(() => {
-    //do something when you navigati back to this screen
-    if (!fundis.fundis.length) setBannerVisible(true);
-    Object.keys(project_banner).length
-      ? setProjectBannerVisibility(true)
-      : setProjectBannerVisibility(false);
-  });
+
+  useFocusEffect(
+    useCallback(() => {
+      // Do something when the screen is focused
+      if (!fundis.fundis.length) setBannerVisible(true);
+      Object.keys(project_banner).length
+        ? setProjectBannerVisibility(true)
+        : setProjectBannerVisibility(false);
+      return () => {
+        BackHandler.removeEventListener('hardwareBackPress', backButtonHandler);
+      };
+    }, []),
+  );
 
   return (
     <View style={[styles.container]}>

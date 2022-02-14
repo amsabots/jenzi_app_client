@@ -7,6 +7,7 @@ import Profile from './profile';
 import ChatScreen from './chats';
 import payments from './payments';
 import Logout from './logout';
+import MainActivity from './main-activity';
 
 export {
   HomeView,
@@ -18,4 +19,5 @@ export {
   ChatScreen,
   payments,
   Logout,
+  MainActivity,
 };

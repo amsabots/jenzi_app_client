@@ -12,6 +12,7 @@ const screens = {
   conversation: 'conversation',
   payments: 'Payments',
   logout: 'Logout',
+  main_activity: 'MainActivity',
 };
 
 export {screens};
