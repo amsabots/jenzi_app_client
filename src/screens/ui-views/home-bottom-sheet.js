@@ -19,7 +19,6 @@ import {fundiActions} from '../../store-actions';
 
 ///// constants
 import {delay} from '../../constants';
-import {concat} from 'react-native-reanimated';
 import axios from 'axios';
 import {endpoints, errorMessage} from '../../endpoints';
 
@@ -144,6 +143,7 @@ const PageContent = ({fundis: f, bottomSheetTop, user_data}) => {
         cats = [...[{id: null, title: 'All', selected: true}], ...cats];
         setCategories(cats);
       } catch (error) {
+        console.log(error);
         dispatch(fundiActions.add_fundi([]));
         errorMessage(error);
       } finally {

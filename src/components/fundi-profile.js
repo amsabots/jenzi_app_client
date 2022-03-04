@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useCallback} from 'react';
 
-import {Button, Chip} from 'react-native-paper';
+import {Button, Chip, Divider} from 'react-native-paper';
 import {View, Text, StyleSheet} from 'react-native';
 import {COLORS, FONTS, SIZES} from '../constants/themes';
 import {connect, useDispatch} from 'react-redux';
@@ -125,10 +125,16 @@ const DetailsView = ({
           {fundi.account.name || 'Not Available'}
         </Text>
         {/* NCA section */}
-        <View>
-          <Text style={{...FONTS.captionBold}}>NCA no</Text>
-          <Text style={{...FONTS.body_medium}}>1234567890</Text>
+        <View style={{alignItems: 'center', marginBottom: SIZES.padding_16}}>
+          <Text style={{...FONTS.captionBold, color: COLORS.secondary}}>
+            NCA number:
+          </Text>
+          <Text style={{...FONTS.caption}}>
+            {fundi.account.ncaNumber || 'Not yet registered with NCA'}
+          </Text>
+          <Divider s />
         </View>
+
         {/* ====================== */}
         <View
           style={{

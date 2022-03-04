@@ -52,16 +52,24 @@ const Register = ({navigation}) => {
         dispatch(user_data_actions.create_user(res.data));
         await AsyncStorage.setItem(offline_data.user, JSON.stringify(res.data));
         ToastAndroid.show('Welcome to Jenzi', ToastAndroid.LONG);
+        navigation.reset({
+          index: 0,
+          routes: [{name: screens.stack_app}],
+        });
       })
       .catch(err => errorMessage(err))
       .finally(() => setLoading(false));
+
+    return () => {
+      setLoading(false);
+    };
   };
 
   return (
     <ScrollView style={{backgroundColor: COLORS.white}}>
       <View style={styles.container}>
         <View>
-          <LoadingNothing label={'JENZI AFRICA'} textColor={COLORS.white} />
+          <LoadingNothing label={'JENZI SMART'} textColor={COLORS.white} />
         </View>
 
         <View style={styles.wrapper}>
