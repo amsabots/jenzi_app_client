@@ -1,9 +1,9 @@
 import _ from 'lodash';
-import axios from 'axios';
 
 const initialState = {
   chats: [],
   selected_chat: {},
+  chat_rooms: [],
 };
 
 export const chats = (state = initialState, action) => {

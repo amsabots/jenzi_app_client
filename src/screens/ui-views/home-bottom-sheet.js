@@ -85,10 +85,11 @@ const PageContent = ({fundis: f, bottomSheetTop, user_data}) => {
     scanRadius,
   } = user_data;
   const [selectedType, setSelectedType] = useState({
-    name: 'All',
+    title: 'All',
     id: null,
     selected: true,
   });
+  const [availableFundis, setAvailableFundis] = useState([]);
   const [renderNull, setRenderNull] = useState(false);
   const [categories, setCategories] = useState([]);
 
@@ -136,7 +137,7 @@ const PageContent = ({fundis: f, bottomSheetTop, user_data}) => {
         );
         const req = await Promise.all([categories, users]);
         dispatch(fundiActions.add_fundi(req[1].data));
-
+        setAvailableFundis(req[1].data);
         let cats = req[0].data.map(el => {
           return {id: el.id, title: el.title, selected: false};
         });
@@ -145,6 +146,7 @@ const PageContent = ({fundis: f, bottomSheetTop, user_data}) => {
       } catch (error) {
         console.log(error);
         dispatch(fundiActions.add_fundi([]));
+
         errorMessage(error);
       } finally {
         setLoading(false);
@@ -154,7 +156,22 @@ const PageContent = ({fundis: f, bottomSheetTop, user_data}) => {
 
   useEffect(() => {
     fecthNearbyFundis();
+    return () => {
+      setLoading(false);
+    };
   }, [latitude, longitude]);
+
+  useEffect(() => {
+    setAvailableFundis(f.fundis);
+    if (selectedType.title === 'All') availableFundis;
+    else {
+      availableFundis.forEach(element => {
+        const tags = element.tags.map(el => el.tagId);
+        if (tags.includes(selectedType.id))
+          setAvailableFundis(i => i.push(element));
+      });
+    }
+  }, [selectedType]);
 
   return (
     <View style={styles.container}>
@@ -181,9 +198,9 @@ const PageContent = ({fundis: f, bottomSheetTop, user_data}) => {
       <Text style={{...FONTS.body_medium, color: COLORS.secondary}}>
         Available {selectedType.name == 'All' ? 'providers' : selectedType.name}
       </Text>
-      {f.fundis.length ? (
+      {availableFundis.length ? (
         <FlatList
-          data={f.fundis}
+          data={availableFundis}
           renderItem={renderFundis}
           keyExtractor={i => i.account.accountId}
           style={{marginVertical: SIZES.padding_16}}

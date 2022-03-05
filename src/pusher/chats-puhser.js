@@ -16,7 +16,7 @@ const consumerIncomingChats = c => {
   const binder = connectToChannel(c);
   binder.bind('pusher:subscription_succeeded', () => {
     console.log(
-      'Channel has been established between client and puhser servers',
+      'Channel has been established between client and pusher servers',
     );
     // USER REQUEST TIMEDOUT
     binder.bind(pusher_filters.new_message, data => {
