@@ -11,6 +11,7 @@ import {
 //axios
 import axios from 'axios';
 axios.defaults.timeout = 10000;
+import moment from 'moment';
 
 // Redux navigation
 import {useDispatch, connect} from 'react-redux';
@@ -23,6 +24,7 @@ import {
 
 import {
   DefaultToolBar,
+  InfoChips,
   LoaderSpinner,
   LoadingNothing,
   PlainFundiProfile,
@@ -59,10 +61,6 @@ const ProjectInfo = ({navigation, route, user_data}) => {
   }, []);
 
   // use effect for incoming changes from previous screen
-  useEffect(() => {
-    const {client, fundiId, pendingTaskStates, taskState, createdAt} = project;
-    //fetch client information
-  }, [route]);
 
   if (!view_ready) {
     return (
@@ -79,6 +77,8 @@ const ProjectInfo = ({navigation, route, user_data}) => {
       </View>
     );
   }
+  const {client, fundiId, pendingTaskStates, taskState, createdAt, title} =
+    project;
   return (
     <View style={[styles.container]}>
       <DefaultToolBar title="Project details" navigation={navigation} />
@@ -87,9 +87,53 @@ const ProjectInfo = ({navigation, route, user_data}) => {
         <View style={[styles.center_in_view]}>
           <PlainFundiProfile
             fundiId={project.fundiId}
-            onFundiFinished={fundi_details => console.log('')}
+            onFundiFinished={fundi_details => setFundi(fundi_details)}
           />
         </View>
+        <Text
+          style={{
+            marginVertical: SIZES.padding_12,
+            ...FONTS.body_medium,
+            marginLeft: SIZES.base,
+          }}>
+          Project details
+        </Text>
+        {/* ============ PROJECT DETAILS ============== */}
+        <View style={[styles._section]}>
+          <Text style={{...FONTS.body_bold}}>{title}</Text>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              marginTop: SIZES.base,
+            }}>
+            <View>
+              <Text style={{...FONTS.caption}}>Your status</Text>
+              <InfoChips text={taskState} textColor={COLORS.secondary} />
+            </View>
+            {/*===== ============== ============ */}
+            <View>
+              <Text style={{...FONTS.caption}}>Fundi status</Text>
+              <InfoChips
+                text={pendingTaskStates}
+                textColor={COLORS.blue_deep}
+              />
+            </View>
+          </View>
+          <Text style={{...FONTS.captionBold, marginTop: SIZES.base}}>
+            Started: <Text>{moment(createdAt).fromNow()}</Text>
+          </Text>
+        </View>
+        {/* =============  PROJECT ACTIONS ========== */}
+        <Text
+          style={{
+            marginVertical: SIZES.padding_12,
+            ...FONTS.body_medium,
+            marginLeft: SIZES.base,
+          }}>
+          Project actions
+        </Text>
+        <View style={[styles._section]}></View>
       </View>
     </View>
   );
@@ -98,6 +142,11 @@ const ProjectInfo = ({navigation, route, user_data}) => {
 const styles = StyleSheet.create({
   center_in_view: {justifyContent: 'center', alignItems: 'center'},
   container: {flex: 1},
+  _section: {
+    backgroundColor: COLORS.white,
+    paddingHorizontal: SIZES.padding_16,
+    paddingVertical: SIZES.base,
+  },
 });
 
 export default connect(mapStateToProps)(ProjectInfo);

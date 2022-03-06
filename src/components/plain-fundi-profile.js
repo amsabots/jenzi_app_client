@@ -1,11 +1,18 @@
 import axios from 'axios';
 import React, {useState, useEffect} from 'react';
-import {View, StyleSheet, Text} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  ToastAndroid,
+} from 'react-native';
 import {Button, Chip, Divider} from 'react-native-paper';
-import {FONTS, SIZES} from '../constants/themes';
+import {COLORS, FONTS, SIZES} from '../constants/themes';
 import {endpoints} from '../endpoints';
 import {CircularImage, LoaderSpinner, LoadingNothing} from './';
 import {Rating} from 'react-native-ratings';
+import {VERTICAL} from 'react-native/Libraries/Components/ScrollView/ScrollViewContext';
 
 const PlainFundiProfile = ({fundi, fundiId, onFundiFinished}) => {
   const [data, setData] = useState(null);
@@ -25,7 +32,7 @@ const PlainFundiProfile = ({fundi, fundiId, onFundiFinished}) => {
   useEffect(() => {
     load_data();
   }, [fundi, fundiId]);
-  console.log(data);
+
   if (!data) {
     return (
       <View>
@@ -48,23 +55,58 @@ const PlainFundiProfile = ({fundi, fundiId, onFundiFinished}) => {
     ratings,
   } = data;
   return (
-    <View style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        {backgroundColor: COLORS.white, width: '100%'},
+      ]}>
       <CircularImage size={120} url={photoUrl} />
       <Text style={{...FONTS.body_bold, marginTop: SIZES.padding_12}}>
         {name}
       </Text>
       <Text style={{marginTop: SIZES.base}}>{email}</Text>
-      <View>
+      <View style={styles._star_container}>
         <Rating
           type="heart"
           ratingCount={5}
-          imageSize={SIZES.padding_32}
-          ratingColor={COLORS.secondary}
+          imageSize={SIZES.icon_size}
           startingValue={stars}
           readonly={true}
         />
+        <View style={styles._rating_details}>
+          <TouchableOpacity>
+            <Text style={[styles._txt_sec]}>0 reviews</Text>
+          </TouchableOpacity>
+          <VerticalDivider height={12} space={8} />
+          <Text style={[styles._txt_sec]}>{stars} stars</Text>
+        </View>
       </View>
+
+      <Chip
+        style={styles._chip_review}
+        textStyle={{color: COLORS.white}}
+        onPress={() => ToastAndroid.show('Coming soon...', ToastAndroid.SHORT)}>
+        Reviews
+      </Chip>
     </View>
+  );
+};
+
+export const VerticalDivider = ({
+  height,
+  color = COLORS.secondary,
+  space = SIZES.padding_4,
+}) => {
+  return (
+    <View
+      style={{
+        height,
+        width: SIZES.stroke,
+        backgroundColor: color,
+        marginHorizontal: space,
+        alignSelf: 'center',
+      }}
+    />
   );
 };
 
@@ -73,6 +115,24 @@ const styles = StyleSheet.create({
   _star_container: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: SIZES.base,
+  },
+  _rating_details: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginLeft: SIZES.base,
+  },
+  _txt_sec: {
+    color: COLORS.secondary,
+    ...FONTS.caption,
+  },
+  _chip_review: {
+    height: 32,
+    width: '70%',
+    ...SIZES.centerInView,
+    backgroundColor: COLORS.primary,
+    marginTop: SIZES.padding_16,
   },
 });
 
