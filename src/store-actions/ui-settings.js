@@ -44,6 +44,11 @@ const UISettingsActions = {
       payload: info_message,
     };
   },
+  refresh_ui_view: () => {
+    return {
+      type: `REFRESH_UI`,
+    };
+  },
 };
 
 export {UISettingsActions};

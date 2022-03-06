@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useCallback} from 'react';
 
 import {Button, Chip, Divider} from 'react-native-paper';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet, ToastAndroid} from 'react-native';
 import {COLORS, FONTS, SIZES} from '../constants/themes';
 import {connect, useDispatch} from 'react-redux';
 import {fundiActions, UISettingsActions} from '../store-actions';
@@ -56,7 +56,7 @@ const DetailsView = ({
   const [modal_loader, set_modal_loader] = useState(false);
 
   //get the title provided and validate
-  const handleSendRequest = title => {
+  const handleSendRequest = async title => {
     if (!title)
       return Toast.show({
         type: 'error',
@@ -71,42 +71,52 @@ const DetailsView = ({
       filterType: pusher_filters.request_user,
     };
     set_modal_loader(true);
-    axios
-      .post(`${endpoints.notification_server}/notify`, payload)
-      .then(res => {
-        payload.requestId = res.data.requestId;
-        dispatch(fundiActions.get_all_Sent_requests([payload]));
-        return Toast.show({
-          type: 'success',
-          text2: 'Request sent, Please wait response.....',
-        });
-      })
-      .catch(e => {
-        return Toast.show({
-          type: 'error',
-          text2: 'Failed Retry later.....',
-        });
-      })
-      .finally(() => set_modal_loader(false));
+
+    try {
+      const res = await axios.post(
+        `${endpoints.notification_server}/notify`,
+        payload,
+        {timeout: 8000},
+      );
+      payload.requestId = res.data.requestId;
+      dispatch(fundiActions.get_all_Sent_requests([payload]));
+      return Toast.show({
+        type: 'success',
+        text2: 'Request sent, Please wait response.....',
+      });
+    } catch (error) {
+      return Toast.show({
+        type: 'error',
+        text2: 'Failed Retry later.....',
+      });
+    } finally {
+      set_modal_loader(false);
+    }
   };
 
   //call the requests delete endpoint when the cancel icon has been clicked on the requests sent component
-  const handleCancelRequest = useCallback(el => {
-    axios
-      .delete(`${endpoints.notification_server}/notify/${el.requestId}`, {
-        timeout: 10000,
-      })
-      .then()
-      .catch()
-      .finally(() => {
-        dispatch(fundiActions.delete_current_requests(el));
-        dispatch(
-          UISettingsActions.snack_bar_info(
-            'The requested has been cancelled successfully. Sorry for the inconvenience caused',
-          ),
-        );
+  const handleCancelRequest = el => {
+    ToastAndroid.showWithGravity(
+      'cancelling....',
+      ToastAndroid.LONG,
+      ToastAndroid.LONG,
+    );
+
+    try {
+      axios.delete(`${endpoints.notification_server}/notify/${el.requestId}`, {
+        timeout: 5000,
       });
-  });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      dispatch(fundiActions.delete_current_requests(el));
+      dispatch(
+        UISettingsActions.snack_bar_info(
+          'The requested has been cancelled successfully. Sorry for the inconvenience caused',
+        ),
+      );
+    }
+  };
 
   return Object.keys(fundi).length ? (
     <View style={styles.container}>

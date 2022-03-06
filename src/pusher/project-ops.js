@@ -19,48 +19,43 @@ const consumeUserInfo = c => {
       'Channel has been established between client and pusher servers',
     );
     //  USER ACCEPTED
-    binder.bind(pusher_filters.user_accepted, data => {
+    binder.bind(pusher_filters.user_accepted, async data => {
       const {payload, sourceAddress, destinationAddress, requestId} = data;
       console.log(requestId);
-      axios
-        .delete(`${endpoints.notification_server}/notify/${requestId}`)
-        .then(() => 'done')
-        .then(async re => {
-          axios
-            .post(
-              `${endpoints.client_service}/jobs`,
-              {
-                title: payload.title,
-                fundiId: sourceAddress,
-                client: {
-                  id: store.getState().user_data.user.id,
-                },
-              },
-              {timeout: 30000},
-            )
-            .then(async f => {
-              store.dispatch(task_actions.add_job_entry([f.data]));
-              store.dispatch(UISettingsActions.show_project_banner(f.data));
-              store.dispatch(fundiActions.delete_current_requests());
-              await axios.post(
-                `${endpoints.realtime_base_url}/chats/chat-room`,
-                {partyA: sourceAddress, partyB: destinationAddress},
-              );
-              store.dispatch(
-                UISettingsActions.snack_bar_info(
-                  'A new project has been started to view details, Go to Menu ad select Projects. A chat connection between you and the fundi has been activated',
-                ),
-              );
-            });
-        })
-        .catch(err => {
-          console.log('===== PROJECT CREATION ERROR =======', err);
-          store.dispatch(
-            UISettingsActions.snack_bar_info(
-              'We cannot initiate a direct link between you and the fundi. Please try again later',
-            ),
-          );
+      try {
+        await axios.delete(
+          `${endpoints.notification_server}/notify/${requestId}`,
+        );
+        const f = await axios.post(
+          `${endpoints.client_service}/jobs`,
+          {
+            title: payload.title,
+            fundiId: sourceAddress,
+            client: {
+              id: store.getState().user_data.user.id,
+            },
+          },
+          {timeout: 10000},
+        );
+        store.dispatch(task_actions.add_job_entry([f.data]));
+        store.dispatch(UISettingsActions.show_project_banner(f.data));
+        store.dispatch(fundiActions.delete_current_requests());
+        await axios.post(`${endpoints.realtime_base_url}/chats/chat-room`, {
+          partyA: sourceAddress,
+          partyB: destinationAddress,
         });
+        store.dispatch(
+          UISettingsActions.snack_bar_info(
+            'A new project has been started to view details, Go to Menu ad select Projects. A chat connection between you and the fundi has been activated',
+          ),
+        );
+      } catch (error) {
+        store.dispatch(
+          UISettingsActions.snack_bar_info(
+            'We cannot initiate a direct link between you and the fundi. Please try again later',
+          ),
+        );
+      }
     });
     // USER REQUEST TIMEDOUT
     binder.bind(pusher_filters.request_user_timedout, data => {

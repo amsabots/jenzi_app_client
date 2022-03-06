@@ -21,6 +21,7 @@ import {COLORS, SIZES} from '../constants/themes';
 
 //icons
 import MIcons from 'react-native-vector-icons/MaterialIcons';
+import EvilICons from 'react-native-vector-icons/EvilIcons';
 
 //building blocks
 import {HomeBottomSheetContent} from './ui-views';
@@ -111,11 +112,10 @@ const Home = ({navigation, fundis, user_data, ui_settings}) => {
     else setSnackBar(false);
   }, [ui_settings]);
 
-  useCallback(() => {}, []);
-
   //run on the first screen render
   useEffect(() => {
     BackHandler.addEventListener('hardwareBackPress', backButtonHandler);
+    consume_from_pusher(user_data.user.clientId);
     subscribe_chat_rooms(user_data.user.clientId);
   }, []);
 
@@ -195,11 +195,24 @@ const Home = ({navigation, fundis, user_data, ui_settings}) => {
         snapPoints={snapPoints}>
         <ScrollView>
           <HomeBottomSheetContent
+            init_refresh={enforce_fetch}
             bottomSheetTop={() => bottomSheetRef.current.snapTo(2)}
           />
         </ScrollView>
       </BottomSheet>
       {/* =============== Views that do not relatively align inside the parent container */}
+      <View
+        style={[
+          {right: SIZES.padding_32, top: SIZES.padding_32},
+          styles._fab_container,
+        ]}>
+        <EvilICons
+          name="refresh"
+          size={SIZES.icon_size}
+          color={COLORS.secondary}
+          onPress={() => dispatch(UISettingsActions.refresh_component())}
+        />
+      </View>
       <Snackbar
         visible={snackbar}
         onDismiss={() => {

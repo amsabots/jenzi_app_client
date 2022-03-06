@@ -23,8 +23,8 @@ axios.defaults.timeout = 10000;
 import {endpoints, errorMessage} from '../../endpoints';
 
 const mapsStateToProps = state => {
-  const {fundis, user_data} = state;
-  return {fundis, user_data};
+  const {fundis, user_data, ui_settings} = state;
+  return {fundis, user_data, ui_settings};
 };
 
 const ServiceType = ({onChipClick, item}) => {
@@ -75,7 +75,7 @@ const Providers = ({details, itemClick}) => {
   );
 };
 
-const PageContent = ({fundis: f, bottomSheetTop, user_data, init_refresh}) => {
+const PageContent = ({fundis: f, bottomSheetTop, user_data, ui_settings}) => {
   const [load, setLoading] = useState(false);
   const {
     coordinates: {latitude, longitude},
@@ -122,8 +122,8 @@ const PageContent = ({fundis: f, bottomSheetTop, user_data, init_refresh}) => {
 
   // axios calls
   const fecthNearbyFundis = async () => {
-    setLoading(true);
     if (latitude && longitude) {
+      setLoading(true);
       try {
         const categories = axios.get(
           `${endpoints.client_service}/tasks-category`,
@@ -164,7 +164,7 @@ const PageContent = ({fundis: f, bottomSheetTop, user_data, init_refresh}) => {
     return () => {
       setLoading(false);
     };
-  }, [init_refresh]);
+  }, [latitude, longitude, ui_settings.refresh_state]);
 
   useEffect(() => {
     filterOnCategoryChange();

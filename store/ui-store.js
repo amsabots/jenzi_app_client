@@ -23,6 +23,8 @@ const UISettings = (s = state, action) => {
       return {...s, project_banner: {}};
     case 'SNACKBAR_INFO':
       return {...state, snack_bar_info: payload};
+    case 'REFRESH_UI':
+      return {...state, refresh_state: Math.random()};
     default:
       return state;
   }
