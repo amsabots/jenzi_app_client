@@ -4,7 +4,7 @@ import {Button, Chip, Divider} from 'react-native-paper';
 import {View, Text, StyleSheet} from 'react-native';
 import {COLORS, FONTS, SIZES} from '../constants/themes';
 import {connect, useDispatch} from 'react-redux';
-import {fundiActions} from '../store-actions';
+import {fundiActions, UISettingsActions} from '../store-actions';
 
 //UI sub components
 import {ServiceRequest, PendingRequests} from '../screens/ui-views';
@@ -92,21 +92,18 @@ const DetailsView = ({
   //call the requests delete endpoint when the cancel icon has been clicked on the requests sent component
   const handleCancelRequest = useCallback(el => {
     axios
-      .delete(`${endpoints.notification_server}/notify/${el.requestId}`)
-      .then(res => {
-        dispatch(fundiActions.delete_current_requests(el));
-        Toast.show({
-          type: 'success',
-          text2: 'Request has been cancelled',
-        });
+      .delete(`${endpoints.notification_server}/notify/${el.requestId}`, {
+        timeout: 10000,
       })
-      .catch(e => {
-        console.log(e);
-        Toast.show({
-          type: 'error',
-          text2:
-            'Request cannot be completed at this time, please try again later',
-        });
+      .then()
+      .catch()
+      .finally(() => {
+        dispatch(fundiActions.delete_current_requests(el));
+        dispatch(
+          UISettingsActions.snack_bar_info(
+            'The requested has been cancelled successfully. Sorry for the inconvenience caused',
+          ),
+        );
       });
   });
 

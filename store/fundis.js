@@ -36,9 +36,7 @@ const fundisData = (state = initialState, action) => {
     case 'GET_SENT_REQUESTS':
       return {...state, sent_requests: [...state.sent_requests, ...payload]};
     case 'REMOVE_SENT_REQUEST':
-      const a = state.sent_requests;
-      _.remove(a, el => el.requestId === payload.requestId);
-      return {...state, sent_requests: a};
+      return {...state, sent_requests: []};
     default:
       return state;
   }

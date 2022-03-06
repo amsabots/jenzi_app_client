@@ -33,10 +33,9 @@ const fundiActions = {
       payload: sent_requests,
     };
   },
-  delete_current_requests: function (request) {
+  delete_current_requests: function () {
     return {
       type: 'REMOVE_SENT_REQUEST',
-      payload: request,
     };
   },
 };

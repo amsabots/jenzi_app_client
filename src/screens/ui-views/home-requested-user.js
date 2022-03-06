@@ -21,20 +21,11 @@ const mapStateToProps = state => {
 
 const PendingRequestsView = memo(({onCancel, fundis}) => {
   const dispatch = useDispatch();
-
   const get_user_name = () => {
     const s = store.getState();
     const {selected_fundi} = s.fundis;
     return selected_fundi;
   };
-  useEffect(() => {
-    axios
-      .get(`${endpoints.notification_server}/notify/andrewmwebi`)
-      .then(res => {
-        dispatch(fundiActions.get_all_Sent_requests(res.data));
-      })
-      .catch(err => console.log(err));
-  }, []);
 
   const {sent_requests} = fundis;
   return sent_requests.length ? (

@@ -5,7 +5,7 @@ import {getCurrentLocation} from '../config/current-location';
 
 //bottom sheet
 import BottomSheet from '@gorhom/bottom-sheet';
-import {Banner} from 'react-native-paper';
+import {Banner, Snackbar} from 'react-native-paper';
 
 // redux store
 import {useDispatch, connect} from 'react-redux';
@@ -37,12 +37,12 @@ const mapStateToProps = state => {
 
 const Home = ({navigation, fundis, user_data, ui_settings}) => {
   const {project_banner} = ui_settings;
-
   //component state
   const [longitude, setLongitude] = useState();
   const [latitude, setLatitude] = useState();
   const [bannerVisible, setBannerVisible] = useState(false);
   const [project_banner_visible, setProjectBannerVisibility] = useState(false);
+  const [snackbar, setSnackBar] = useState(false);
 
   //const refrproject_banneresh
   const [find, setFinder] = useState(0);
@@ -102,6 +102,12 @@ const Home = ({navigation, fundis, user_data, ui_settings}) => {
   useEffect(() => {
     location();
   }, [find]);
+
+  useEffect(() => {
+    const {snack_bar_info} = ui_settings;
+    if (snack_bar_info) setSnackBar(true);
+    else setSnackBar(false);
+  }, [ui_settings]);
 
   //run on the first screen render
   useEffect(() => {
@@ -189,6 +195,20 @@ const Home = ({navigation, fundis, user_data, ui_settings}) => {
           />
         </ScrollView>
       </BottomSheet>
+      {/* =============== Views that do not relatively align inside the parent container */}
+      <Snackbar
+        visible={snackbar}
+        onDismiss={() => {
+          dispatch(UISettingsActions.snack_bar_info(''));
+        }}
+        action={{
+          label: 'Okay',
+          onPress: () => {
+            // Do something
+          },
+        }}>
+        {ui_settings.snack_bar_info}
+      </Snackbar>
     </View>
   );
 };

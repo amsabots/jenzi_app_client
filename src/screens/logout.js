@@ -19,7 +19,7 @@ import Toast from 'react-native-toast-message';
 import {LoadingModal} from '../components';
 import axios from 'axios';
 import asyncStorage from '@react-native-async-storage/async-storage';
-import {offline_data} from '../constants';
+import {offline_data, screens} from '../constants';
 
 const mapStateToProps = state => {
   const {user_data} = state;
@@ -63,6 +63,15 @@ const Logout = ({navigation, user_data}) => {
     setShowConfirmation(false);
   };
 
+  async function deactivate_session() {
+    dispatch(user_data_actions.delete_user());
+    await asyncStorage.removeItem(offline_data.user);
+    navigation.reset({
+      index: 0,
+      routes: [{name: screens.stack_auth}],
+    });
+  }
+
   const handleOnAccept = () => {
     setShowConfirmation(false);
     setModalShow(true);
@@ -73,15 +82,19 @@ const Logout = ({navigation, user_data}) => {
         .put(`${endpoints.client_service}/clients/${user_data.user.id}`, l)
         .then(async res => {
           ToastAndroid.show('Logged out', ToastAndroid.LONG);
-          dispatch(user_data_actions.delete_user());
-          await asyncStorage.removeItem(offline_data.user);
+          await deactivate_session();
         })
-        .catch(e => {
+        .catch(async e => {
+          deactivate_session();
           errorMessage(e);
         })
         .finally(() => setModalShow(false));
     } else if (type === 'delete') {
-      Toast.show({type: 'error', text2: 'Deleted account successfully'});
+      Toast.show({
+        type: 'error',
+        text2:
+          'Deleted account successfully, Internally this feature is disabled',
+      });
     }
   };
 

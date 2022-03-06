@@ -38,6 +38,12 @@ const UISettingsActions = {
       type: 'HIDE_PROJECT_BANNER',
     };
   },
+  snack_bar_info: info_message => {
+    return {
+      type: 'SNACKBAR_INFO',
+      payload: info_message,
+    };
+  },
 };
 
 export {UISettingsActions};

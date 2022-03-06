@@ -154,6 +154,16 @@ const PageContent = ({fundis: f, bottomSheetTop, user_data}) => {
     }
   };
 
+  const filterOnCategoryChange = () => {
+    if (selectedType.title === 'All') return setAvailableFundis(f.fundis);
+    const filtered_fundis = [];
+    availableFundis.forEach(el => {
+      const tags = el.tags.map(el => el.tagId);
+      if (tags.includes(selectedType.id)) filtered_fundis.push(el);
+    });
+    setAvailableFundis(filtered_fundis);
+  };
+
   useEffect(() => {
     fecthNearbyFundis();
     return () => {
@@ -162,15 +172,7 @@ const PageContent = ({fundis: f, bottomSheetTop, user_data}) => {
   }, [latitude, longitude]);
 
   useEffect(() => {
-    setAvailableFundis(f.fundis);
-    if (selectedType.title === 'All') availableFundis;
-    else {
-      availableFundis.forEach(element => {
-        const tags = element.tags.map(el => el.tagId);
-        if (tags.includes(selectedType.id))
-          setAvailableFundis(i => i.push(element));
-      });
-    }
+    filterOnCategoryChange();
   }, [selectedType]);
 
   return (
@@ -196,7 +198,7 @@ const PageContent = ({fundis: f, bottomSheetTop, user_data}) => {
 
       {/* Available users */}
       <Text style={{...FONTS.body_medium, color: COLORS.secondary}}>
-        Available {selectedType.name == 'All' ? 'providers' : selectedType.name}
+        Available providers
       </Text>
       {availableFundis.length ? (
         <FlatList

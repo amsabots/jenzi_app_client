@@ -13,6 +13,8 @@ const screens = {
   payments: 'Payments',
   logout: 'Logout',
   main_activity: 'MainActivity',
+  rate_fundi: 'Rate Fundi',
+  project_info: 'Project_info',
 };
 
 export {screens};
