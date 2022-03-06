@@ -25,6 +25,7 @@ import {pusher_filters} from '../constants';
 //toast
 import Toast from 'react-native-toast-message';
 import axios from 'axios';
+axios.defaults.timeout = 10000;
 import {endpoints} from '../endpoints';
 const mapStateToProps = state => {
   const {fundis, user_data} = state;

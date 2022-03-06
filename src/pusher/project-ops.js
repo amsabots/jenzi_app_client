@@ -39,19 +39,18 @@ const consumeUserInfo = c => {
               },
               {timeout: 30000},
             )
-            .then(f => {
+            .then(async f => {
               store.dispatch(task_actions.add_job_entry([f.data]));
               store.dispatch(UISettingsActions.show_project_banner(f.data));
               store.dispatch(fundiActions.delete_current_requests());
+              await axios.post(
+                `${endpoints.realtime_base_url}/chats/chat-room`,
+                {partyA: sourceAddress, partyB: destinationAddress},
+              );
               store.dispatch(
                 UISettingsActions.snack_bar_info(
-                  'A new project has been started to view details, Go to Menu ad select Projects',
+                  'A new project has been started to view details, Go to Menu ad select Projects. A chat connection between you and the fundi has been activated',
                 ),
-              );
-              return ToastAndroid.showWithGravity(
-                'Connection between you and the fundi has been set - You can freely chat on our messenger platform and track the project independently',
-                ToastAndroid.LONG,
-                ToastAndroid.CENTER,
               );
             });
         })

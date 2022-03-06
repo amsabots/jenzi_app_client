@@ -3,6 +3,7 @@ export const endpoints = {
   notification_server: 'http://159.223.37.196:27500/realtime-server',
   client_service: `http://159.223.37.196:27900/client/api`,
   fundi_service: `http://159.223.37.196:27800/fundi/api`,
+  realtime_base_url: `http://159.223.37.196:27500`,
 };
 
 export const errorMessage = err => {
