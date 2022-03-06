@@ -109,10 +109,12 @@ const Home = ({navigation, fundis, user_data, ui_settings}) => {
     else setSnackBar(false);
   }, [ui_settings]);
 
+  useCallback(() => {}, []);
+
   //run on the first screen render
   useEffect(() => {
-    consume_from_pusher(user_data.user.clientId);
     BackHandler.addEventListener('hardwareBackPress', backButtonHandler);
+    consume_from_pusher(user_data.user.clientId);
   }, []);
 
   useFocusEffect(

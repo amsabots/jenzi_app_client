@@ -33,6 +33,7 @@ import axios from 'axios';
 import {endpoints, errorMessage} from '../endpoints';
 import {task_actions} from '../store-actions/task-actions';
 import {ProjectOptions, TaskUpdate} from './ui-views';
+import {screens} from '../constants';
 
 //assigned fundis
 const FundiItem = ({project}) => {
@@ -111,12 +112,7 @@ const ProjectItem = ({project, onSelected, longPress}) => {
   };
 
   return (
-    <TouchableOpacity
-      activeOpacity={0.9}
-      onPress={() =>
-        ToastAndroid.show('Long press for options', ToastAndroid.SHORT)
-      }
-      onLongPress={() => longPress(project)}>
+    <TouchableOpacity activeOpacity={0.9} onPress={() => longPress(project)}>
       <Card style={styles._content_card}>
         <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
           <Caption style={{...FONTS.caption, marginVertical: SIZES.base}}>
@@ -165,9 +161,8 @@ const Projects = ({navigation, tasks, user_data}) => {
   const btm_sheet = useRef(null);
 
   const handleLongPress = p => {
-    setOptions(true);
-    setSelectedOption(p);
     dispatch(task_actions.set_selected_job(p));
+    navigation.navigate(screens.project_info, {project: p});
   };
 
   //render project item

@@ -8,6 +8,7 @@ import ChatScreen from './chats';
 import payments from './payments';
 import Logout from './logout';
 import MainActivity from './main-activity';
+import ProjectInfo from './project-info';
 
 export {
   HomeView,
@@ -19,5 +20,6 @@ export {
   ChatScreen,
   payments,
   Logout,
+  ProjectInfo,
   MainActivity,
 };
