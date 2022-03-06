@@ -1,28 +1,25 @@
-import React from 'react';
-import {store} from '../../App';
-import {fundiActions} from '../store-actions';
-import Toast from 'react-native-toast-message';
-import {ToastAndroid} from 'react-native';
-import {pusher_filters} from '../constants';
+import database from '@react-native-firebase/database';
 import axios from 'axios';
-import {endpoints} from '../endpoints';
+import {store} from '../../App';
+import {fundiActions, task_actions, UISettingsActions} from '../store-actions';
 
-//pusher
-import {connectToChannel} from '.';
-
-const consumerIncomingChats = c => {
-  //const dispatch = useDispatch()
-
-  const binder = connectToChannel(c);
-  binder.bind('pusher:subscription_succeeded', () => {
-    console.log(
-      'Channel has been established between client and pusher servers',
-    );
-    // USER REQUEST TIMEDOUT
-    binder.bind(pusher_filters.new_message, data => {
-      console.log(data);
+const subscribe_chat_rooms = user => {
+  database()
+    .ref(`/chatrooms/${user}`)
+    .once('value')
+    .then(el => {
+      for (const [key, value] of Object.entries(el.toJSON())) {
+        const chat_room = key;
+        const fundiId = value.partyB;
+        // get last message foreach chatroom
+        database()
+          .ref(`/chats/${chat_room}`)
+          .limitToFirst(1)
+          .on(`child_added`, snapshot => {
+            console.log(snapshot);
+          });
+      }
     });
-  });
 };
 
-export {consumerIncomingChats};
+export {subscribe_chat_rooms};

@@ -9,6 +9,7 @@ import payments from './payments';
 import Logout from './logout';
 import MainActivity from './main-activity';
 import ProjectInfo from './project-info';
+import RateClient from './rate-client';
 
 export {
   HomeView,
@@ -22,4 +23,5 @@ export {
   Logout,
   ProjectInfo,
   MainActivity,
+  RateClient,
 };

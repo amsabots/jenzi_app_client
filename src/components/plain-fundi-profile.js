@@ -13,8 +13,9 @@ import {endpoints} from '../endpoints';
 import {CircularImage, LoaderSpinner, LoadingNothing} from './';
 import {Rating} from 'react-native-ratings';
 import {VERTICAL} from 'react-native/Libraries/Components/ScrollView/ScrollViewContext';
+import {screens} from '../constants';
 
-const PlainFundiProfile = ({fundi, fundiId, onFundiFinished}) => {
+const PlainFundiProfile = ({fundi, fundiId, onFundiFinished, navigation}) => {
   const [data, setData] = useState(null);
 
   const load_data = () => {
@@ -85,8 +86,9 @@ const PlainFundiProfile = ({fundi, fundiId, onFundiFinished}) => {
       <Chip
         style={styles._chip_review}
         textStyle={{color: COLORS.white}}
-        onPress={() => ToastAndroid.show('Coming soon...', ToastAndroid.SHORT)}>
-        Reviews
+        onPress={() => ToastAndroid.show('Coming soon...', ToastAndroid.SHORT)}
+        onPress={() => navigation.navigate(screens.rate_fundi, {fundi: data})}>
+        Rate {'&'} see reviews
       </Chip>
     </View>
   );

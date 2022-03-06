@@ -18,12 +18,9 @@ import {useDispatch, connect} from 'react-redux';
 import {fundiActions} from '../../store-actions';
 
 ///// constants
-import {delay} from '../../constants';
 import axios from 'axios';
+axios.defaults.timeout = 10000;
 import {endpoints, errorMessage} from '../../endpoints';
-
-//Toast
-import Toast from 'react-native-toast-message';
 
 const mapsStateToProps = state => {
   const {fundis, user_data} = state;
@@ -78,7 +75,7 @@ const Providers = ({details, itemClick}) => {
   );
 };
 
-const PageContent = ({fundis: f, bottomSheetTop, user_data}) => {
+const PageContent = ({fundis: f, bottomSheetTop, user_data, init_refresh}) => {
   const [load, setLoading] = useState(false);
   const {
     coordinates: {latitude, longitude},
@@ -133,7 +130,6 @@ const PageContent = ({fundis: f, bottomSheetTop, user_data}) => {
         );
         const users = axios.get(
           `${endpoints.fundi_service}/accounts/find-nearby?longitude=${longitude}&latitude=${latitude}&scanRadius=${scanRadius}`,
-          {timeout: 15000},
         );
         const req = await Promise.all([categories, users]);
         dispatch(fundiActions.add_fundi(req[1].data));
@@ -146,7 +142,6 @@ const PageContent = ({fundis: f, bottomSheetTop, user_data}) => {
       } catch (error) {
         console.log(error);
         dispatch(fundiActions.add_fundi([]));
-
         errorMessage(error);
       } finally {
         setLoading(false);
@@ -169,7 +164,7 @@ const PageContent = ({fundis: f, bottomSheetTop, user_data}) => {
     return () => {
       setLoading(false);
     };
-  }, [latitude, longitude]);
+  }, [init_refresh]);
 
   useEffect(() => {
     filterOnCategoryChange();

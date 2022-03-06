@@ -3,7 +3,6 @@ import React from 'react';
 import {store} from '../../App';
 import {fundiActions, task_actions, UISettingsActions} from '../store-actions';
 import Toast from 'react-native-toast-message';
-import {ToastAndroid} from 'react-native';
 import {pusher_filters} from '../constants';
 import axios from 'axios';
 import {endpoints} from '../endpoints';

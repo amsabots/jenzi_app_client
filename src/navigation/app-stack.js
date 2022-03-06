@@ -10,6 +10,7 @@ import {
   payments,
   Logout,
   ProjectInfo,
+  RateClient,
 } from '../screens';
 import {screens} from '../constants/screens';
 //navigation components
@@ -97,6 +98,7 @@ const AppDrawerNavigator = () => {
       <Stack.Screen name={screens.profile} component={Profile} />
       <Stack.Screen name={screens.logout} component={Logout} />
       <Stack.Screen name={screens.project_info} component={ProjectInfo} />
+      <Stack.Screen name={screens.rate_fundi} component={RateClient} />
     </Stack.Navigator>
   );
 };

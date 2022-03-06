@@ -1,5 +1,4 @@
 import {consumeUserInfo} from './project-ops';
-import {consumerIncomingChats} from './chats-puhser';
 import Pusher from 'pusher-js/react-native';
 import {app_config} from '../config';
 
@@ -12,6 +11,5 @@ export const connectToChannel = c => {
 };
 
 export const consume_from_pusher = user_id => {
-  consumeUserInfo(user_id);
   consumeUserInfo(user_id);
 };

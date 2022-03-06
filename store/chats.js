@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
 const initialState = {
-  chats: [],
+  conversation_chats: [],
   selected_chat: {},
   chat_rooms: [],
 };

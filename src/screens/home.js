@@ -29,6 +29,7 @@ import {ScrollView} from 'react-native-gesture-handler';
 // subscribtions
 import {connectToChannel, consume_from_pusher} from '../pusher';
 import {screens} from '../constants';
+import {subscribe_chat_rooms} from '../pusher/chats-puhser';
 
 const mapStateToProps = state => {
   const {fundis, user_data, ui_settings} = state;
@@ -43,6 +44,7 @@ const Home = ({navigation, fundis, user_data, ui_settings}) => {
   const [bannerVisible, setBannerVisible] = useState(false);
   const [project_banner_visible, setProjectBannerVisibility] = useState(false);
   const [snackbar, setSnackBar] = useState(false);
+  const [enforce_fetch, setEnforceFetch] = useState(0);
 
   //const refrproject_banneresh
   const [find, setFinder] = useState(0);
@@ -114,7 +116,7 @@ const Home = ({navigation, fundis, user_data, ui_settings}) => {
   //run on the first screen render
   useEffect(() => {
     BackHandler.addEventListener('hardwareBackPress', backButtonHandler);
-    consume_from_pusher(user_data.user.clientId);
+    subscribe_chat_rooms(user_data.user.clientId);
   }, []);
 
   useFocusEffect(
