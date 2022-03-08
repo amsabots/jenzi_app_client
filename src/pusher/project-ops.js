@@ -37,9 +37,12 @@ const consumeUserInfo = c => {
           },
           {timeout: 10000},
         );
+        // update ui and nested states
         store.dispatch(task_actions.add_job_entry([f.data]));
         store.dispatch(UISettingsActions.show_project_banner(f.data));
         store.dispatch(fundiActions.delete_current_requests());
+        store.dispatch(UISettingsActions.refresh_component());
+        //try to create a new chat room if it does not exist
         await axios.post(`${endpoints.realtime_base_url}/chats/chat-room`, {
           partyA: sourceAddress,
           partyB: destinationAddress,

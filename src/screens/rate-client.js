@@ -57,7 +57,7 @@ const RateClient = ({navigation, user_data, route}) => {
   const [rate, setRate] = useState(0);
   const [review, setReview] = useState('');
   const [load, setLoading] = useState(false);
-  const [reviews, setReviews] = useState([1]);
+  const [reviews, setReviews] = useState([]);
   const [ui_refresher, setUIRefresher] = useState(Math.random());
   const [snackVisible, setSnackVisible] = useState(false);
   const [selected, setSelected] = useState(null);
