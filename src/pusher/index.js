@@ -1,15 +1,4 @@
-import {consumeUserInfo} from './project-ops';
-import Pusher from 'pusher-js/react-native';
-import {app_config} from '../config';
+import {subscribe_job_states, jobUtils} from './fb-projects';
+import {subscribe_to_chatrooms} from './chats';
 
-const {PUSHER_CLUSTER, PUSHER_KEY} = app_config.pusher_config;
-
-export const connectToChannel = c => {
-  const pusher = new Pusher(PUSHER_KEY, {cluster: PUSHER_CLUSTER});
-  const channel = pusher.subscribe(c);
-  return channel;
-};
-
-export const consume_from_pusher = user_id => {
-  consumeUserInfo(user_id);
-};
+export {subscribe_job_states, jobUtils, subscribe_to_chatrooms};

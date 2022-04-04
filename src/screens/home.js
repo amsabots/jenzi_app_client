@@ -30,7 +30,7 @@ import {ScrollView} from 'react-native-gesture-handler';
 // subscribtions
 import {connectToChannel, consume_from_pusher} from '../pusher';
 import {screens} from '../constants';
-import {subscribe_chat_rooms} from '../pusher/chats-puhser';
+import {subscribe_chat_rooms} from '../pusher/chats-events';
 
 const mapStateToProps = state => {
   const {fundis, user_data, ui_settings} = state;

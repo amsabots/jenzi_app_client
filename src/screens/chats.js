@@ -17,6 +17,7 @@ import {screens} from '../constants';
 import moment from 'moment';
 import axios from 'axios';
 import {endpoints} from '../endpoints';
+import {chat_actions} from '../store-actions';
 
 const mapStateToProps = state => {
   const {user_data, chats} = state;
@@ -59,39 +60,43 @@ export const ChatItemFooter = ({time, status, belongs_to_user}) => {
   );
 };
 
-const ChatItem = ({item, onItemClick, user}) => {
-  const {connection, lastMessage} = item;
-  const [partyB_name, setPartyBName] = useState('Identifying....');
-  const is_belong_to_logged_user = () => {
-    if (user.id === lastMessage.sourceId) return true;
-    return false;
-  };
+const ChatItem = ({onItemClick, user, chat_room_id, current_user}) => {
+  const [lastmessage, setLastMessage] = useState({chatId: '', data: ''});
   useEffect(() => {
-    axios
-      .get(`${endpoints.client_service}/clients/${connection.partyB}`)
-      .then(res => {
-        setPartyBName(res.data.name);
-      })
-      .catch(err => {
-        console.log(err);
-        setPartyBName('Name not found');
+    firebase_db
+      .ref(`/chats/${chat_room_id}`)
+      .limitToLast(1)
+      .on(`value`, s => {
+        if (s.exists()) {
+          const chat_id = Object.keys(s.toJSON())[0];
+          const data = s.toJSON()[chat_id];
+          setLastMessage({chatId: chat_id, data});
+        }
       });
+    return () => {
+      firebase_db.ref(`/chats/${chat_room_id}`).off('value');
+    };
   }, []);
+
   return (
     <TouchableOpacity
       style={styles._chat_item_container}
-      onPress={() => onItemClick(item)}
+      onPress={() => onItemClick(user)}
       activeOpacity={0.9}>
       <View>
         <CircularImage size={SIZES.size_48} />
       </View>
       <View style={styles._chat_item_text_area}>
-        <Text style={{...FONTS.body_bold}}>{partyB_name}</Text>
-        <Text>{lastMessage.message}</Text>
+        <Text style={{...FONTS.body_bold}}>{user?.name || 'Unknown user'}</Text>
+        <Text>
+          {Object.values(lastmessage).filter(Boolean).length
+            ? lastmessage.data.message
+            : 'Be the first one to say Hi'}
+        </Text>
         <ChatItemFooter
-          time={lastMessage.createdAt}
-          status={lastMessage.delivered}
-          belongs_to_user={is_belong_to_logged_user()}
+          time={lastmessage.createdAt}
+          status={lastmessage.delivered}
+          belongs_to_user={current_user.accountId === lastmessage.source}
         />
         <Divider style={styles._divider} />
       </View>
@@ -106,9 +111,7 @@ const ChatList = ({user_data, navigation, chats}) => {
   const {chat_rooms} = chats;
   //event dispatcher hook
   const dispatch = useDispatch();
-
   //testing area
-
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -141,11 +144,13 @@ const ChatList = ({user_data, navigation, chats}) => {
             renderItem={({item}) => {
               return (
                 <ChatItem
-                  onItemClick={i =>
-                    navigation.navigate(screens.conversation, {i})
-                  }
-                  item={item}
-                  user={user}
+                  onItemClick={i => {
+                    dispatch(chat_actions.active_chat(i));
+                    navigation.navigate(screens.conversation);
+                  }}
+                  user={item.client}
+                  chat_room_id={item.chatroom}
+                  current_user={user}
                 />
               );
             }}

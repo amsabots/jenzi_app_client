@@ -1,88 +1,69 @@
-import React from 'react';
-
-import {store} from '../../App';
-import {fundiActions, task_actions, UISettingsActions} from '../store-actions';
-import Toast from 'react-native-toast-message';
-import {pusher_filters} from '../constants';
+import {endpoints, firebase_db} from '../endpoints';
+import {popPushNotification} from '../notifications';
 import axios from 'axios';
-import {endpoints} from '../endpoints';
+import {store} from '../../App';
+import {clientActions} from '../store-actions';
 
-//pusher
-import {connectToChannel} from '.';
+const logger = console.log.bind(console, `[file: fb-projects.js]`);
 
-const consumeUserInfo = c => {
-  //const dispatch = useDispatch();
+//request cancelled or it came in and expired
+// return popPushNotification(
+//   `Light note`,
+//   `A request came in while your device was offline or disconnected. Kindly keep you device on the line for alerts`,
+// );
 
-  const binder = connectToChannel(c);
-  binder.bind('pusher:subscription_succeeded', () => {
-    console.log(
-      'Channel has been established between client and pusher servers',
-    );
-    //  USER ACCEPTED
-    binder.bind(pusher_filters.user_accepted, async data => {
-      const {payload, sourceAddress, destinationAddress, requestId} = data;
-      console.log(requestId);
-      try {
-        await axios.delete(
-          `${endpoints.notification_server}/notify/${requestId}`,
+export const subscribe_job_states = user => {
+  logger(`[message: The system has been bound to firebase job states channel]`);
+  firebase_db
+    .ref(`/jobalerts/${user.accountId}`)
+    .on('value', async snapshot => {
+      if (snapshot.exists()) {
+        const {event, requestId, createdAt} = snapshot.toJSON();
+        const res = await axios.get(
+          `${endpoints.notification_base}/jobs/requests/${requestId}`,
         );
-        const f = await axios.post(
-          `${endpoints.client_service}/jobs`,
-          {
-            title: payload.title,
-            fundiId: sourceAddress,
-            client: {
-              id: store.getState().user_data.user.id,
-            },
-          },
-          {timeout: 10000},
+        const elapsed_seconds = Math.floor(
+          (new Date().getTime() - createdAt) / 1000,
         );
-        // update ui and nested states
-        store.dispatch(task_actions.add_job_entry([f.data]));
-        store.dispatch(UISettingsActions.show_project_banner(f.data));
-        store.dispatch(fundiActions.delete_current_requests());
-        store.dispatch(UISettingsActions.refresh_component());
-        //try to create a new chat room if it does not exist
-        await axios.post(`${endpoints.realtime_base_url}/chats/chat-room`, {
-          partyA: sourceAddress,
-          partyB: destinationAddress,
-        });
-        store.dispatch(
-          UISettingsActions.snack_bar_info(
-            'A new project has been started to view details, Go to Menu ad select Projects. A chat connection between you and the fundi has been activated',
-          ),
-        );
-      } catch (error) {
-        store.dispatch(
-          UISettingsActions.snack_bar_info(
-            'We cannot initiate a direct link between you and the fundi. Please try again later',
-          ),
-        );
+        console.log(elapsed_seconds);
+        if (elapsed_seconds > 120) return;
+        switch (event) {
+          case 'JOBREQUEST':
+            if (res.data) {
+              const {payload, user} = res.data;
+              popPushNotification(
+                'New job request',
+                `${user.name} is requesting your services for ${payload.title}. Open the app to accept or decline`,
+              );
+              store.dispatch(
+                clientActions.create_new_rqeuest(requestId, payload),
+              );
+              store.dispatch(clientActions.active_client(user));
+            }
+            break;
+          case 'PROJECTTIMEOUT':
+            await firebase_db.ref(`/jobalerts/${user.accountId}`).remove();
+            store.dispatch(clientActions.expire_request());
+            popPushNotification(
+              `Delay in responding`,
+              `A request sent earlier has expired before you responded. Kindly make sure you respond to any jenzi alert within a time span of less than a minute`,
+            );
+          default:
+            return null;
+        }
       }
     });
-    // USER REQUEST TIMEDOUT
-    binder.bind(pusher_filters.request_user_timedout, data => {
-      store.dispatch(fundiActions.delete_current_requests());
-      store.dispatch(
-        UISettingsActions.snack_bar_info(
-          'The fundi you requested failed to respond within our delay limits. You can place a request for another one or try again later',
-        ),
-      );
-      Toast.show({
-        type: 'info',
-        text2: `Unable to receive immediate response from the user. We try later, you can cancel and request for another fundi`,
-      });
-    });
-    // USER REJECTED THE REQUEST
-    binder.bind(pusher_filters.user_rejected, data => {
-      store.dispatch(fundiActions.delete_current_requests());
-      store.dispatch(
-        UISettingsActions.snack_bar_info(
-          'Ooops! We regret informing you that the ufundi you have requested declined your request. We will follow up on the actual reason and revert if necessary. SOrry for the inconveniences caused',
-        ),
-      );
-    });
-  });
 };
 
-export {consumeUserInfo};
+export const jobUtils = {
+  delete_entry: async function (accountId) {
+    await firebase_db.ref(`/jobalerts/${accountId}`).remove();
+  },
+  update_client: async function client_alerts(alert, client_id, job_id) {
+    await firebase_db.ref(`/jobalerts/${client_id}`).update({
+      createdAt: new Date().getTime(),
+      event: alert,
+      requestId: job_id,
+    });
+  },
+};

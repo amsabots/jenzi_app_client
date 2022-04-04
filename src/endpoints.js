@@ -1,11 +1,15 @@
 import Toast from 'react-native-toast-message';
+import {firebase} from '@react-native-firebase/database';
+
 export const endpoints = {
   notification_server: 'http://159.223.37.196:27500/realtime-server',
   client_service: `http://159.223.37.196:27900/client/api`,
   fundi_service: `http://159.223.37.196:27800/fundi/api`,
   realtime_base_url: `http://159.223.37.196:27500`,
+  firebase_database: `https://jenzi-1234d-default-rtdb.asia-southeast1.firebasedatabase.app/`,
 };
 
+export const firebase_db = firebase.app().database(endpoints.firebase_database);
 export const errorMessage = err => {
   if (err.response) {
     const {data, status} = err.response;
