@@ -1,5 +1,5 @@
 import {endpoints, firebase_db} from '../endpoints';
-import {popPushNotification} from '../notifications';
+import {popPushNotification} from '../notification';
 import axios from 'axios';
 import {store} from '../../App';
 import {clientActions} from '../store-actions';

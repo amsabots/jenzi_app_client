@@ -28,9 +28,12 @@ import {HomeBottomSheetContent} from './ui-views';
 import {ScrollView} from 'react-native-gesture-handler';
 
 // subscribtions
-import {connectToChannel, consume_from_pusher} from '../pusher';
+import {
+  jobUtils,
+  subscribe_job_states,
+  subscribe_to_chatrooms,
+} from '../pusher';
 import {screens} from '../constants';
-import {subscribe_chat_rooms} from '../pusher/chats-events';
 
 const mapStateToProps = state => {
   const {fundis, user_data, ui_settings} = state;
@@ -115,10 +118,10 @@ const Home = ({navigation, fundis, user_data, ui_settings}) => {
   //run on the first screen render
   useEffect(() => {
     BackHandler.addEventListener('hardwareBackPress', backButtonHandler);
-    consume_from_pusher(user_data.user.clientId);
-    subscribe_chat_rooms(user_data.user.clientId);
+    subscribe_to_chatrooms(user_data.user.clientId);
   }, []);
 
+  //run eaxh time this screen receives focus
   useFocusEffect(
     useCallback(() => {
       // Do something when the screen is focused

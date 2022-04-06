@@ -7,6 +7,9 @@ axios.defaults.baseURL = endpoints.fundi_service;
 const logger = console.log.bind(console, `[file: chats.js]`);
 
 export const subscribe_to_chatrooms = current_user => {
+  logger(
+    `------------------------ subscribed to system chat room ----------------------`,
+  );
   firebase_db
     .ref(`/chatrooms/${current_user}`)
     .once('value')

@@ -10,6 +10,7 @@ import Logout from './logout';
 import MainActivity from './main-activity';
 import ProjectInfo from './project-info';
 import RateClient from './rate-client';
+import Conversation from './conversation';
 
 export {
   HomeView,
@@ -24,4 +25,5 @@ export {
   ProjectInfo,
   MainActivity,
   RateClient,
+  Conversation,
 };

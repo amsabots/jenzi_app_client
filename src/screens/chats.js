@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 
 //ui components
-import {CircularImage, LoadingNothing, MapMarker} from '../components';
+import {CircularImage, LoadingNothing} from '../components';
 
 //Icons
 import EvilCons from 'react-native-vector-icons/EvilIcons';
@@ -16,7 +16,7 @@ import {FlatList, TouchableOpacity} from 'react-native-gesture-handler';
 import {screens} from '../constants';
 import moment from 'moment';
 import axios from 'axios';
-import {endpoints} from '../endpoints';
+import {endpoints, firebase_db} from '../endpoints';
 import {chat_actions} from '../store-actions';
 
 const mapStateToProps = state => {

@@ -91,6 +91,7 @@ const ConversationScreen = ({navigation, chats, user_data}) => {
   const [chat_room, set_chatroom] = useState('');
   const [message, setMessage] = useState('');
   const [isSendable, setSendable] = useState(false);
+  console.log(selected_chat);
 
   //hooks
   const dispatch = useDispatch();
