@@ -15,6 +15,7 @@ const screens = {
   main_activity: 'MainActivity',
   rate_fundi: 'Rate Fundi',
   project_info: 'Project_info',
+  project_creator_wizard: 'project_creator_wizard',
 };
 
 export {screens};

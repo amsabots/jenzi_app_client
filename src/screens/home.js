@@ -16,7 +16,7 @@ import {
 } from '../store-actions';
 
 //components
-import {MapView} from '../components';
+import {MapView, HomeFab} from '../components';
 import {COLORS, SIZES} from '../constants/themes';
 
 //icons
@@ -49,6 +49,7 @@ const Home = ({navigation, fundis, user_data, ui_settings}) => {
   const [project_banner_visible, setProjectBannerVisibility] = useState(false);
   const [snackbar, setSnackBar] = useState(false);
   const [enforce_fetch, setEnforceFetch] = useState(0);
+  const [is_ui_resumed, setUiResumed] = useState(false);
 
   //const refrproject_banneresh
   const [find, setFinder] = useState(0);
@@ -129,14 +130,20 @@ const Home = ({navigation, fundis, user_data, ui_settings}) => {
       Object.keys(project_banner).length
         ? setProjectBannerVisibility(true)
         : setProjectBannerVisibility(false);
+      // set ui resumed to true - means the user is at this current component
+      setUiResumed(true);
       return () => {
         BackHandler.removeEventListener('hardwareBackPress', backButtonHandler);
+        setUiResumed(false);
       };
     }, []),
   );
 
   return (
     <View style={[styles.container]}>
+      {/* All components with absolute position */}
+      {is_ui_resumed && <HomeFab navigation={navigation} />}
+      {/* ========================= START OF PAGE COMPONENTS ======================== */}
       {/* Map container */}
       <View style={styles._map_container}>
         <View style={[styles._hamburger, styles._fab_container]}>

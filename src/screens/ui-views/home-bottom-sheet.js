@@ -53,7 +53,12 @@ const Providers = ({details, itemClick}) => {
           <Text style={{...FONTS.body_bold}}>{name || 'Not Available'}</Text>
         </View>
 
-        <Rating ratingCount={5} imageSize={SIZES.icon_size} startingValue={0} />
+        <Rating
+          ratingCount={5}
+          imageSize={SIZES.icon_size}
+          startingValue={0}
+          readonly
+        />
         <View
           style={{width: '100%', flexDirection: 'row', alignItems: 'center'}}>
           <OIcons

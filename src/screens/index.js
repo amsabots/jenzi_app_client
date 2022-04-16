@@ -11,6 +11,7 @@ import MainActivity from './main-activity';
 import ProjectInfo from './project-info';
 import RateClient from './rate-client';
 import Conversation from './conversation';
+import ProjectCreatorWizard from './project-creator-wizard';
 
 export {
   HomeView,
@@ -26,4 +27,5 @@ export {
   MainActivity,
   RateClient,
   Conversation,
+  ProjectCreatorWizard,
 };

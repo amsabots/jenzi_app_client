@@ -35,4 +35,19 @@ export const task_actions = {
       type: 'RESET_TASKS',
     };
   },
+  set_current_project: function (task_requirements, task_title) {
+    return {
+      type: 'SET_CURRENT_PROJECT',
+      payload: {
+        title: task_title,
+        requirements: task_requirements,
+      },
+    };
+  },
+  //UNSET_CURRENT_PROJECT
+  unset_current_project: function (current_project_obj) {
+    return {
+      type: 'UNSET_CURRENT_PROJECT',
+    };
+  },
 };

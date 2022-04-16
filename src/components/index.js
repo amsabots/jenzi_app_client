@@ -13,6 +13,7 @@ import {MenuPopUp} from './menu-popup';
 import {ImageSelector} from './image-selector';
 import {MapMarker} from './google-map-fundi-marker';
 import {PlainFundiProfile} from './plain-fundi-profile';
+import HomeFab from './home-action-fabs';
 
 export {
   PrimaryStatusBar,
@@ -30,4 +31,5 @@ export {
   ImageSelector,
   MapMarker,
   PlainFundiProfile,
+  HomeFab,
 };
