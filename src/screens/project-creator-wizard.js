@@ -13,6 +13,7 @@ import {
   TouchableOpacity,
   ScrollView,
   ToastAndroid,
+  InteractionManager,
 } from 'react-native';
 import {
   Badge,
@@ -23,13 +24,13 @@ import {
   Snackbar,
 } from 'react-native-paper';
 // ==== view components =======
-import {LoadingModal, LoadingNothing, DefaultToolBar} from '../components';
+import {LoaderSpinner, LoadingNothing, DefaultToolBar} from '../components';
 import {COLORS, FONTS, SIZES} from '../constants/themes';
 import {generate_random_hex, screens} from '../constants';
 
 const mapStateToProps = state => {
-  const {user_data, tasks} = state;
-  return {user_data, tasks};
+  const {tasks} = state;
+  return {tasks};
 };
 
 const logger = console.log.bind(console, '[file: project-creator-wizard.js] ');
@@ -74,17 +75,25 @@ const InputBox = ({
   );
 };
 
-const ProjectCreatorWizard = ({navigation, user_data, tasks}) => {
+const ProjectCreatorWizard = ({navigation, tasks}) => {
   // destructure the props from the selected store state
   const {current_project} = tasks;
+  console.log('Initializing.....');
   const [title, setTitle] = useState('');
   const [requirements, setRequirements] = useState({});
   const [snackVisible, setSnackVisible] = useState(false);
   // contains an array of objects defined as {inputId:string, value:string}
   const [requirementsInputBoxes, setRequirementInputBox] = useState([]);
+  const [is_view_ready, setViewReady] = useState(false);
 
   // component hooks
   const dispatch = useDispatch();
+
+  //interactions manager handler
+  InteractionManager.runAfterInteractions(() => {
+    setViewReady(true);
+    //logger(`View complete loading`);
+  }, []);
 
   //component functions
   const add_new_requirement_box = () => {
@@ -124,17 +133,23 @@ const ProjectCreatorWizard = ({navigation, user_data, tasks}) => {
         });
       });
     }
-  }, [tasks.current_project]);
+  }, []);
 
   // run anytime this screen receives focus - equivalent of android @onResume view lifecycle hooks
   useFocusEffect(
     useCallback(() => {
       dispatch(UISettingsActions.status_bar(false));
-      return () => {
-        setSnackVisible(false);
-      };
     }, []),
   );
+
+  //display this while the nested screens is loading
+  if (!is_view_ready)
+    return (
+      <View style={{flex: 1, ...SIZES.centerInView}}>
+        <LoaderSpinner.DoubleRing loading={true} size={100} />
+        <Text>Preparing environment, Please wait.......</Text>
+      </View>
+    );
 
   return (
     <View style={styles.container}>
@@ -255,4 +270,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
-export default connect(mapStateToProps)(ProjectCreatorWizard);
+export default connect(mapStateToProps)(React.memo(ProjectCreatorWizard));

@@ -24,7 +24,7 @@ import MIcons from 'react-native-vector-icons/MaterialIcons';
 import EvilICons from 'react-native-vector-icons/EvilIcons';
 
 //building blocks
-import {HomeBottomSheetContent} from './ui-views';
+import {HomeBottomSheetContent, CurrentProject} from './ui-views';
 import {ScrollView} from 'react-native-gesture-handler';
 
 // subscribtions
@@ -204,6 +204,7 @@ const Home = ({navigation, fundis, user_data, ui_settings}) => {
         initialSnapIndex={1}
         snapPoints={snapPoints}>
         <ScrollView>
+          <CurrentProject navigation={navigation} />
           <HomeBottomSheetContent
             init_refresh={enforce_fetch}
             bottomSheetTop={() => bottomSheetRef.current.snapTo(2)}

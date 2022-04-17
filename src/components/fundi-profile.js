@@ -27,9 +27,11 @@ import Toast from 'react-native-toast-message';
 import axios from 'axios';
 axios.defaults.timeout = 10000;
 import {endpoints} from '../endpoints';
+
+const logger = console.log.bind(console, `[file: fundi-profile.js]`);
 const mapStateToProps = state => {
-  const {fundis, user_data} = state;
-  return {fundis, user_data};
+  const {fundis, user_data, tasks} = state;
+  return {fundis, user_data, tasks};
 };
 
 const Loader = ({type = 'a', label = 'Fetching........'}) => {
@@ -45,6 +47,7 @@ const DetailsView = ({
   leadinglabel = 'No details available',
   fundis,
   user_data,
+  tasks,
 }) => {
   const dispatch = useDispatch();
   const [load, setLoad] = useState(false);

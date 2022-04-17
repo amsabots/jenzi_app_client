@@ -7,7 +7,7 @@ import {Chip, Card, Divider} from 'react-native-paper';
 import {FlatList} from 'react-native-gesture-handler';
 
 import {LoadingNothing, CircularImage, FundiDetails} from '../../components';
-import {PendingRequests} from '../ui-views';
+import {CurrentProject} from '../ui-views';
 
 //rating
 import {Rating} from 'react-native-ratings';
@@ -23,8 +23,8 @@ axios.defaults.timeout = 10000;
 import {endpoints, errorMessage} from '../../endpoints';
 
 const mapsStateToProps = state => {
-  const {fundis, user_data, ui_settings} = state;
-  return {fundis, user_data, ui_settings};
+  const {fundis, user_data, ui_settings, tasks} = state;
+  return {fundis, user_data, ui_settings, tasks};
 };
 
 const ServiceType = ({onChipClick, item}) => {
@@ -80,7 +80,13 @@ const Providers = ({details, itemClick}) => {
   );
 };
 
-const PageContent = ({fundis: f, bottomSheetTop, user_data, ui_settings}) => {
+const PageContent = ({
+  fundis: f,
+  bottomSheetTop,
+  user_data,
+  ui_settings,
+  tasks,
+}) => {
   const [load, setLoading] = useState(false);
   const {
     coordinates: {latitude, longitude},
