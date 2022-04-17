@@ -28,15 +28,7 @@ const RequestTitle = memo(({onAccept, show = false, onHide}) => {
         onDismiss={onHide}
         contentContainerStyle={styles.modal_conatiner}>
         <View>
-          <TextInput
-            placeholder="Enter project title"
-            dense={true}
-            mode="outlined"
-            outlineColor={COLORS.secondary}
-            activeOutlineColor={COLORS.secondary}
-            multiline={true}
-            onChangeText={t => setTitle(t)}
-          />
+          <Text>Please confirm your request to initiate the process</Text>
           <View
             style={{
               marginTop: SIZES.padding_16,
@@ -46,7 +38,7 @@ const RequestTitle = memo(({onAccept, show = false, onHide}) => {
             <Button onPress={onHide} color={COLORS.primary}>
               Cancel
             </Button>
-            <Button onPress={() => onAccept(title)} color={COLORS.secondary}>
+            <Button onPress={onAccept} color={COLORS.secondary}>
               Send Request
             </Button>
           </View>
@@ -61,28 +53,11 @@ const ServiceRequestView = ({sendRequest, fundis}) => {
   const {selected_fundi} = fundis;
   const [disableBtn, setDisableBtn] = useState(false);
 
-  useEffect(() => {
-    //change this to reflect the currently user id string
-    axios
-      .get(`${endpoints.notification_server}/notify/andrewmwebi`)
-      .then(res => {
-        //check if an object with similar user id is present and disable the button
-      })
-      .catch(e =>
-        Toast.show({
-          type: 'error',
-          text1: 'Failed to update the state properly, Refresh.',
-        }),
-      );
-  });
+  const handleAccept = useCallback(() => {
+    sendRequest();
+    setShowModal(false);
+  }, [showModal]);
 
-  const handleAccept = useCallback(
-    t => {
-      sendRequest(t);
-      setShowModal(false);
-    },
-    [showModal],
-  );
   return (
     <View style={{marginVertical: SIZES.padding_16}}>
       <Button
@@ -97,7 +72,7 @@ const ServiceRequestView = ({sendRequest, fundis}) => {
       <RequestTitle
         show={showModal}
         onHide={() => setShowModal(false)}
-        onAccept={d => handleAccept(d)}
+        onAccept={handleAccept}
       />
     </View>
   );

@@ -120,9 +120,13 @@ const Home = ({navigation, fundis, user_data, ui_settings}) => {
   useEffect(() => {
     BackHandler.addEventListener('hardwareBackPress', backButtonHandler);
     subscribe_to_chatrooms(user_data.user.clientId);
+    subscribe_job_states(user_data.user.clientId);
+    return () => {
+      jobUtils.unsubscribe_from_job_alerts();
+    };
   }, []);
 
-  //run eaxh time this screen receives focus
+  //run each time this screen receives focus
   useFocusEffect(
     useCallback(() => {
       // Do something when the screen is focused
@@ -226,6 +230,7 @@ const Home = ({navigation, fundis, user_data, ui_settings}) => {
       </View>
       <Snackbar
         visible={snackbar}
+        style={{backgroundColor: COLORS.secondary}}
         onDismiss={() => {
           dispatch(UISettingsActions.snack_bar_info(''));
         }}

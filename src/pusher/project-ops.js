@@ -14,45 +14,52 @@ const logger = console.log.bind(console, `[file: fb-projects.js]`);
 
 export const subscribe_job_states = user => {
   logger(`[message: The system has been bound to firebase job states channel]`);
-  firebase_db
-    .ref(`/jobalerts/${user.accountId}`)
-    .on('value', async snapshot => {
-      if (snapshot.exists()) {
-        const {event, requestId, createdAt} = snapshot.toJSON();
-        const res = await axios.get(
-          `${endpoints.notification_base}/jobs/requests/${requestId}`,
-        );
-        const elapsed_seconds = Math.floor(
-          (new Date().getTime() - createdAt) / 1000,
-        );
-        console.log(elapsed_seconds);
-        if (elapsed_seconds > 120) return;
-        switch (event) {
-          case 'JOBREQUEST':
-            if (res.data) {
-              const {payload, user} = res.data;
-              popPushNotification(
-                'New job request',
-                `${user.name} is requesting your services for ${payload.title}. Open the app to accept or decline`,
-              );
-              store.dispatch(
-                clientActions.create_new_rqeuest(requestId, payload),
-              );
-              store.dispatch(clientActions.active_client(user));
-            }
-            break;
-          case 'PROJECTTIMEOUT':
-            await firebase_db.ref(`/jobalerts/${user.accountId}`).remove();
-            store.dispatch(clientActions.expire_request());
-            popPushNotification(
-              `Delay in responding`,
-              `A request sent earlier has expired before you responded. Kindly make sure you respond to any jenzi alert within a time span of less than a minute`,
-            );
-          default:
-            return null;
-        }
-      }
-    });
+  firebase_db.ref(`/jobalerts`).on('value', async snapshot => {
+    if (snapshot.exists()) {
+      const key = Object.keys(snapshot.toJSON())[0];
+      const {
+        event,
+        requestId,
+        createdAt,
+        user: {clientId},
+      } = snapshot.toJSON()[key];
+      if (clientId !== user) return;
+      const res = await axios.get(
+        `${endpoints.realtime_base_url}/jobs/requests/${requestId}`,
+      );
+      if (!res.data) return;
+      console.log(res.data);
+      // const elapsed_seconds = Math.floor(
+      //   (new Date().getTime() - createdAt) / 1000,
+      // );
+      // console.log(elapsed_seconds);
+      // if (elapsed_seconds > 120) return;
+      // switch (event) {
+      //   case 'JOBREQUEST':
+      //     if (res.data) {
+      //       const {payload, user} = res.data;
+      //       popPushNotification(
+      //         'New job request',
+      //         `${user.name} is requesting your services for ${payload.title}. Open the app to accept or decline`,
+      //       );
+      //       store.dispatch(
+      //         clientActions.create_new_rqeuest(requestId, payload),
+      //       );
+      //       store.dispatch(clientActions.active_client(user));
+      //     }
+      //     break;
+      //   case 'PROJECTTIMEOUT':
+      //     await firebase_db.ref(`/jobalerts/${user.accountId}`).remove();
+      //     store.dispatch(clientActions.expire_request());
+      //     popPushNotification(
+      //       `Delay in responding`,
+      //       `A request sent earlier has expired before you responded. Kindly make sure you respond to any jenzi alert within a time span of less than a minute`,
+      //     );
+      //   default:
+      //     return null;
+      // }
+    }
+  });
 };
 
 export const jobUtils = {
@@ -65,5 +72,13 @@ export const jobUtils = {
       event: alert,
       requestId: job_id,
     });
+  },
+
+  unsubscribe_from_job_alerts: function () {
+    firebase_db
+      .ref(`/jobalerts/`)
+      .off('value', () =>
+        logger(`------- Unsubscribed from job updates ----------------`),
+      );
   },
 };

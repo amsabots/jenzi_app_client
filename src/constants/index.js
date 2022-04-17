@@ -18,8 +18,8 @@ const offline_data = {
 };
 
 const pusher_filters = {
-  request_user: 'request_user',
-  request_user_timedout: 'requesting_fundi_timedout',
+  request_user: 'JOBREQUEST',
+  request_user_timedout: 'PROJECTTIMEOUT',
   user_accepted: 'user_accepted',
   user_rejected: 'user_rejected',
   project_created: 'new_project',

@@ -23,9 +23,7 @@ export const subscribe_to_chatrooms = current_user => {
             const partyB = value.partyB;
             const req_fundi = await axios.get(`/accounts/${partyB}`);
             chat_room.push({chatroom, client: req_fundi.data});
-          } catch (error) {
-            logger(`[error: ${error}]`);
-          }
+          } catch (error) {}
         }
         store.dispatch(chat_actions.load_chat_rooms(chat_room));
       }

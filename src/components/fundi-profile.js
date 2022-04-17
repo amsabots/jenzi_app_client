@@ -56,28 +56,29 @@ const DetailsView = ({
   // timer to track the request validity period -
 
   const {selected_fundi: fundi} = fundis;
+  const {current_project} = tasks;
   const [modal_loader, set_modal_loader] = useState(false);
 
   //get the title provided and validate
-  const handleSendRequest = async title => {
-    if (!title)
+  const handleSendRequest = async () => {
+    if (Object.values(current_project).filter(Boolean).length < 1)
       return Toast.show({
         type: 'error',
-        text1: 'Title missing',
-        text2: 'You have not provided any valid job title',
+        text1: 'Missing project',
+        text2: 'Create project first then come back here',
       });
-    const {clientId} = user_data.user;
+    const {user} = user_data;
     const payload = {
-      payload: {title},
-      sourceAddress: clientId,
-      destinationAddress: fundi.account.accountId,
-      filterType: pusher_filters.request_user,
+      payload: current_project,
+      user: user,
+      destination: fundi.account,
+      status: pusher_filters.request_user,
     };
     set_modal_loader(true);
 
     try {
       const res = await axios.post(
-        `${endpoints.notification_server}/notify`,
+        `${endpoints.realtime_base_url}/jobs/requests`,
         payload,
         {timeout: 8000},
       );
@@ -101,21 +102,23 @@ const DetailsView = ({
   const handleCancelRequest = el => {
     ToastAndroid.showWithGravity(
       'cancelling....',
-      ToastAndroid.LONG,
+      ToastAndroid.CENTER,
       ToastAndroid.LONG,
     );
-
     try {
-      axios.delete(`${endpoints.notification_server}/notify/${el.requestId}`, {
-        timeout: 5000,
-      });
+      axios.delete(
+        `${endpoints.realtime_base_url}/jobs/requests/${el.requestId}`,
+        {
+          timeout: 5000,
+        },
+      );
     } catch (error) {
       console.log(error);
     } finally {
       dispatch(fundiActions.delete_current_requests(el));
       dispatch(
         UISettingsActions.snack_bar_info(
-          'The requested has been cancelled successfully. Sorry for the inconvenience caused',
+          'The requested has been cancelled successfully. You can always try again later',
         ),
       );
     }
@@ -204,7 +207,7 @@ const DetailsView = ({
       </View>
       {/*  */}
       {fundis.sent_requests.length < 1 && (
-        <ServiceRequest sendRequest={title => handleSendRequest(title)} />
+        <ServiceRequest sendRequest={handleSendRequest} />
       )}
       <View style={styles._border_line}></View>
       {/*  */}
