@@ -8,7 +8,6 @@ import {connect} from 'react-redux';
 
 //ui components
 import {MapMarker} from '.';
-import {DoubleRing} from './loading-animated';
 
 const mapStateToProps = state => {
   const {fundis} = state;
@@ -43,6 +42,16 @@ const Mapview = ({coordinates, onMarkerClicked, fundis}) => {
       ref={mapRef}
       style={{...StyleSheet.absoluteFillObject}}
       loadingEnabled
+      initialCamera={{
+        altitude: 15000,
+        center: {
+          latitude: -1.303208,
+          longitude: 36.7771852,
+        },
+        heading: 0,
+        pitch: 0,
+        zoom: 16,
+      }}
       rotateEnabled={false}
       toolbarEnabled={false}
       loadingBackgroundColor={COLORS.white}>

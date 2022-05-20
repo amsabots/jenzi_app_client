@@ -132,24 +132,18 @@ const PageContent = ({
   }
 
   // axios calls
-  const fecthNearbyFundis = async () => {
+  const fetchNearbyFundis = async (filter = 'none') => {
     if (latitude && longitude) {
       setLoading(true);
       try {
-        const categories = axios.get(
-          `${endpoints.client_service}/tasks-category`,
-        );
-        const users = axios.get(
-          `${endpoints.fundi_service}/accounts/find-nearby?longitude=${longitude}&latitude=${latitude}&scanRadius=${scanRadius}`,
-        );
-        const req = await Promise.all([categories, users]);
-        dispatch(fundiActions.add_fundi(req[1].data));
-        setAvailableFundis(req[1].data);
-        let cats = req[0].data.map(el => {
-          return {id: el.id, title: el.title, selected: false};
-        });
-        cats = [...[{id: null, title: 'All', selected: true}], ...cats];
-        setCategories(cats);
+        let fundi_req = `${endpoints.fundi_service}/accounts/find-nearby?longitude=${longitude}&latitude=${latitude}&scanRadius=${scanRadius}`;
+        if (filter !== 'none') {
+          fundi_req = `${endpoints.fundi_service}/accounts/find-nearby?longitude=${longitude}&latitude=${latitude}&scanRadius=${scanRadius}&filter=${filter}`;
+        }
+        const users = axios.get(fundi_req);
+        const req = await Promise.all([users]);
+        dispatch(fundiActions.add_fundi(req[0].data));
+        setAvailableFundis(req[0].data);
       } catch (error) {
         console.log(error);
         dispatch(fundiActions.add_fundi([]));
@@ -160,18 +154,23 @@ const PageContent = ({
     }
   };
 
-  const filterOnCategoryChange = () => {
-    if (selectedType.title === 'All') return setAvailableFundis(f.fundis);
-    const filtered_fundis = [];
-    availableFundis.forEach(el => {
-      const tags = el.tags.map(el => el.tagId);
-      if (tags.includes(selectedType.id)) filtered_fundis.push(el);
+  const fetch_categories = () => {
+    axios.get(`${endpoints.client_service}/tasks-category`).then(categories => {
+      let cats = categories.data.map(el => {
+        return {id: el.id, title: el.title, selected: false};
+      });
+      cats = [{id: null, title: 'All', selected: true}, ...cats];
+      setCategories(cats);
     });
-    setAvailableFundis(filtered_fundis);
+  };
+
+  const filterOnCategoryChange = () => {
+    if (selectedType.title === 'All') fetchNearbyFundis();
+    else fetchNearbyFundis(selectedType.id);
   };
 
   useEffect(() => {
-    fecthNearbyFundis();
+    fetchNearbyFundis();
     return () => {
       setLoading(false);
     };
@@ -180,6 +179,11 @@ const PageContent = ({
   useEffect(() => {
     filterOnCategoryChange();
   }, [selectedType]);
+
+  // run once
+  useEffect(() => {
+    fetch_categories();
+  }, []);
 
   return (
     <View style={styles.container}>

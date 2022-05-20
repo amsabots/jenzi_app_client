@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  Linking,
-  PermissionsAndroid,
-  ToastAndroid,
-  Platform,
-} from 'react-native';
+import {PermissionsAndroid, ToastAndroid, Platform} from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
 
 const hasLocationPermission = async () => {

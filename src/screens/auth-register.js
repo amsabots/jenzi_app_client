@@ -13,6 +13,8 @@ import {UISettingsActions, user_data_actions} from '../store-actions';
 import {LoaderSpinner, LoadingNothing} from '../components';
 import {TextInput, Button} from 'react-native-paper';
 import {endpoints, errorMessage} from '../endpoints';
+//input validations
+import {auth_validator} from '../utils';
 //axios
 import axios from 'axios';
 
@@ -45,6 +47,13 @@ const Register = ({navigation}) => {
         text1: 'Passwords do not match',
         position: 'bottom',
       });
+    const valid = auth_validator.register_schema.validate({email, password});
+    if (valid?.error)
+      return Toast.show({
+        type: 'error',
+        text1: valid.error,
+        position: 'bottom',
+      });
     setLoading(true);
     axios
       .post(`${endpoints.client_service}/clients`, {name, email, password})
@@ -69,7 +78,10 @@ const Register = ({navigation}) => {
     <ScrollView style={{backgroundColor: COLORS.white}}>
       <View style={styles.container}>
         <View>
-          <LoadingNothing label={'JENZI SMART'} textColor={COLORS.white} />
+          <LoadingNothing textColor={COLORS.white} />
+          <Text style={{...FONTS.h4, textAlign: 'center', color: COLORS.white}}>
+            Jenzi Smart
+          </Text>
         </View>
 
         <View style={styles.wrapper}>
@@ -107,7 +119,8 @@ const Register = ({navigation}) => {
                 style={{marginRight: SIZES.base}}
               />
             }
-            placeholder="phonenumber/email"
+            placeholder="Phone number"
+            keyboardType="phone-pad"
             onChangeText={txt => setEmail(txt)}
           />
           <TextInput
@@ -146,24 +159,25 @@ const Register = ({navigation}) => {
               Terms and Conditions
             </Text>
           </Text>
-          <Button
-            mode="contained"
-            loading={load}
-            onPress={handleRegistration}
-            style={{
-              backgroundColor: COLORS.secondary,
-              marginTop: SIZES.size_48,
-            }}>
-            Sign up
-          </Button>
-          <Text
-            style={{marginTop: SIZES.padding_16, textAlign: 'center'}}
-            onPress={() => navigation.navigate(screens.login)}>
-            Already have an account?{' '}
-            <Text style={{color: COLORS.blue_deep, ...FONTS.body_medium}}>
-              Login
-            </Text>
-          </Text>
+          {/* Button Area */}
+          <View style={[styles._action_area]}>
+            <Button
+              mode="contained"
+              loading={load}
+              onPress={handleRegistration}
+              style={{
+                backgroundColor: COLORS.secondary,
+              }}>
+              <Text style={{...FONTS.captionBold}}> Create Account</Text>
+            </Button>
+            <Button
+              mode="outlined"
+              onPress={() => navigation.navigate(screens.login)}
+              style={{borderColor: COLORS.blue_deep}}>
+              <Text style={{...FONTS.captionBold}}>Back to Login</Text>
+            </Button>
+          </View>
+          {/* End of action area */}
         </View>
       </View>
     </ScrollView>
@@ -186,6 +200,12 @@ const styles = StyleSheet.create({
   },
   _input_field: {
     marginBottom: SIZES.padding_32,
+  },
+  _action_area: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: SIZES.padding_32,
   },
 });
 

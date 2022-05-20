@@ -23,6 +23,7 @@ export const subscribe_job_states = user => {
         createdAt,
         user: {clientId},
       } = snapshot.toJSON()[key];
+      // return if the change is not associated with this client
       if (clientId !== user) return;
       const res = await axios.get(
         `${endpoints.realtime_base_url}/jobs/requests/${requestId}`,

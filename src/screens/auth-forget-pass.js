@@ -29,7 +29,10 @@ const RestPassword = ({navigation}) => {
     <ScrollView style={{backgroundColor: COLORS.white}}>
       <View style={styles.container}>
         <View>
-          <LoadingNothing label={'JENZI AFRICA'} textColor={COLORS.white} />
+          <LoadingNothing textColor={COLORS.white} />
+          <Text style={{...FONTS.h4, textAlign: 'center', color: COLORS.white}}>
+            Jenzi Smart
+          </Text>
         </View>
 
         <View style={styles.wrapper}>
@@ -48,6 +51,7 @@ const RestPassword = ({navigation}) => {
           </Text>
           <TextInput
             dense={true}
+            keyboardType="phone-pad"
             activeUnderlineColor={COLORS.secondary}
             style={[{backgroundColor: 'transparent'}]}
             left={

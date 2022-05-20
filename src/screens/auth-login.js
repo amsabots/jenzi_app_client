@@ -15,6 +15,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import {offline_data, screens} from '../constants';
 import {endpoints, errorMessage} from '../endpoints';
+// data validation
+import {auth_validator} from '../utils';
 
 const Login = ({navigation}) => {
   // screen state
@@ -33,7 +35,13 @@ const Login = ({navigation}) => {
   const handleLogin = () => {
     if (!email || !password)
       return ToastAndroid.show(
-        'Email and password are required',
+        'Phone number and password are required',
+        ToastAndroid.LONG,
+      );
+    const valid = auth_validator.login_schema.validate({email});
+    if (valid?.error)
+      return ToastAndroid.show(
+        'Invalid phone number format or length - check and try again',
         ToastAndroid.LONG,
       );
     setLoading(true);
@@ -59,7 +67,10 @@ const Login = ({navigation}) => {
     <ScrollView style={{backgroundColor: COLORS.white}}>
       <View style={styles.container}>
         <View>
-          <LoadingNothing label={'JENZI AFRICA'} textColor={COLORS.white} />
+          <LoadingNothing textColor={COLORS.white} />
+          <Text style={{...FONTS.h4, textAlign: 'center', color: COLORS.white}}>
+            Jenzi Smart
+          </Text>
         </View>
 
         <View style={styles.wrapper}>
@@ -82,7 +93,8 @@ const Login = ({navigation}) => {
                 style={{marginRight: SIZES.base}}
               />
             }
-            placeholder="phonenumber/email"
+            placeholder="Phone number"
+            keyboardType="phone-pad"
             value={email}
             onChangeText={txt => setEmail(txt)}
           />
@@ -112,24 +124,25 @@ const Login = ({navigation}) => {
             onPress={() => navigation.navigate(screens.reset_pass)}>
             Forgot password
           </Text>
-          <Button
-            mode="contained"
-            loading={load}
-            style={{
-              backgroundColor: COLORS.secondary,
-              marginTop: SIZES.size_48,
-            }}
-            onPress={handleLogin}>
-            Login
-          </Button>
-          <Text
-            style={{marginTop: SIZES.padding_16, textAlign: 'center'}}
-            onPress={() => navigation.navigate(screens.register)}>
-            New to Jenzi?{' '}
-            <Text style={{color: COLORS.blue_deep, ...FONTS.body_medium}}>
-              Register
-            </Text>
-          </Text>
+          {/* Button Area */}
+          <View style={[styles._action_area]}>
+            <Button
+              mode="contained"
+              loading={load}
+              onPress={handleLogin}
+              style={{
+                backgroundColor: COLORS.secondary,
+              }}>
+              <Text style={{...FONTS.captionBold}}> Login</Text>
+            </Button>
+            <Button
+              mode="outlined"
+              onPress={() => navigation.navigate(screens.register)}
+              style={{borderColor: COLORS.blue_deep}}>
+              <Text style={{...FONTS.captionBold}}>New account</Text>
+            </Button>
+          </View>
+          {/* End of action area */}
         </View>
       </View>
     </ScrollView>
@@ -152,6 +165,12 @@ const styles = StyleSheet.create({
   },
   _input_field: {
     marginBottom: SIZES.padding_32,
+  },
+  _action_area: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: SIZES.padding_32,
   },
 });
 
