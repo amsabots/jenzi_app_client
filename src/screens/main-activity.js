@@ -11,7 +11,11 @@ import {offline_data, screens} from '../constants';
 import {useNavigation} from '@react-navigation/native';
 import {LoadingNothing, LoaderSpinner} from '../components';
 import {SIZES} from '../constants/themes';
-import {UISettings} from '../../store/ui-store';
+import {
+  jobUtils,
+  subscribe_job_states,
+  subscribe_to_chatrooms as subscribe_to_chatroom,
+} from '../pusher';
 
 const mapStateToProps = state => {
   const {user_data} = state;
@@ -41,6 +45,13 @@ const MainActivity = ({user_data}) => {
       })
       .catch(err => dispatch(user_data_actions.delete_user()));
   }, []);
+
+  useEffect(() => {
+    if (Object.values(user_data.user).length > 0) {
+      subscribe_to_chatroom(user_data.user.clientId);
+      subscribe_job_states(user_data.user.clientId);
+    }
+  }, [user_data]);
 
   return (
     <View style={styles.container}>

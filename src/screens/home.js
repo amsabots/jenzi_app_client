@@ -34,6 +34,7 @@ import {
   subscribe_to_chatrooms,
 } from '../pusher';
 import {screens} from '../constants';
+import {popPushNotification} from '../notification';
 
 const mapStateToProps = state => {
   const {fundis, user_data, ui_settings} = state;
@@ -42,13 +43,13 @@ const mapStateToProps = state => {
 
 const Home = ({navigation, fundis, user_data, ui_settings}) => {
   const {project_banner} = ui_settings;
-  console.log(user_data.user);
   //component state
   const [longitude, setLongitude] = useState();
   const [latitude, setLatitude] = useState();
   const [bannerVisible, setBannerVisible] = useState(false);
   const [project_banner_visible, setProjectBannerVisibility] = useState(false);
   const [snackbar, setSnackBar] = useState(false);
+  const [enforce_fetch, setEnforceFetch] = useState(0);
   const [is_ui_resumed, setUiResumed] = useState(false);
 
   //const refrproject_banneresh
@@ -119,8 +120,6 @@ const Home = ({navigation, fundis, user_data, ui_settings}) => {
   //run on the first screen render
   useEffect(() => {
     BackHandler.addEventListener('hardwareBackPress', backButtonHandler);
-    subscribe_to_chatrooms(user_data.user.clientId);
-    subscribe_job_states(user_data.user.clientId);
     return () => {
       jobUtils.unsubscribe_from_job_alerts();
     };
