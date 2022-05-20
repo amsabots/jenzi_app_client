@@ -42,13 +42,13 @@ const mapStateToProps = state => {
 
 const Home = ({navigation, fundis, user_data, ui_settings}) => {
   const {project_banner} = ui_settings;
+  console.log(user_data.user);
   //component state
   const [longitude, setLongitude] = useState();
   const [latitude, setLatitude] = useState();
   const [bannerVisible, setBannerVisible] = useState(false);
   const [project_banner_visible, setProjectBannerVisibility] = useState(false);
   const [snackbar, setSnackBar] = useState(false);
-  const [enforce_fetch, setEnforceFetch] = useState(0);
   const [is_ui_resumed, setUiResumed] = useState(false);
 
   //const refrproject_banneresh
