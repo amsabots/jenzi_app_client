@@ -49,11 +49,10 @@ const Register = ({navigation}) => {
       });
     const valid = auth_validator.register_schema.validate({email, password});
     if (valid?.error)
-      return Toast.show({
-        type: 'error',
-        text1: valid.error,
-        position: 'bottom',
-      });
+      return ToastAndroid.show(
+        'Input validation failed -Phone number should be in valid length & password should not be less than 6 characters',
+        ToastAndroid.LONG,
+      );
     setLoading(true);
     axios
       .post(`${endpoints.client_service}/clients`, {name, email, password})
@@ -68,11 +67,13 @@ const Register = ({navigation}) => {
       })
       .catch(err => errorMessage(err))
       .finally(() => setLoading(false));
+  };
 
+  useEffect(() => {
     return () => {
       setLoading(false);
     };
-  };
+  });
 
   return (
     <ScrollView style={{backgroundColor: COLORS.white}}>

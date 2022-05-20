@@ -63,6 +63,12 @@ const Login = ({navigation}) => {
       });
   };
 
+  useEffect(() => {
+    return () => {
+      setLoading(false);
+    };
+  });
+
   return (
     <ScrollView style={{backgroundColor: COLORS.white}}>
       <View style={styles.container}>
