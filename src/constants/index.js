@@ -23,10 +23,6 @@ const pusher_filters = {
   user_accepted: 'REQUESTACCEPTED',
   user_rejected: 'REQUESTDECLINED',
   project_created: 'new_project',
-  accept_response_timedout: 'accept_response_timedout',
-  general_payload: 'general_channel',
-  new_message: 'new_message',
-  dlr_report: 'dlr_report',
 };
 
 function generate_random_hex(length = 6) {

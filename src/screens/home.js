@@ -205,7 +205,8 @@ const Home = ({navigation, fundis, user_data, ui_settings}) => {
           <CurrentProject navigation={navigation} />
           <HomeBottomSheetContent
             init_refresh={enforce_fetch}
-            bottomSheetTop={() => bottomSheetRef.current.snapTo(2)}
+            navigation={navigation}
+            bottomSheetTop={() => bottomSheetRef.current.snapTo()}
           />
         </ScrollView>
       </BottomSheet>

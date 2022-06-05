@@ -55,11 +55,42 @@ async function project_changes_handler(snapshot, userId, fundiId) {
       return await firebase_db.ref(`/jobalerts/${fundiId}`).remove();
     case 'REQUESTACCEPTED':
       if (!res.data) return;
-      const {requestId: eventId, ttl, payload, user} = res.data;
-      Vibration.vibrate();
-      helpers_notify(
-        `Project request accepted. - We have initiated a connection channel`,
-      );
+      const {
+        requestId: eventId,
+        ttl,
+        payload,
+        user,
+        destination: {accountId, name},
+      } = res.data;
+      axios
+        .post(endpoints.client_service + '/jobs', {
+          title: payload.title,
+          fundiId: accountId,
+          client: {
+            id: user.clientId,
+          },
+        })
+        .then(res => res.data)
+        .then(async data => {
+          await axios.get(
+            endpoints.fundi_service +
+              `/projects/start/${accountId}/${data.taskId}`,
+          );
+          Vibration.vibrate();
+          helpers_notify(
+            `Project request accepted. - We have initiated a connection channel`,
+          );
+        })
+        .catch(err => {
+          Vibration.vibrate();
+          popPushNotification(
+            `Request error`,
+            'The request could not be processed at this moment. Please try again later',
+          );
+        })
+        .finally(() => {
+          store.dispatch(fundiActions.delete_current_requests());
+        });
       break;
     case 'REQUESTDECLINED':
       store.dispatch(fundiActions.delete_current_requests());

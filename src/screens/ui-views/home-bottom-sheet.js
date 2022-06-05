@@ -7,7 +7,6 @@ import {Chip, Card, Divider} from 'react-native-paper';
 import {FlatList} from 'react-native-gesture-handler';
 
 import {LoadingNothing, CircularImage, FundiDetails} from '../../components';
-import {CurrentProject} from '../ui-views';
 
 //rating
 import {Rating} from 'react-native-ratings';
@@ -21,6 +20,7 @@ import {fundiActions} from '../../store-actions';
 import axios from 'axios';
 axios.defaults.timeout = 10000;
 import {endpoints, errorMessage} from '../../endpoints';
+import {screens} from '../../constants';
 
 const mapsStateToProps = state => {
   const {fundis, user_data, ui_settings, tasks} = state;
@@ -80,13 +80,7 @@ const Providers = ({details, itemClick}) => {
   );
 };
 
-const PageContent = ({
-  fundis: f,
-  bottomSheetTop,
-  user_data,
-  ui_settings,
-  tasks,
-}) => {
+const PageContent = ({fundis: f, navigation, user_data, ui_settings}) => {
   const [load, setLoading] = useState(false);
   const {
     coordinates: {latitude, longitude},
@@ -115,7 +109,7 @@ const PageContent = ({
         details={item}
         itemClick={() => {
           dispatch(fundiActions.set_selected_fundi(item));
-          bottomSheetTop();
+          navigation.navigate(screens.fundi_details_preview);
         }}
       />
     );
@@ -225,10 +219,10 @@ const PageContent = ({
           textColor={COLORS.primary}
         />
       )}
-
+      {/* 
       <View style={styles._section_selected_user}>
-        <FundiDetails renderNull={v => setRenderNull(v)} />
-      </View>
+        <FundiDetails />
+      </View> */}
     </View>
   );
 };

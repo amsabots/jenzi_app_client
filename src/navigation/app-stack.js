@@ -1,6 +1,7 @@
 import React from 'react';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import HomeDetailsPreview from '../screens/home-fundidetails-preview';
 
 import {
   HomeView,
@@ -102,6 +103,10 @@ const AppDrawerNavigator = () => {
       <Stack.Screen name={screens.project_info} component={ProjectInfo} />
       <Stack.Screen name={screens.rate_fundi} component={RateClient} />
       <Stack.Screen name={screens.conversation} component={Conversation} />
+      <Stack.Screen
+        name={screens.fundi_details_preview}
+        component={HomeDetailsPreview}
+      />
       <Stack.Screen
         name={screens.project_creator_wizard}
         component={ProjectCreatorWizard}

@@ -16,6 +16,7 @@ const screens = {
   rate_fundi: 'Rate Fundi',
   project_info: 'Project_info',
   project_creator_wizard: 'project_creator_wizard',
+  fundi_details_preview: 'FundiDetailsPreview',
 };
 
 export {screens};

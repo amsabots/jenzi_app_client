@@ -212,10 +212,9 @@ const DetailsView = ({
         <ServiceRequest sendRequest={handleSendRequest} />
       )}
       <View style={styles._border_line}></View>
-      {/*  */}
-      <View style={styles._reviews}>
+      {/* <View style={styles._reviews}>
         <ReviewContainer />
-      </View>
+      </View> */}
     </View>
   ) : (
     <LoadingNothing label={leadinglabel} />
