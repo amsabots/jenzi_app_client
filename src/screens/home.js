@@ -72,8 +72,7 @@ const Home = ({navigation, fundis, user_data, ui_settings}) => {
 
   // handle clicked user maker on the map
   const handleCalloutClick = useCallback(f => {
-    bottomSheetRef.current.snapTo(2);
-    dispatch(fundiActions.set_selected_fundi(f));
+    navigation.navigate(screens.fundi_details_preview, {...f});
   });
 
   //bottom sheet
