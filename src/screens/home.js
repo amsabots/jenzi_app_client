@@ -28,13 +28,8 @@ import {HomeBottomSheetContent, CurrentProject} from './ui-views';
 import {ScrollView} from 'react-native-gesture-handler';
 
 // subscribtions
-import {
-  jobUtils,
-  subscribe_job_states,
-  subscribe_to_chatrooms,
-} from '../pusher';
+import {jobUtils} from '../pusher';
 import {screens} from '../constants';
-import {popPushNotification} from '../notification';
 
 const mapStateToProps = state => {
   const {fundis, user_data, ui_settings} = state;

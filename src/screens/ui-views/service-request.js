@@ -50,7 +50,6 @@ const RequestTitle = memo(({onAccept, show = false, onHide}) => {
 
 const ServiceRequestView = ({sendRequest, fundis}) => {
   const [showModal, setShowModal] = useState(false);
-  const {selected_fundi} = fundis;
   const [disableBtn, setDisableBtn] = useState(false);
 
   const handleAccept = useCallback(() => {

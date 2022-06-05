@@ -20,8 +20,8 @@ const offline_data = {
 const pusher_filters = {
   request_user: 'JOBREQUEST',
   request_user_timedout: 'PROJECTTIMEOUT',
-  user_accepted: 'user_accepted',
-  user_rejected: 'user_rejected',
+  user_accepted: 'REQUESTACCEPTED',
+  user_rejected: 'REQUESTDECLINED',
   project_created: 'new_project',
   accept_response_timedout: 'accept_response_timedout',
   general_payload: 'general_channel',

@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useCallback} from 'react';
 
 import {Button, Chip, Divider} from 'react-native-paper';
-import {View, Text, StyleSheet, ToastAndroid} from 'react-native';
+import {View, Text, StyleSheet, ToastAndroid, Vibration} from 'react-native';
 import {COLORS, FONTS, SIZES} from '../constants/themes';
 import {connect, useDispatch} from 'react-redux';
 import {fundiActions, UISettingsActions} from '../store-actions';
@@ -67,6 +67,7 @@ const DetailsView = ({
         text1: 'Missing project',
         text2: 'Create project first then come back here',
       });
+    //
     const {user} = user_data;
     const payload = {
       payload: current_project,
@@ -115,12 +116,13 @@ const DetailsView = ({
     } catch (error) {
       console.log(error);
     } finally {
-      dispatch(fundiActions.delete_current_requests(el));
+      dispatch(fundiActions.delete_current_requests());
       dispatch(
         UISettingsActions.snack_bar_info(
           'The requested has been cancelled successfully. You can always try again later',
         ),
       );
+      Vibration.vibrate();
     }
   };
 
@@ -205,7 +207,7 @@ const DetailsView = ({
         {/* ============= ============================= */}
         <View style={styles._border_line}></View>
       </View>
-      {/*  */}
+      {/* =========== handler attached to on accept of the module window from the adjacent activity =============  */}
       {fundis.sent_requests.length < 1 && (
         <ServiceRequest sendRequest={handleSendRequest} />
       )}

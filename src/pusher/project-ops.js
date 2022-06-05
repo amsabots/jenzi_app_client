@@ -2,8 +2,8 @@ import {endpoints, firebase_db} from '../endpoints';
 import {popPushNotification} from '../notification';
 import axios from 'axios';
 import {store} from '../../App';
-import {clientActions} from '../store-actions';
-
+import {clientActions, fundiActions} from '../store-actions';
+import {Vibration, ToastAndroid} from 'react-native';
 const logger = console.log.bind(console, `[file: fb-projects.js]`);
 
 //request cancelled or it came in and expired
@@ -12,47 +12,63 @@ const logger = console.log.bind(console, `[file: fb-projects.js]`);
 //   `A request came in while your device was offline or disconnected. Kindly keep you device on the line for alerts`,
 // );
 
-export const subscribe_job_states = user => {
+export const subscribe_job_states = userId => {
   logger(`[message: The system has been bound to firebase job states channel]`);
-  firebase_db.ref(`/jobalerts`).on('value', async snapshot => {
-    if (!snapshot.exists()) return;
-    for (const [key, data] of Object.entries(snapshot.toJSON())) {
-      const {
-        createdAt,
-        event,
-        requestId,
-        user: {clientId},
-      } = data;
-      if (clientId !== user) continue;
-      const elapsed_seconds = Math.floor(
-        (new Date().getTime() - createdAt) / 1000,
-      );
-      //delete the request and return
-      if (Math.ceil(elapsed_seconds) > 120)
-        return await firebase_db.ref(`/jobalerts/${key}`).remove();
-      switch (event.trim()) {
-        case 'JOBREQUEST':
-          const res = await axios.get(
-            `${endpoints.realtime_base_url}/jobs/requests/${requestId}`,
-          );
-          if (!res.data) return;
-          const {requestId: eventId, ttl, payload, user} = res.data;
-          // store.dispatch(clientActions.create_new_rqeuest(requestId, payload));
-          // store.dispatch(clientActions.active_client(user));
-          break;
-        case 'PROJECTTIMEOUT':
-          popPushNotification(
-            `Request timed Out`,
-            `The fundi seems to be offline at this moment. Try again after a while or select another suitable fundi`,
-          );
-          return await firebase_db.ref(`/jobalerts/${key}`).remove();
-        default:
-          console.log(event);
-          return null;
-      }
-    }
+  firebase_db.ref(`/jobalerts`).on('child_changed', async snapshot => {
+    snapshot.exists() &&
+      (await project_changes_handler(snapshot?.toJSON(), userId, snapshot.key));
+  });
+  firebase_db.ref(`/jobalerts`).on('child_added', async snapshot => {
+    snapshot.exists() &&
+      (await project_changes_handler(snapshot?.toJSON(), userId, snapshot.key));
   });
 };
+
+async function project_changes_handler(snapshot, userId, fundiId) {
+  const {
+    user: {clientId},
+    createdAt,
+    event,
+    requestId,
+  } = snapshot;
+  if (!snapshot?.user) return;
+  if (clientId !== userId) return;
+  const elapsed_seconds = Math.floor((new Date().getTime() - createdAt) / 1000);
+  //delete the request and return
+  if (Math.ceil(elapsed_seconds) > 120)
+    return await firebase_db.ref(`/jobalerts/${fundiId}`).remove();
+  // process events
+  const res = await axios.get(
+    `${endpoints.realtime_base_url}/jobs/requests/${requestId}`,
+  );
+  switch (event.trim()) {
+    case 'JOBREQUEST':
+      Vibration.vibrate();
+      break;
+    case 'PROJECTTIMEOUT':
+      Vibration.vibrate();
+      popPushNotification(
+        `Request timed Out`,
+        `The fundi seems to be offline at this moment. Try again after a while or select another suitable fundi`,
+      );
+      store.dispatch(fundiActions.delete_current_requests());
+      return await firebase_db.ref(`/jobalerts/${fundiId}`).remove();
+    case 'REQUESTACCEPTED':
+      if (!res.data) return;
+      const {requestId: eventId, ttl, payload, user} = res.data;
+      Vibration.vibrate();
+      helpers_notify(
+        `Project request accepted. - We have initiated a connection channel`,
+      );
+      break;
+    case 'REQUESTDECLINED':
+      store.dispatch(fundiActions.delete_current_requests());
+      return await firebase_db.ref(`/jobalerts/${fundiId}`).remove();
+    default:
+      console.log(event);
+      return null;
+  }
+}
 
 export const jobUtils = {
   delete_entry: async function (accountId) {
@@ -74,3 +90,13 @@ export const jobUtils = {
       );
   },
 };
+
+function helpers_notify(message) {
+  ToastAndroid.showWithGravityAndOffset(
+    message,
+    ToastAndroid.TOP,
+    ToastAndroid.LONG,
+    0,
+    40,
+  );
+}
