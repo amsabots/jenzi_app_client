@@ -78,7 +78,6 @@ const InputBox = ({
 const ProjectCreatorWizard = ({navigation, tasks}) => {
   // destructure the props from the selected store state
   const {current_project} = tasks;
-  console.log('Initializing.....');
   const [title, setTitle] = useState('');
   const [requirements, setRequirements] = useState({});
   const [snackVisible, setSnackVisible] = useState(false);
