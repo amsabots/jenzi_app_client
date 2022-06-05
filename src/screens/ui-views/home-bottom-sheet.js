@@ -108,8 +108,7 @@ const PageContent = ({fundis: f, navigation, user_data, ui_settings}) => {
       <Providers
         details={item}
         itemClick={() => {
-          dispatch(fundiActions.set_selected_fundi(item));
-          navigation.navigate(screens.fundi_details_preview);
+          navigation.navigate(screens.fundi_details_preview, {...item});
         }}
       />
     );
@@ -219,10 +218,6 @@ const PageContent = ({fundis: f, navigation, user_data, ui_settings}) => {
           textColor={COLORS.primary}
         />
       )}
-      {/* 
-      <View style={styles._section_selected_user}>
-        <FundiDetails />
-      </View> */}
     </View>
   );
 };

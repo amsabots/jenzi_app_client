@@ -79,7 +79,7 @@ const Home = ({navigation, fundis, user_data, ui_settings}) => {
   //bottom sheet
   const bottomSheetRef = useRef(null);
   // variables
-  const snapPoints = useMemo(() => ['35%', '50%', '90%'], []);
+  const snapPoints = useMemo(() => ['55%'], []);
 
   // back button Handler
   let backHandlerClickCount = 0;
@@ -246,7 +246,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   _map_container: {
-    height: '65%',
+    height: '45%',
   },
   _hamburger: {
     top: SIZES.padding_32,
