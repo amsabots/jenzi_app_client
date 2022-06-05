@@ -88,17 +88,26 @@ const DoubleRing = ({
   return null;
 };
 
-const MainScreen = ({height = 32, width = 32, loading = false}) => {
-  if (loading)
-    return (
-      <LottieView
-        source={require('../animations_files/men_working.json')}
-        autoPlay
-        loop
-        style={[styles.vl_container, {height, width}]}
-      />
-    );
-  return null;
+const MainScreen = ({height = 32, width = 32}) => {
+  return (
+    <LottieView
+      source={require('../animations_files/men_working.json')}
+      autoPlay
+      loop
+      style={[styles.vl_container, {height, width}]}
+    />
+  );
+};
+
+const SuccessAnimation = ({height = 32, width = 32}) => {
+  return (
+    <LottieView
+      source={require('../animations_files/success.json')}
+      autoPlay
+      loop
+      style={[styles.vl_container, {height, width}]}
+    />
+  );
 };
 
 const styles = StyleSheet.create({
@@ -108,4 +117,11 @@ const styles = StyleSheet.create({
   },
 });
 
-export {VinyLoader, RingedLoader, ArcherLoader, DoubleRing, MainScreen};
+export {
+  VinyLoader,
+  RingedLoader,
+  ArcherLoader,
+  DoubleRing,
+  MainScreen,
+  SuccessAnimation,
+};

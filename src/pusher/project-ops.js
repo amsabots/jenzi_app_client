@@ -80,6 +80,7 @@ async function project_changes_handler(snapshot, userId, fundiId) {
           helpers_notify(
             `Project request accepted. - We have initiated a connection channel`,
           );
+          store.dispatch(chat_actions.active_chat(destination));
         })
         .catch(err => {
           Vibration.vibrate();
