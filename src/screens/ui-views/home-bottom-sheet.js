@@ -72,7 +72,9 @@ const Providers = ({details, itemClick}) => {
               marginVertical: SIZES.base,
               color: COLORS.secondary,
             }}>
-            {d < 1 ? (d * 1000).toFixed(2) + ' Meter(s)' : d + ' Kms'}
+            {d < 1
+              ? (d * 1000).toFixed(2) + ' Meter(s)'
+              : d.toFixed(1) + ' Kms'}
           </Text>
         </View>
       </View>
