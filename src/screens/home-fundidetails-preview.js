@@ -1,11 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {
-  View,
-  InteractionManager,
-  ActivityIndicator,
-  StyleSheet,
-  Text,
-} from 'react-native';
+import {View, InteractionManager, StyleSheet, Text} from 'react-native';
 import {useDispatch} from 'react-redux';
 import {Portal, Modal, Divider, Button} from 'react-native-paper';
 
@@ -72,7 +66,16 @@ const HomeDetailsPreview = ({navigation, route}) => {
               automatically for the period it will be active. Please remember to
               update project status.
             </Text>
-            <View style={styles._modal_footer_container}></View>
+            <View style={styles._modal_footer_container}>
+              <Button>
+                <Text style={{...FONTS.caption, color: COLORS.grey_dark}}>
+                  Open project
+                </Text>
+              </Button>
+              <Button>
+                <Text style={{...FONTS.captionBold}}>Open chats</Text>
+              </Button>
+            </View>
           </View>
         </Modal>
       </Portal>
@@ -88,17 +91,18 @@ const styles = StyleSheet.create({
   _modal_style: {
     backgroundColor: COLORS.white,
     borderRadius: SIZES.base,
-    minHeight: 200,
+    alignSelf: 'baseline',
+    width: '90%',
     marginHorizontal: SIZES.padding_16,
+    paddingVertical: SIZES.base,
   },
   _modal_container_wrapper: {
-    flex: 1,
     alignItems: 'center',
   },
   _modal_footer_container: {
     marginTop: SIZES.padding_16,
     width: '100%',
-    flex: 'row',
+    flexDirection: 'row',
     justifyContent: 'space-between',
   },
   _modal_footer_btns: {
