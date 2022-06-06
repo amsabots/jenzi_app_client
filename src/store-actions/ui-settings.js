@@ -49,6 +49,13 @@ const UISettingsActions = {
       type: `REFRESH_UI`,
     };
   },
+  //PROJECT_STATE_TRACKER
+  update_project_tracker: project_state => {
+    return {
+      type: `PROJECT_STATE_TRACKER`,
+      payload: project_state,
+    };
+  },
 };
 
 export {UISettingsActions};

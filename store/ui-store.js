@@ -8,6 +8,7 @@ const state = {
   refresh_state: Math.random(),
   project_banner: {},
   snack_bar_info: '',
+  project_tracker: {},
 };
 
 const UISettings = (s = state, action) => {
@@ -25,6 +26,8 @@ const UISettings = (s = state, action) => {
       return {...state, snack_bar_info: payload};
     case 'REFRESH_UI':
       return {...state, refresh_state: Math.random()};
+    case 'PROJECT_STATE_TRACKER':
+      return {...state, project_tracker: payload};
     default:
       return state;
   }

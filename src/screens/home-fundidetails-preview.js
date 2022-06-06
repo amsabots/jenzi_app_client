@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {View, InteractionManager, StyleSheet, Text} from 'react-native';
-import {useDispatch} from 'react-redux';
-import {Portal, Modal, Divider, Button} from 'react-native-paper';
+import {useDispatch, connect} from 'react-redux';
+import {Portal, Modal, Button} from 'react-native-paper';
 
 import {
   FundiDetails,
@@ -10,12 +10,20 @@ import {
   LoadingNothing,
 } from '../components';
 import {COLORS, FONTS, SIZES} from '../constants/themes';
-import {fundiActions} from '../store-actions';
+import {fundiActions, UISettingsActions} from '../store-actions';
 
-const HomeDetailsPreview = ({navigation, route}) => {
+const mapStateToProps = state => {
+  const {ui_settings} = state;
+  return {ui_settings};
+};
+
+const HomeDetailsPreview = ({navigation, route, ui_settings}) => {
   const [is_ready, setReady] = useState(false);
+  const [project_success, setSuccessModal] = useState(false);
   const data = route.params;
   const dispatch = useDispatch();
+
+  // get data from store props
 
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
@@ -26,6 +34,18 @@ const HomeDetailsPreview = ({navigation, route}) => {
       setReady(false);
     };
   }, []);
+
+  useEffect(() => {
+    const {project_tracker} = ui_settings;
+    if (Object.keys(project_tracker).length) {
+      setSuccessModal(true);
+    }
+
+    return () => {
+      setSuccessModal(false);
+    };
+  }, [ui_settings.project_tracker]);
+
   if (!is_ready)
     return (
       <View style={[styles.container, {justifyContent: 'center'}]}>
@@ -51,9 +71,13 @@ const HomeDetailsPreview = ({navigation, route}) => {
       <Portal>
         {/* Success modal - prompt user to provide next screen prompt action input */}
         <Modal
-          visible={true}
-          onDismiss={() => console.log('modal hidden')}
-          contentContainerStyle={styles._modal_style}>
+          visible={project_success}
+          onDismiss={() => {
+            setSuccessModal(false);
+            dispatch(UISettingsActions.update_project_tracker({}));
+          }}
+          contentContainerStyle={styles._modal_style}
+          dismissable={false}>
           <View style={styles._modal_container_wrapper}>
             <LoaderSpinner.SuccessAnimation width={120} height={120} />
             <Text
@@ -110,4 +134,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeDetailsPreview;
+export default connect(mapStateToProps)(HomeDetailsPreview);
