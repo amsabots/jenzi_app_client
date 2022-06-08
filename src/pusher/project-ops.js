@@ -2,7 +2,7 @@ import {endpoints, firebase_db} from '../endpoints';
 import {popPushNotification} from '../notification';
 import axios from 'axios';
 import {store} from '../../App';
-import {clientActions, fundiActions} from '../store-actions';
+import {clientActions, fundiActions, UISettingsActions} from '../store-actions';
 import {Vibration, ToastAndroid} from 'react-native';
 const logger = console.log.bind(console, `[file: fb-projects.js]`);
 
@@ -25,13 +25,13 @@ export const subscribe_job_states = userId => {
 };
 
 async function project_changes_handler(snapshot, userId, fundiId) {
+  if (!snapshot?.user) return;
   const {
     user: {clientId},
     createdAt,
     event,
     requestId,
   } = snapshot;
-  if (!snapshot?.user) return;
   if (clientId !== userId) return;
   const elapsed_seconds = Math.floor((new Date().getTime() - createdAt) / 1000);
   //delete the request and return
@@ -48,7 +48,7 @@ async function project_changes_handler(snapshot, userId, fundiId) {
     case 'PROJECTTIMEOUT':
       Vibration.vibrate();
       popPushNotification(
-        `Request timed Out`,
+        `Request timed out`,
         `The fundi seems to be offline at this moment. Try again after a while or select another suitable fundi`,
       );
       store.dispatch(fundiActions.delete_current_requests());
@@ -62,6 +62,7 @@ async function project_changes_handler(snapshot, userId, fundiId) {
         user,
         destination: {accountId, name},
       } = res.data;
+      //
       axios
         .post(endpoints.client_service + '/jobs', {
           title: payload.title,
@@ -70,7 +71,10 @@ async function project_changes_handler(snapshot, userId, fundiId) {
             id: user.clientId,
           },
         })
-        .then(res => res.data)
+        .then(res => {
+          console.log(res.data);
+          return res.data;
+        })
         .then(async data => {
           await axios.get(
             endpoints.fundi_service +
@@ -80,9 +84,13 @@ async function project_changes_handler(snapshot, userId, fundiId) {
           helpers_notify(
             `Project request accepted. - We have initiated a connection channel`,
           );
-          store.dispatch(chat_actions.active_chat(destination));
+          store.dispatch(chat_actions.active_chat(res?.data?.destination));
+          store.dispatch(
+            UISettingsActions.update_project_tracker(res?.data?.destination),
+          );
         })
         .catch(err => {
+          console.log(err);
           Vibration.vibrate();
           popPushNotification(
             `Request error`,

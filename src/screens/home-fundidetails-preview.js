@@ -11,6 +11,7 @@ import {
 } from '../components';
 import {COLORS, FONTS, SIZES} from '../constants/themes';
 import {fundiActions, UISettingsActions} from '../store-actions';
+import {screens} from '../constants';
 
 const mapStateToProps = state => {
   const {ui_settings} = state;
@@ -82,9 +83,8 @@ const HomeDetailsPreview = ({navigation, route, ui_settings}) => {
             <LoaderSpinner.SuccessAnimation width={120} height={120} />
             <Text
               style={{
-                ...FONTS.caption,
+                ...FONTS.body_medium,
                 marginHorizontal: SIZES.base,
-                color: COLORS.secondary,
               }}>
               Fundi accepted your request. We have initiated the project
               automatically for the period it will be active. Please remember to
@@ -92,12 +92,18 @@ const HomeDetailsPreview = ({navigation, route, ui_settings}) => {
             </Text>
             <View style={styles._modal_footer_container}>
               <Button>
-                <Text style={{...FONTS.caption, color: COLORS.grey_dark}}>
+                <Text
+                  style={{...FONTS.caption, color: COLORS.grey_dark}}
+                  onPress={() => navigation.navigate(screens.projects)}>
                   Open project
                 </Text>
               </Button>
               <Button>
-                <Text style={{...FONTS.captionBold}}>Open chats</Text>
+                <Text
+                  style={{...FONTS.captionBold}}
+                  onPress={() => navigation.navigate(screens.conversation)}>
+                  Open chats
+                </Text>
               </Button>
             </View>
           </View>
