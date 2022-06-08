@@ -1,16 +1,11 @@
 import * as React from 'react';
 import {FAB, Portal} from 'react-native-paper';
 import {screens} from '../constants';
-import {COLORS} from '../constants/themes';
+import {COLORS, FONTS} from '../constants/themes';
 import {StyleSheet} from 'react-native';
 
 const HomeFab = ({navigation}) => {
   const [state, setState] = React.useState({open: false});
-
-  const onStateChange = ({open}) => setState({open});
-
-  const {open} = state;
-
   return (
     <Portal>
       <FAB

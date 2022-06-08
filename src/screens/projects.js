@@ -60,6 +60,7 @@ const FundiItem = ({project}) => {
       setLoading(false);
     };
   }, []);
+
   return load ? (
     <View style={{flexDirection: 'row', alignItems: 'center'}}>
       <LoaderSpinner.ArcherLoader loading={load} />

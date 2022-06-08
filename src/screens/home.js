@@ -78,7 +78,7 @@ const Home = ({navigation, fundis, user_data, ui_settings}) => {
   //bottom sheet
   const bottomSheetRef = useRef(null);
   // variables
-  const snapPoints = useMemo(() => ['55%'], []);
+  const snapPoints = useMemo(() => ['55%', '70%'], []);
 
   // back button Handler
   let backHandlerClickCount = 0;
@@ -177,7 +177,7 @@ const Home = ({navigation, fundis, user_data, ui_settings}) => {
         </Banner>
         {/* banner section to display state of fundis */}
         {fundis.fundis.length < 1 && (
-          <Banner style={{top: 64}} visible={bannerVisible} actions={[]}>
+          <Banner style={{top: 60}} visible={bannerVisible} actions={[]}>
             There are no available fundis within your location.
           </Banner>
         )}

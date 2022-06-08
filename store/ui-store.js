@@ -8,7 +8,7 @@ const state = {
   refresh_state: Math.random(),
   project_banner: {},
   snack_bar_info: '',
-  project_tracker: {},
+  project_tracker: null,
 };
 
 const UISettings = (s = state, action) => {

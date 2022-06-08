@@ -55,6 +55,7 @@ async function project_changes_handler(snapshot, userId, fundiId) {
       return await firebase_db.ref(`/jobalerts/${fundiId}`).remove();
     case 'REQUESTACCEPTED':
       if (!res.data) return;
+      axios.defaults.baseURL = endpoints.client_service;
       const {
         requestId: eventId,
         ttl,
@@ -63,34 +64,35 @@ async function project_changes_handler(snapshot, userId, fundiId) {
         destination: {accountId, name},
       } = res.data;
       //
+      const request_data = {
+        title: payload.title,
+        fundiId: accountId,
+        client: {
+          id: user.clientId,
+        },
+      };
+      //
       axios
-        .post(endpoints.client_service + '/jobs', {
-          title: payload.title,
-          fundiId: accountId,
-          client: {
-            id: user.clientId,
-          },
-        })
+        .post(`/jobs`, request_data)
         .then(res => {
           console.log(res.data);
-          return res.data;
         })
-        .then(async data => {
-          await axios.get(
-            endpoints.fundi_service +
-              `/projects/start/${accountId}/${data.taskId}`,
-          );
-          Vibration.vibrate();
-          helpers_notify(
-            `Project request accepted. - We have initiated a connection channel`,
-          );
-          store.dispatch(chat_actions.active_chat(res?.data?.destination));
-          store.dispatch(
-            UISettingsActions.update_project_tracker(res?.data?.destination),
-          );
-        })
+        // .then(async data => {
+        //   await axios.get(
+        //     endpoints.fundi_service +
+        //       `/projects/start/${accountId}/${data.taskId}`,
+        //   );
+        //   Vibration.vibrate();
+        //   helpers_notify(
+        //     `Project request accepted. - We have initiated a connection channel`,
+        //   );
+        //   store.dispatch(chat_actions.active_chat(res?.data?.destination));
+        // store.dispatch(
+        //   UISettingsActions.update_project_tracker({action: 1, payload: res?.data?.destination}),
+        // );
+        // })
         .catch(err => {
-          console.log(err);
+          console.trace(err?.response);
           Vibration.vibrate();
           popPushNotification(
             `Request error`,
@@ -103,6 +105,9 @@ async function project_changes_handler(snapshot, userId, fundiId) {
       break;
     case 'REQUESTDECLINED':
       store.dispatch(fundiActions.delete_current_requests());
+      store.dispatch(
+        UISettingsActions.update_project_tracker({action: 2, payload: false}),
+      );
       return await firebase_db.ref(`/jobalerts/${fundiId}`).remove();
     default:
       console.log(event);
