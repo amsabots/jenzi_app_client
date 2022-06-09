@@ -168,27 +168,29 @@ const Projects = ({navigation, tasks, user_data}) => {
 
   //render project item
 
-  async function loadProjects() {
+  function loadProjects() {
     setLoading(true);
-    try {
-      const res = await axios.get(
+    axios
+      .get(
         `${endpoints.client_service}/jobs/owner/${user_data.user.id}?page=0&pageSize=100`,
         {timeout: 15000},
-      );
-      setLoading(false);
-      const t = res.data.data;
-      if (t.length) {
-        t.forEach(element => {
-          t[t.indexOf(element)] = {...element, selected: false};
-        });
-        dispatch(task_actions.load_jobs(t));
-      } else {
-        dispatch(task_actions.reset_store());
-      }
-    } catch (error) {
-      setLoading(false);
-      errorMessage(error);
-    }
+      )
+      .then(res => {
+        const t = res.data.data;
+        if (t.length) {
+          t.forEach(element => {
+            t[t.indexOf(element)] = {...element, selected: false};
+          });
+          dispatch(task_actions.load_jobs(t));
+        } else {
+          dispatch(task_actions.reset_store());
+        }
+        setLoading(false);
+      })
+      .catch(error => {
+        setLoading(false);
+        errorMessage(error);
+      });
   }
 
   useEffect(() => {
@@ -252,7 +254,7 @@ const Projects = ({navigation, tasks, user_data}) => {
           </View>
         ) : (
           <LoadingNothing
-            label={'No projects found, come back later'}
+            label={'No projects found, enjoy your empty history'}
             textColor={COLORS.primary}
           />
         )}

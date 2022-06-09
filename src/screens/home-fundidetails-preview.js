@@ -37,7 +37,7 @@ const RequestDeclinedAlert = ({show, onCancel, label}) => {
             <View>
               <LoadingNothing width={64} height={64} />
             </View>
-            <Text style={{...FONTS.body}}>{label}</Text>
+            <Text style={{...FONTS.caption}}>{label}</Text>
           </View>
         </View>
         <Dialog.Button label="Ok" onPress={onCancel} />
@@ -46,10 +46,47 @@ const RequestDeclinedAlert = ({show, onCancel, label}) => {
   );
 };
 
+const RequestAccepted = ({show, openProject, openChats, label}) => {
+  return (
+    <View>
+      <Dialog.Container visible={show}>
+        <View>
+          <Text style={{...FONTS.body_bold, color: COLORS.danger}}>
+            Request Accepted
+          </Text>
+          {/* Body  */}
+          <View
+            style={{
+              marginTop: SIZES.padding_16,
+              flexDirection: 'row',
+              width: '80%',
+            }}>
+            <LoaderSpinner.SuccessAnimation width={32} height={32} />
+            <Text style={{...FONTS.caption, marginLeft: SIZES.padding_12}}>
+              {label}
+            </Text>
+          </View>
+        </View>
+        <Dialog.Button
+          label="Open Chats"
+          onPress={openChats}
+          color={COLORS.secondary}
+          bold={true}
+        />
+        <Dialog.Button
+          label="Open projects"
+          onPress={openProject}
+          color={COLORS.blue_deep}
+        />
+      </Dialog.Container>
+    </View>
+  );
+};
+
 const HomeDetailsPreview = ({navigation, route, ui_settings, fundis}) => {
   const [is_ready, setReady] = useState(false);
   const [project_success, setSuccessModal] = useState(false);
-  const [request_declined, setRequestDeclined] = useState(true);
+  const [request_declined, setRequestDeclined] = useState(false);
   const data = route.params;
   const dispatch = useDispatch();
   //component function handlers
@@ -117,47 +154,25 @@ const HomeDetailsPreview = ({navigation, route, ui_settings, fundis}) => {
             onCancel={handle_user_declined}
             label={
               fundis?.selected_fundi?.account?.name +
-              ' Has declined your request. Exit and select another fundi'
+              ' Has declined your request. Exit and select another fundi or try again after some time'
             }
           />
-          {/* Success modal - prompt user to provide next screen prompt action input */}
-          <Modal
-            visible={project_success}
-            onDismiss={() => {
-              setSuccessModal(false);
-              dispatch(UISettingsActions.update_project_tracker({}));
+          {/* positive */}
+          <RequestAccepted
+            show={project_success}
+            openChats={() => {
+              navigation.navigate(screens.conversation);
+              dispatch(UISettingsActions.update_project_tracker(null));
             }}
-            contentContainerStyle={styles._modal_style}
-            dismissable={false}>
-            <View style={styles._modal_container_wrapper}>
-              <LoaderSpinner.SuccessAnimation width={120} height={120} />
-              <Text
-                style={{
-                  ...FONTS.body_medium,
-                  marginHorizontal: SIZES.base,
-                }}>
-                Fundi accepted your request. We have initiated the project
-                automatically for the period it will be active. Please remember
-                to update project status.
-              </Text>
-              <View style={styles._modal_footer_container}>
-                <Button>
-                  <Text
-                    style={{...FONTS.caption, color: COLORS.grey_dark}}
-                    onPress={() => navigation.navigate(screens.projects)}>
-                    Open project
-                  </Text>
-                </Button>
-                <Button>
-                  <Text
-                    style={{...FONTS.captionBold}}
-                    onPress={() => navigation.navigate(screens.conversation)}>
-                    Open chats
-                  </Text>
-                </Button>
-              </View>
-            </View>
-          </Modal>
+            openProject={() => {
+              navigation.navigate(screens.projects);
+              dispatch(UISettingsActions.update_project_tracker(null));
+            }}
+            label={
+              fundis?.selected_fundi?.account?.name +
+              'Accepted your request. The project has been created and flagged as ONGOING. '
+            }
+          />
         </Portal>
       </View>
     </ScrollView>
@@ -192,3 +207,41 @@ const styles = StyleSheet.create({
 });
 
 export default connect(mapStateToProps)(HomeDetailsPreview);
+
+// <Modal
+//   visible={project_success}
+//   onDismiss={() => {
+//     setSuccessModal(false);
+//     dispatch(UISettingsActions.update_project_tracker({}));
+//   }}
+//   contentContainerStyle={styles._modal_style}
+//   dismissable={false}>
+//   <View style={styles._modal_container_wrapper}>
+//     <LoaderSpinner.SuccessAnimation width={120} height={120} />
+//     <Text
+//       style={{
+//         ...FONTS.body_medium,
+//         marginHorizontal: SIZES.base,
+//       }}>
+//       Fundi accepted your request. We have initiated the project automatically
+//       for the period it will be active. Please remember to update project
+//       status.
+//     </Text>
+//     <View style={styles._modal_footer_container}>
+//       <Button>
+//         <Text
+//           style={{...FONTS.caption, color: COLORS.grey_dark}}
+//           onPress={}>
+//           Open project
+//         </Text>
+//       </Button>
+//       <Button>
+//         <Text
+//           style={{...FONTS.captionBold}}
+//           onPress={() => }>
+//           Open chats
+//         </Text>
+//       </Button>
+//     </View>
+//   </View>
+// </Modal>;

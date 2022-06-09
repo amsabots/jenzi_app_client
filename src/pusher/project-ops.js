@@ -55,7 +55,6 @@ async function project_changes_handler(snapshot, userId, fundiId) {
       return await firebase_db.ref(`/jobalerts/${fundiId}`).remove();
     case 'REQUESTACCEPTED':
       if (!res.data) return;
-      axios.defaults.baseURL = endpoints.client_service;
       const {
         requestId: eventId,
         ttl,
@@ -71,7 +70,7 @@ async function project_changes_handler(snapshot, userId, fundiId) {
           id: user.clientId,
         },
       };
-      //
+      await firebase_db.ref(`/jobalerts/${fundiId}`).update({event: 'ACK'});
       axios
         .post(`/jobs`, request_data)
         .then(res => {
@@ -92,7 +91,7 @@ async function project_changes_handler(snapshot, userId, fundiId) {
         // );
         // })
         .catch(err => {
-          console.trace(err?.response);
+          console.log(err?.response);
           Vibration.vibrate();
           popPushNotification(
             `Request error`,
