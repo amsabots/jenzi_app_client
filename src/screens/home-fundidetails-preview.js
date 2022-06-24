@@ -7,7 +7,7 @@ import {
   ScrollView,
 } from 'react-native';
 import {useDispatch, connect} from 'react-redux';
-import {Portal, Modal, Button} from 'react-native-paper';
+import {Portal} from 'react-native-paper';
 import Dialog from 'react-native-dialog';
 import {
   FundiDetails,
@@ -87,7 +87,7 @@ const HomeDetailsPreview = ({navigation, route, ui_settings, fundis}) => {
   const [is_ready, setReady] = useState(false);
   const [project_success, setSuccessModal] = useState(false);
   const [request_declined, setRequestDeclined] = useState(false);
-  const data = route.params;
+  const {item} = route.params;
   const dispatch = useDispatch();
   //component function handlers
   const handle_user_declined = () => {
@@ -99,7 +99,7 @@ const HomeDetailsPreview = ({navigation, route, ui_settings, fundis}) => {
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
       setReady(true);
-      dispatch(fundiActions.set_selected_fundi(data));
+      dispatch(fundiActions.set_selected_fundi(item));
     });
     return () => {
       setReady(false);

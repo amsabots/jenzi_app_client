@@ -203,7 +203,7 @@ const PageContent = ({fundis: f, navigation, user_data, ui_settings}) => {
               <Providers
                 details={item}
                 itemClick={() => {
-                  navigation.navigate(screens.fundi_details_preview, {...item});
+                  navigation.navigate(screens.fundi_details_preview, {item});
                 }}
               />
             );

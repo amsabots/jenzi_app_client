@@ -10,25 +10,22 @@ import {fundiActions, UISettingsActions} from '../store-actions';
 import {ServiceRequest, PendingRequests} from '../screens/ui-views';
 
 //components
-import {
-  CircularImage,
-  ReviewContainer,
-  InfoChips,
-  LoaderSpinner,
-  LoadingNothing,
-  LoadingModal,
-} from '.';
+//prettier-ignore
+import {CircularImage, InfoChips, LoaderSpinner, LoadingNothing, LoadingModal} from '.';
 //icons
-import MIcon from 'react-native-vector-icons/MaterialIcons';
+import AIcons from 'react-native-vector-icons/AntDesign';
 import {pusher_filters} from '../constants';
 
 //toast
 import Toast from 'react-native-toast-message';
+//
+import {axios_endpoint_error, endpoints} from '../endpoints';
 import axios from 'axios';
 axios.defaults.timeout = 10000;
-import {endpoints} from '../endpoints';
+axios.defaults.baseURL = endpoints;
 
 const logger = console.log.bind(console, `[file: fundi-profile.js]`);
+//
 const mapStateToProps = state => {
   const {fundis, user_data, tasks} = state;
   return {fundis, user_data, tasks};
@@ -43,16 +40,32 @@ const Loader = ({type = 'a', label = 'Fetching........'}) => {
   );
 };
 
-const DetailsView = ({
-  leadinglabel = 'No details available',
-  fundis,
-  user_data,
-  tasks,
-}) => {
+const Fundi_projects = ({project}) => {
+  return (
+    <View
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: SIZES.base,
+      }}>
+      <AIcons
+        name="verticleleft"
+        size={SIZES.padding_16}
+        color={COLORS.green}
+      />
+      <Text style={{...FONTS.captionBold, marginLeft: SIZES.padding_16}}>
+        Some long ass title to test if this guy is going to wrap correctly at
+        the end of the container insets
+      </Text>
+    </View>
+  );
+};
+
+const DetailsView = ({fundis, user_data, tasks}) => {
   const dispatch = useDispatch();
   const [load, setLoad] = useState(false);
-  const [trainedBy, setTraineddBy] = useState([]);
-  const [projects, setLoadProjects] = useState([]);
+  const [trainedBy, set_trained_by] = useState([1]);
+  const [projects, set_fundi_projects] = useState([1]);
   // timer to track the request validity period -
 
   const {selected_fundi: fundi} = fundis;
@@ -126,6 +139,24 @@ const DetailsView = ({
     }
   };
 
+  useEffect(() => {
+    setLoad(true);
+    axios
+      .get(`/fundi-tasks/user/${fundi.id}`)
+      .then(res => {
+        const {data} = res.data;
+        const projects_data = data?.filter(el => {
+          if (el?.fundi_data?.state?.toLowerCase() === 'inprogress') return el;
+        });
+        set_fundi_projects(projects_data);
+      })
+      .catch(err => axios_endpoint_error(err))
+      .finally(() => setLoad(false));
+    return () => {
+      setLoad(false);
+    };
+  });
+
   return Object.keys(fundi).length ? (
     <View style={styles.container}>
       {/* ===== loading modal */}
@@ -134,11 +165,11 @@ const DetailsView = ({
         onDismiss={() => set_modal_loader(false)}
         label="Sending........"
       />
-      <CircularImage size={100} url={fundi.account.photo_url} />
+      <CircularImage size={100} url={fundi?.photo_url} />
       {/*  */}
       <View style={styles._details}>
         <Text style={{...FONTS.body_bold, marginBottom: SIZES.base}}>
-          {fundi.account.name || 'Not Available'}
+          {fundi?.name || 'Not Available'}
         </Text>
         {/* NCA section */}
         <View style={{alignItems: 'center', marginBottom: SIZES.padding_16}}>
@@ -146,7 +177,7 @@ const DetailsView = ({
             NCA number:
           </Text>
           <Text style={{...FONTS.caption}}>
-            {fundi.account.ncaNumber || 'Not yet registered with NCA'}
+            {fundi?.nca_number || 'Not yet registered with NCA'}
           </Text>
           <Divider s />
         </View>
@@ -161,7 +192,7 @@ const DetailsView = ({
           <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
             {load ? (
               <Loader label="Loading training organizations........" />
-            ) : projects.length ? (
+            ) : trainedBy.length ? (
               [1, 2].map((el, idx) => (
                 <InfoChips
                   key={idx}
@@ -182,19 +213,13 @@ const DetailsView = ({
             <Text style={styles._section_header}>Completed projects</Text>
             <View
               style={{
-                flexDirection: 'row',
                 flexWrap: 'wrap',
                 marginTop: SIZES.base,
               }}>
               {load ? (
-                <Loader label="Loading user projects]........" />
-              ) : trainedBy.length ? (
-                [1, 2, 3, 4, 5, 6].map((el, idx) => (
-                  <Chip
-                    style={{marginBottom: 4, marginRight: SIZES.padding_16}}>
-                    SGR construction
-                  </Chip>
-                ))
+                <Loader label="Loading user projects........" />
+              ) : projects.length ? (
+                [1, 2, 3, 4, 5, 6].map((el, idx) => <Fundi_projects />)
               ) : (
                 <LoadingNothing label={'0 Projects done'} width={100} />
               )}
@@ -217,7 +242,7 @@ const DetailsView = ({
       </View> */}
     </View>
   ) : (
-    <LoadingNothing label={leadinglabel} />
+    <LoadingNothing label={'No details available'} />
   );
 };
 
