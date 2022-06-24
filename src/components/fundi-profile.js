@@ -22,7 +22,7 @@ import Toast from 'react-native-toast-message';
 import {axios_endpoint_error, endpoints} from '../endpoints';
 import axios from 'axios';
 axios.defaults.timeout = 10000;
-axios.defaults.baseURL = endpoints;
+axios.defaults.baseURL = endpoints.jenzi_backend + '/jenzi/v1';
 
 const logger = console.log.bind(console, `[file: fundi-profile.js]`);
 //
@@ -41,21 +41,36 @@ const Loader = ({type = 'a', label = 'Fetching........'}) => {
 };
 
 const Fundi_projects = ({project}) => {
+  const [client_info, set_client_info] = useState('N/A');
+  useEffect(() => {
+    axios.get(`/clients/${project.clientId}`).then(res => {
+      set_client_info(res.data);
+    });
+    return () => {
+      set_client_info('N/A');
+    };
+  }, []);
   return (
-    <View
-      style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: SIZES.base,
-      }}>
-      <AIcons
-        name="verticleleft"
-        size={SIZES.padding_16}
-        color={COLORS.green}
-      />
-      <Text style={{...FONTS.captionBold, marginLeft: SIZES.padding_16}}>
-        Some long ass title to test if this guy is going to wrap correctly at
-        the end of the container insets
+    <View>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          marginBottom: SIZES.base,
+        }}>
+        <AIcons
+          name="verticleleft"
+          size={SIZES.padding_16}
+          color={COLORS.green}
+        />
+        <Text style={{...FONTS.captionBold, marginLeft: SIZES.padding_16}}>
+          {project?.title || 'Project Info Missing'}
+        </Text>
+      </View>
+      <Text
+        style={{textAlign: 'right', ...FONTS.caption, color: COLORS.blue_deep}}>
+        <Text style={{color: COLORS.grey_dark}}>Client: </Text>
+        {client_info.name}
       </Text>
     </View>
   );
@@ -65,7 +80,7 @@ const DetailsView = ({fundis, user_data, tasks}) => {
   const dispatch = useDispatch();
   const [load, setLoad] = useState(false);
   const [trainedBy, set_trained_by] = useState([1]);
-  const [projects, set_fundi_projects] = useState([1]);
+  const [projects, set_fundi_projects] = useState([]);
   // timer to track the request validity period -
 
   const {selected_fundi: fundi} = fundis;
@@ -150,12 +165,12 @@ const DetailsView = ({fundis, user_data, tasks}) => {
         });
         set_fundi_projects(projects_data);
       })
-      .catch(err => axios_endpoint_error(err))
+      .catch(err => console.log(err))
       .finally(() => setLoad(false));
     return () => {
       setLoad(false);
     };
-  });
+  }, []);
 
   return Object.keys(fundi).length ? (
     <View style={styles.container}>
@@ -219,7 +234,9 @@ const DetailsView = ({fundis, user_data, tasks}) => {
               {load ? (
                 <Loader label="Loading user projects........" />
               ) : projects.length ? (
-                [1, 2, 3, 4, 5, 6].map((el, idx) => <Fundi_projects />)
+                projects.map((el, idx) => (
+                  <Fundi_projects key={idx} project={el} />
+                ))
               ) : (
                 <LoadingNothing label={'0 Projects done'} width={100} />
               )}
