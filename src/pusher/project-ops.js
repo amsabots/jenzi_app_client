@@ -70,6 +70,7 @@ async function project_changes_handler(snapshot, userId, fundiId) {
           id: user.clientId,
         },
       };
+      //this section should be executed after all the project pre & post handler calls have been completed - simply call it as the last action
       await firebase_db.ref(`/jobalerts/${fundiId}`).update({event: 'ACK'});
       axios
         .post(`/jobs`, request_data)
@@ -89,9 +90,10 @@ async function project_changes_handler(snapshot, userId, fundiId) {
         // store.dispatch(
         //   UISettingsActions.update_project_tracker({action: 1, payload: res?.data?.destination}),
         // );
+        // ========== put the action to acknowledge the request here ============================
         // })
         .catch(err => {
-          console.log(err?.response);
+          console.log(err?.message);
           Vibration.vibrate();
           popPushNotification(
             `Request error`,
