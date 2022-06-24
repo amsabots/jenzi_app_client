@@ -76,10 +76,29 @@ const Fundi_projects = ({project}) => {
   );
 };
 
+const Fundi_trainedBy = ({trained_by}) => {
+  const {organization, verified} = trained_by;
+  return (
+    <View>
+      <View>
+        <Chip
+          style={{
+            backgroundColor: COLORS.light_green,
+            marginRight: SIZES.base,
+          }}
+          icon={verified ? 'check-circle-outline' : ''}
+          textStyle={{color: COLORS.green}}>
+          {trained_by?.organization || 'N/A'}
+        </Chip>
+      </View>
+    </View>
+  );
+};
+
 const DetailsView = ({fundis, user_data, tasks}) => {
   const dispatch = useDispatch();
   const [load, setLoad] = useState(false);
-  const [trainedBy, set_trained_by] = useState([1]);
+  const [trainedBy, set_trained_by] = useState([]);
   const [projects, set_fundi_projects] = useState([]);
   // timer to track the request validity period -
 
@@ -158,12 +177,16 @@ const DetailsView = ({fundis, user_data, tasks}) => {
     setLoad(true);
     axios
       .get(`/fundi-tasks/user/${fundi.id}`)
-      .then(res => {
+      .then(async res => {
         const {data} = res.data;
         const projects_data = data?.filter(el => {
           if (el?.fundi_data?.state?.toLowerCase() === 'inprogress') return el;
         });
+        const {data: d} = await axios.get(
+          `/fundi-trained-by/fundi/${fundi.id}`,
+        );
         set_fundi_projects(projects_data);
+        set_trained_by(d);
       })
       .catch(err => console.log(err))
       .finally(() => setLoad(false));
@@ -208,16 +231,8 @@ const DetailsView = ({fundis, user_data, tasks}) => {
             {load ? (
               <Loader label="Loading training organizations........" />
             ) : trainedBy.length ? (
-              [1, 2].map((el, idx) => (
-                <InfoChips
-                  key={idx}
-                  text={'NIBS College'}
-                  textColor={COLORS.blue_deep}
-                  containerStyles={{
-                    marginRight: SIZES.padding_4,
-                    marginBottom: SIZES.padding_4,
-                  }}
-                />
+              trainedBy.map((el, idx) => (
+                <Fundi_trainedBy trained_by={el} key={idx} />
               ))
             ) : (
               <LoadingNothing label={'Training not available'} width={100} />
