@@ -12,11 +12,12 @@ import {UISettingsActions, user_data_actions} from '../store-actions';
 
 import {LoaderSpinner, LoadingNothing} from '../components';
 import {TextInput, Button} from 'react-native-paper';
-import {endpoints, errorMessage} from '../endpoints';
+import {axios_endpoint_error, endpoints, errorMessage} from '../endpoints';
 //input validations
 import {auth_validator} from '../utils';
 //axios
 import axios from 'axios';
+axios.defaults.baseURL = endpoints.jenzi_backend + '/jenzi/v1';
 
 //icon
 import {offline_data, screens} from '../constants';
@@ -26,7 +27,7 @@ const Register = ({navigation}) => {
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [pass1, setPass1] = useState('');
-  const [email, setEmail] = useState('');
+  const [username, set_username] = useState('');
   const [load, setLoading] = useState(false);
 
   const dispatch = useDispatch();
@@ -35,7 +36,7 @@ const Register = ({navigation}) => {
   }, []);
 
   const handleRegistration = () => {
-    if (!name || !password || !email)
+    if (!name || !password || !username)
       return Toast.show({
         type: 'error',
         text1: 'Please all the fields before submission',
@@ -47,7 +48,7 @@ const Register = ({navigation}) => {
         text1: 'Passwords do not match',
         position: 'bottom',
       });
-    const valid = auth_validator.register_schema.validate({email, password});
+    const valid = auth_validator.register_schema.validate({username, password});
     if (valid?.error)
       return ToastAndroid.show(
         'Input validation failed -Phone number should be in valid length & password should not be less than 6 characters',
@@ -55,7 +56,7 @@ const Register = ({navigation}) => {
       );
     setLoading(true);
     axios
-      .post(`${endpoints.client_service}/clients`, {name, email, password})
+      .post(`/clients`, {name, username, password})
       .then(async res => {
         dispatch(user_data_actions.create_user(res.data));
         await AsyncStorage.setItem(offline_data.user, JSON.stringify(res.data));
@@ -65,7 +66,7 @@ const Register = ({navigation}) => {
           routes: [{name: screens.stack_app}],
         });
       })
-      .catch(err => errorMessage(err))
+      .catch(err => axios_endpoint_error(err))
       .finally(() => setLoading(false));
   };
 
@@ -122,7 +123,7 @@ const Register = ({navigation}) => {
             }
             placeholder="Phone number"
             keyboardType="phone-pad"
-            onChangeText={txt => setEmail(txt)}
+            onChangeText={txt => set_username(txt)}
           />
           <TextInput
             dense={true}

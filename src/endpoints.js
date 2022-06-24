@@ -7,6 +7,7 @@ export const endpoints = {
   fundi_service: `http://159.223.37.196:27800/fundi/api`,
   realtime_base_url: `http://159.223.37.196:27500`,
   firebase_database: `https://jenzi-1234d-default-rtdb.asia-southeast1.firebasedatabase.app/`,
+  jenzi_backend: `http://159.223.37.196:18300`,
 };
 
 export const firebase_db = firebase.app().database(endpoints.firebase_database);
@@ -24,6 +25,28 @@ export const errorMessage = err => {
     });
   } else {
     console.log('AXIOS CALL ERROR: ', err);
+    Toast.show({
+      type: 'error',
+      text1: 'Service unavailable',
+      text2: 'Check your network and try again later',
+    });
+  }
+};
+
+export const axios_endpoint_error = error => {
+  if (error?.response) {
+    let err = error.response.data;
+    //prettier-ignore
+    err = typeof err !=="string" || err.length > 70 ? "Error processing your request": err
+    console.log();
+    Toast.show({
+      type: 'error',
+      text1: 'Request Error',
+      text2: err,
+      position: 'center',
+    });
+  } else {
+    console.log(error);
     Toast.show({
       type: 'error',
       text1: 'Service unavailable',

@@ -9,11 +9,7 @@ import {Banner, Snackbar} from 'react-native-paper';
 
 // redux store
 import {useDispatch, connect} from 'react-redux';
-import {
-  fundiActions,
-  UISettingsActions,
-  user_data_actions,
-} from '../store-actions';
+import {UISettingsActions, user_data_actions} from '../store-actions';
 
 //components
 import {MapView, HomeFab} from '../components';

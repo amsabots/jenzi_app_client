@@ -3,15 +3,15 @@ import React, {useState, useEffect, useCallback} from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import {LoaderSpinner} from '../../components';
 import {COLORS, FONTS, SIZES} from '../../constants/themes';
-import {Chip, Card, Divider} from 'react-native-paper';
+import {Chip, Card} from 'react-native-paper';
 import {FlatList} from 'react-native-gesture-handler';
 
-import {LoadingNothing, CircularImage, FundiDetails} from '../../components';
+import {LoadingNothing, CircularImage} from '../../components';
 
 //rating
 import {Rating} from 'react-native-ratings';
-//icons
-import OIcons from 'react-native-vector-icons/Octicons';
+//icons;
+import AIcons from 'react-native-vector-icons/AntDesign';
 // redux store
 import {useDispatch, connect} from 'react-redux';
 import {fundiActions} from '../../store-actions';
@@ -19,8 +19,9 @@ import {fundiActions} from '../../store-actions';
 ///// constants
 import axios from 'axios';
 axios.defaults.timeout = 10000;
-import {endpoints, errorMessage} from '../../endpoints';
+import {axios_endpoint_error, endpoints} from '../../endpoints';
 import {screens} from '../../constants';
+axios.defaults.baseURL = endpoints.jenzi_backend + '/jenzi/v1';
 
 const mapsStateToProps = state => {
   const {fundis, user_data, ui_settings, tasks} = state;
@@ -43,12 +44,25 @@ const ServiceType = ({onChipClick, item}) => {
 };
 
 const Providers = ({details, itemClick}) => {
-  const {name, photoUrl} = details.account;
-  const d = details.distance;
+  const {name, photo_url, id, stars} = details;
+  const [fundi_projects, set_fundi_projects] = useState([]);
+  useEffect(() => {
+    axios.get(`/fundi-tasks/user/${id}`).then(res => {
+      const {data} = res.data;
+      const projects_data = data?.filter(el => {
+        if (el?.fundi_data?.state?.toLowerCase() === 'inprogress') return el;
+      });
+      set_fundi_projects(projects_data);
+    });
+
+    return () => {
+      set_fundi_projects(0);
+    };
+  }, []);
   return (
     <Card style={styles.card_container} onPress={() => itemClick(details)}>
       <View style={styles._card_content}>
-        <CircularImage size={70} />
+        <CircularImage size={100} url={photo_url} />
         <View style={{marginVertical: SIZES.base, alignItems: 'center'}}>
           <Text style={{...FONTS.body_bold}}>{name || 'Not Available'}</Text>
         </View>
@@ -56,25 +70,24 @@ const Providers = ({details, itemClick}) => {
         <Rating
           ratingCount={5}
           imageSize={SIZES.icon_size}
-          startingValue={0}
+          startingValue={stars ?? 1}
           readonly
         />
         <View
           style={{width: '100%', flexDirection: 'row', alignItems: 'center'}}>
-          <OIcons
-            name="milestone"
-            size={SIZES.icon_size}
+          <AIcons
+            name="dashboard"
+            size={SIZES.padding_16}
+            color={COLORS.blue_deep}
             style={{marginRight: SIZES.base}}
           />
           <Text
             style={{
               ...FONTS.body,
               marginVertical: SIZES.base,
-              color: COLORS.secondary,
+              color: COLORS.blue_deep,
             }}>
-            {d < 1
-              ? (d * 1000).toFixed(2) + ' Meter(s)'
-              : d.toFixed(1) + ' Kms'}
+            {fundi_projects.length} projects{`(s)`} complete
           </Text>
         </View>
       </View>
@@ -94,7 +107,6 @@ const PageContent = ({fundis: f, navigation, user_data, ui_settings}) => {
     selected: true,
   });
   const [availableFundis, setAvailableFundis] = useState([]);
-  const [renderNull, setRenderNull] = useState(false);
   const [categories, setCategories] = useState([]);
 
   //store
@@ -104,17 +116,6 @@ const PageContent = ({fundis: f, navigation, user_data, ui_settings}) => {
   const renderProfessionTypes = ({item}) => (
     <ServiceType item={item} onChipClick={i => handleClickedType(i)} />
   );
-  //render available users
-  const renderFundis = ({item}) => {
-    return (
-      <Providers
-        details={item}
-        itemClick={() => {
-          navigation.navigate(screens.fundi_details_preview, {...item});
-        }}
-      />
-    );
-  };
 
   function handleClickedType(i) {
     setSelectedType(i);
@@ -128,29 +129,27 @@ const PageContent = ({fundis: f, navigation, user_data, ui_settings}) => {
 
   // axios calls
   const fetchNearbyFundis = async (filter = 'none') => {
-    if (latitude && longitude) {
-      setLoading(true);
-      try {
-        let fundi_req = `${endpoints.fundi_service}/accounts/find-nearby?longitude=${longitude}&latitude=${latitude}&scanRadius=${scanRadius}`;
-        if (filter !== 'none') {
-          fundi_req = `${endpoints.fundi_service}/accounts/find-nearby?longitude=${longitude}&latitude=${latitude}&scanRadius=${scanRadius}&filter=${filter}`;
-        }
-        const users = axios.get(fundi_req);
-        const req = await Promise.all([users]);
-        dispatch(fundiActions.add_fundi(req[0].data));
-        setAvailableFundis(req[0].data);
-      } catch (error) {
-        console.log(error);
-        dispatch(fundiActions.add_fundi([]));
-        errorMessage(error);
-      } finally {
-        setLoading(false);
-      }
+    // if (latitude && longitude) {
+    setLoading(true);
+    let fundi_req = `/utility/nearby-fundis?longitude=${0}&latitude=${0}&radius=${22000}`;
+    if (filter !== 'none') {
+      fundi_req = `/utility/nearby-fundis?longitude=${0}&latitude=${0}&radius=${22000}&filter=${filter}`;
     }
+    axios
+      .get(fundi_req)
+      .then(res => {
+        setAvailableFundis(res.data);
+      })
+      .catch(err => {
+        dispatch(fundiActions.add_fundi([]));
+        axios_endpoint_error(err);
+      })
+      .finally(() => setLoading(false));
+    // }
   };
 
   const fetch_categories = () => {
-    axios.get(`${endpoints.client_service}/tasks-category`).then(categories => {
+    axios.get(`/job-category`).then(categories => {
       let cats = categories.data.map(el => {
         return {id: el.id, title: el.title, selected: false};
       });
@@ -159,22 +158,13 @@ const PageContent = ({fundis: f, navigation, user_data, ui_settings}) => {
     });
   };
 
-  const filterOnCategoryChange = () => {
-    if (selectedType.title === 'All') fetchNearbyFundis();
-    else fetchNearbyFundis(selectedType.id);
-  };
-
   useEffect(() => {
-    fetchNearbyFundis();
+    if (selectedType.title !== 'All') fetchNearbyFundis(selectedType.id);
+    else fetchNearbyFundis();
     return () => {
       setLoading(false);
     };
-  }, [latitude, longitude, ui_settings.refresh_state]);
-
-  useEffect(() => {
-    filterOnCategoryChange();
-  }, [selectedType]);
-
+  }, [latitude, longitude, ui_settings.refresh_state, selectedType]);
   // run once
   useEffect(() => {
     fetch_categories();
@@ -208,8 +198,17 @@ const PageContent = ({fundis: f, navigation, user_data, ui_settings}) => {
       {availableFundis.length ? (
         <FlatList
           data={availableFundis}
-          renderItem={renderFundis}
-          keyExtractor={i => i.account.accountId}
+          renderItem={({item}) => {
+            return (
+              <Providers
+                details={item}
+                itemClick={() => {
+                  navigation.navigate(screens.fundi_details_preview, {...item});
+                }}
+              />
+            );
+          }}
+          keyExtractor={i => i.account_id}
           style={{marginVertical: SIZES.padding_16}}
           horizontal={true}
           showsHorizontalScrollIndicator={false}
