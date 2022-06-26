@@ -14,13 +14,14 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import {offline_data, screens} from '../constants';
-import {endpoints, errorMessage} from '../endpoints';
+import {endpoints, axios_endpoint_error} from '../endpoints';
 // data validation
 import {auth_validator} from '../utils';
+axios.defaults.baseURL = endpoints.jenzi_backend + '/jenzi/v1';
 
 const Login = ({navigation}) => {
   // screen state
-  const [email, setEmail] = useState('');
+  const [username, set_username] = useState('');
   const [password, setPassword] = useState('');
   const [load, setLoading] = useState(false);
 
@@ -33,12 +34,12 @@ const Login = ({navigation}) => {
   }, []);
 
   const handleLogin = () => {
-    if (!email || !password)
+    if (!username || !password)
       return ToastAndroid.show(
         'Phone number and password are required',
         ToastAndroid.LONG,
       );
-    const valid = auth_validator.login_schema.validate({email});
+    const valid = auth_validator.login_schema.validate({username});
     if (valid?.error)
       return ToastAndroid.show(
         'Invalid phone number format or length - check and try again',
@@ -46,17 +47,21 @@ const Login = ({navigation}) => {
       );
     setLoading(true);
     axios
-      .post(`${endpoints.client_service}/clients/details-email`, {
-        email: email.toLowerCase(),
+      .post(`/clients/login`, {
+        username: username.toLowerCase().trim(),
         password,
       })
       .then(async res => {
         await AsyncStorage.setItem(offline_data.user, JSON.stringify(res.data));
         dispatch(user_data_actions.create_user(res.data));
         ToastAndroid.show('Welcome to Jenzi', ToastAndroid.LONG);
+        navigation.reset({
+          index: 0,
+          routes: [{name: screens.stack_app}],
+        });
       })
       .catch(err => {
-        errorMessage(err);
+        axios_endpoint_error(err);
       })
       .finally(() => {
         setLoading(false);
@@ -90,6 +95,7 @@ const Login = ({navigation}) => {
           </Text>
           <TextInput
             dense={true}
+            underlineColorAndroid="transparent"
             activeUnderlineColor={COLORS.secondary}
             style={[styles._input_field, {backgroundColor: 'transparent'}]}
             left={
@@ -101,11 +107,12 @@ const Login = ({navigation}) => {
             }
             placeholder="Phone number"
             keyboardType="phone-pad"
-            value={email}
-            onChangeText={txt => setEmail(txt)}
+            value={username}
+            onChangeText={txt => set_username(txt)}
           />
           <TextInput
             dense={true}
+            underlineColorAndroid="rgba(0,0,0,0)"
             activeUnderlineColor={COLORS.secondary}
             style={[{backgroundColor: 'white'}]}
             left={

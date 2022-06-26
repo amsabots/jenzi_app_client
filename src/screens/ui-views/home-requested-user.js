@@ -1,7 +1,6 @@
 import React, {useState, useEffect, memo} from 'react';
 import {View, Text, StyleSheet} from 'react-native';
-import {Button, Caption} from 'react-native-paper';
-import {FlatList} from 'react-native-gesture-handler';
+import {Caption} from 'react-native-paper';
 import {COLORS, FONTS, SIZES} from '../../constants/themes';
 //components
 import {LoaderSpinner} from '../../components';
@@ -10,9 +9,6 @@ import {useDispatch, connect} from 'react-redux';
 import {store} from '../../../App';
 //components
 import MIcons from 'react-native-vector-icons/MaterialIcons';
-import axios from 'axios';
-import {fundiActions} from '../../store-actions';
-import {endpoints} from '../../endpoints';
 
 const mapStateToProps = state => {
   const {fundis} = state;

@@ -1,18 +1,11 @@
 import React, {useState, useEffect, useMemo, memo, useCallback} from 'react';
-import {Button, Portal, Modal, TextInput} from 'react-native-paper';
+import {Button, Portal, Modal} from 'react-native-paper';
 import {View, Text, StyleSheet} from 'react-native';
 // constants
 import {SIZES} from '../../constants/themes';
 import {COLORS} from '../../constants/themes';
 //
 import _ from 'lodash';
-
-//redux
-import {useDispatch, connect} from 'react-redux';
-import axios from 'axios';
-//
-import {endpoints} from '../../endpoints';
-import Toast from 'react-native-toast-message';
 
 const mapStateToProps = state => {
   const {fundis} = state;
