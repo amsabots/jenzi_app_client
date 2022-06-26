@@ -17,6 +17,9 @@ const screens = {
   project_info: 'Project_info',
   project_creator_wizard: 'project_creator_wizard',
   fundi_details_preview: 'FundiDetailsPreview',
+  profile_basic_details: 'ProfileBasicDetails',
+  profile_password_edit: 'ProfilePasswordEditor',
+  profile_preferences_edit: 'ProfilePreferencesEdit',
 };
 
 export {screens};
