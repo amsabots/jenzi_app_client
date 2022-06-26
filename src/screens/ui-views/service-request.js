@@ -1,6 +1,7 @@
 import React, {useState, useEffect, useMemo, memo, useCallback} from 'react';
 import {Button, Portal, Modal} from 'react-native-paper';
 import {View, Text, StyleSheet} from 'react-native';
+import {connect} from 'react-redux';
 // constants
 import {SIZES} from '../../constants/themes';
 import {COLORS} from '../../constants/themes';
