@@ -1,5 +1,6 @@
 import React, {useState, useEffect, useRef} from 'react';
-import {View, Text, StyleSheet, ScrollView} from 'react-native';
+//prettier-ignore
+import {View, Text, StyleSheet, ScrollView, TouchableOpacity} from 'react-native';
 import {Caption} from 'react-native-paper';
 //toast
 import {
@@ -14,7 +15,6 @@ import AIcons from 'react-native-vector-icons/AntDesign';
 // redux store
 import {UISettingsActions} from '../store-actions/ui-settings';
 import {useDispatch, connect} from 'react-redux';
-import {TouchableOpacity} from 'react-native-gesture-handler';
 import {screens} from '../constants';
 
 const stateToProps = state => {
@@ -22,11 +22,9 @@ const stateToProps = state => {
   return {user_data};
 };
 
-const MenuItem = ({icon_name = 'adduser', to_screen, label, navigation}) => {
+const MenuItem = ({icon_name = 'adduser', label, onItemClicked}) => {
   return (
-    <TouchableOpacity
-      style={sub_styles._container}
-      onPress={() => navigation.navigate(to_screen)}>
+    <TouchableOpacity style={sub_styles._container} onPress={onItemClicked}>
       <View style={sub_styles._icon_container}>
         <AIcons
           name={icon_name}
@@ -63,6 +61,10 @@ const Profile = ({navigation, user_data}) => {
   // redux store
   const dispatch = useDispatch();
   // mount on the first render only
+
+  const handleItemClicked = to_screen => {
+    navigation.navigate(to_screen);
+  };
   useEffect(() => {
     dispatch(UISettingsActions.status_bar(false));
   }, []);
@@ -100,24 +102,27 @@ const Profile = ({navigation, user_data}) => {
                 color: COLORS.blue_deep,
                 marginBottom: SIZES.padding_16,
               }}>
-              Profile managers
+              Profile manager
             </Text>
             <MenuItem
               label={'Basic Info'}
-              navigation={navigation}
-              to_screen={screens.profile_basic_details}
+              onItemClicked={() =>
+                handleItemClicked(screens.profile_basic_details)
+              }
             />
             <MenuItem
               label={'Password Editor'}
               icon_name={'key'}
-              navigation={navigation}
-              to_screen={screens.profile_password_edit}
+              onItemClicked={() =>
+                handleItemClicked(screens.profile_password_edit)
+              }
             />
             <MenuItem
               label={'Account Preferences'}
               icon_name={'tool'}
-              navigation={navigation}
-              to_screen={screens.profile_password_edit}
+              onItemClicked={() =>
+                handleItemClicked(screens.profile_preferences_edit)
+              }
             />
           </View>
           {/*  */}

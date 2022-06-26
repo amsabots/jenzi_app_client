@@ -14,6 +14,8 @@ import {
   RateClient,
   Conversation,
   ProjectCreatorWizard,
+  profileBasicEditor,
+  profilePassword,
 } from '../screens';
 import {screens} from '../constants/screens';
 //navigation components
@@ -103,6 +105,14 @@ const AppDrawerNavigator = () => {
       <Stack.Screen name={screens.project_info} component={ProjectInfo} />
       <Stack.Screen name={screens.rate_fundi} component={RateClient} />
       <Stack.Screen name={screens.conversation} component={Conversation} />
+      <Stack.Screen
+        name={screens.profile_basic_details}
+        component={profileBasicEditor}
+      />
+      <Stack.Screen
+        name={screens.profile_password_edit}
+        component={profilePassword}
+      />
       <Stack.Screen
         name={screens.fundi_details_preview}
         component={HomeDetailsPreview}

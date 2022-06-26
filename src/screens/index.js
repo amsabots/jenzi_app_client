@@ -12,6 +12,8 @@ import ProjectInfo from './project-info';
 import RateClient from './rate-client';
 import Conversation from './conversation';
 import ProjectCreatorWizard from './project-creator-wizard';
+import profileBasicEditor from './profile-basic-editor';
+import profilePassword from './profile-password';
 
 export {
   HomeView,
@@ -28,4 +30,6 @@ export {
   RateClient,
   Conversation,
   ProjectCreatorWizard,
+  profileBasicEditor,
+  profilePassword,
 };
