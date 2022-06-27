@@ -1,6 +1,5 @@
 import React, {useEffect} from 'react';
 //sqlite
-import storage from '@react-native-async-storage/async-storage';
 import {screens} from '../constants';
 import AuthNavigator from './auth-stack';
 import AppDrawerNavigator from './app-stack';
@@ -12,7 +11,7 @@ import {MainActivity} from '../screens';
 
 const Stack = createNativeStackNavigator();
 
-const NavigationContainerWrapperView = () => {
+export const NavigationContainerWrapper = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
@@ -27,5 +26,3 @@ const NavigationContainerWrapperView = () => {
     </NavigationContainer>
   );
 };
-
-export const NavigationContainerWrapper = NavigationContainerWrapperView;

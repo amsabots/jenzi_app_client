@@ -5,7 +5,6 @@ import {Caption, Card, Chip} from 'react-native-paper';
 import {UISettingsActions} from '../store-actions/ui-settings';
 import {connect, useDispatch} from 'react-redux';
 import {COLORS, FONTS, SIZES} from '../constants/themes';
-import {TabView, SceneMap} from 'react-native-tab-view';
 
 //ui components
 import {DefaultToolBar} from '../components';
@@ -15,28 +14,6 @@ import axios from 'axios';
 import {axios_endpoint_error, endpoints} from '../endpoints';
 
 axios.defaults.baseURL = endpoints.jenzi_backend + '/jenzi/v1';
-
-//tabs
-const CompletedProjects = () => {
-  return (
-    <View style={{flex: 1, backgroundColor: 'red'}}>
-      <Text>Hello first screen</Text>
-    </View>
-  );
-};
-//tabs
-const OtherProjects = () => {
-  return (
-    <View style={{flex: 1, backgroundColor: 'blue'}}>
-      <Text>Hello second screen</Text>
-    </View>
-  );
-};
-
-const renderScene = SceneMap({
-  first: CompletedProjects,
-  second: OtherProjects,
-});
 /**
  * =================== Main Component =================
  */
@@ -45,17 +22,6 @@ const Projects = ({navigation, user_data}) => {
   const [loading, setLoading] = useState(false);
   const [deletable, showDeletable] = useState(false);
   const [projects, set_projects] = useState([]);
-  // ======= TABS ============
-  const layout = useWindowDimensions();
-
-  const [index, setIndex] = useState(0);
-  const routes = useMemo(
-    () => [
-      {key: 'first', title: 'First'},
-      {key: 'second', title: 'Second'},
-    ],
-    [],
-  );
   //redux
   const dispatch = useDispatch();
 
@@ -85,14 +51,7 @@ const Projects = ({navigation, user_data}) => {
         refresh={true}
         onRefreshClicked={loadProjects}
       />
-      <View style={styles.container}>
-        <TabView
-          navigationState={{index, routes}}
-          renderScene={renderScene}
-          onIndexChange={setIndex}
-          initialLayout={{width: layout.width}}
-        />
-      </View>
+      <View style={styles.container}></View>
     </View>
   );
 };

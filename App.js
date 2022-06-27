@@ -1,8 +1,4 @@
 import React from 'react';
-import {StyleSheet, View} from 'react-native';
-//
-import SplashScreen from 'react-native-splash-screen';
-
 import {Provider} from 'react-redux';
 import {createStore} from 'redux';
 //paper react native ui lib
