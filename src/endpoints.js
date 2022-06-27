@@ -34,11 +34,11 @@ export const errorMessage = err => {
 };
 
 export const axios_endpoint_error = error => {
+  console.log(error);
   if (error?.response) {
     let err = error.response.data;
     //prettier-ignore
     err = typeof err !=="string" || err.length > 70 ? "Error processing your request": err
-    console.log();
     Toast.show({
       type: 'error',
       text1: 'Request Error',
@@ -46,7 +46,6 @@ export const axios_endpoint_error = error => {
       position: 'center',
     });
   } else {
-    console.log(error);
     Toast.show({
       type: 'error',
       text1: 'Service unavailable',

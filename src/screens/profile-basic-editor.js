@@ -2,9 +2,14 @@ import React, {useState} from 'react';
 import {Text, View, StyleSheet, ToastAndroid} from 'react-native';
 import {Button, Switch, TextInput} from 'react-native-paper';
 import {connect} from 'react-redux';
-import {DefaultToolBar} from '../components';
+import {DefaultToolBar, LoadingModal} from '../components';
 import {COLORS, FONTS, SIZES} from '../constants/themes';
 import _ from 'lodash';
+import axios from 'axios';
+import {axios_endpoint_error, endpoints} from '../endpoints';
+import {refresh_saved_user} from '../utils/store-actions';
+axios.defaults.baseURL = endpoints.jenzi_backend + '/jenzi/v1';
+import Toast from 'react-native-toast-message';
 
 const stateToProps = state => {
   const {user_data} = state;
@@ -40,6 +45,24 @@ const ProfileBasicEditor = ({navigation, user_data}) => {
   const handleAccountStateChange = () => {
     set_active(!is_active);
   };
+  const handle_input_change = obj => {
+    set_update_info(prev => {
+      return {...prev, ...obj};
+    });
+  };
+  const handle_form_submission = () => {
+    const _clean = _.omitBy(update_info, _.isNil);
+    set_loading(true);
+    axios
+      .put(`/clients/${user.id}`, _clean)
+      .then(res => {
+        refresh_saved_user(user.id);
+        // prettier-ignore
+        Toast.show({type:"success", text2:"Information updated successfully"})
+      })
+      .catch(err => axios_endpoint_error(err))
+      .finally(() => set_loading(false));
+  };
   return (
     <View style={styles.container}>
       <DefaultToolBar navigation={navigation} title={'Basic Detailss'} />
@@ -53,14 +76,19 @@ const ProfileBasicEditor = ({navigation, user_data}) => {
             }}>
             Profile details
           </Text>
-          <CustomInpuTextInput label={'Your name'} value={update_info.name} />
+          <CustomInpuTextInput
+            label={'Your name'}
+            value={update_info.name}
+            onTextChange={txt => handle_input_change({name: txt})}
+          />
           <CustomInpuTextInput
             label={'Phone number'}
             value={update_info.phone_number ?? user.username}
+            onTextChange={txt => handle_input_change({phone_number: txt})}
           />
           <Button
             mode="contained"
-            loading={load}
+            onPress={handle_form_submission}
             style={{
               marginVertical: SIZES.padding_32,
               backgroundColor: COLORS.secondary,
@@ -84,6 +112,7 @@ const ProfileBasicEditor = ({navigation, user_data}) => {
           </View>
         </View>
       </View>
+      <LoadingModal show={load} label={'Please wait....'} />
     </View>
   );
 };
