@@ -95,7 +95,7 @@ const Fundi_trainedBy = ({trained_by}) => {
   );
 };
 
-const DetailsView = ({fundis, user_data, tasks}) => {
+const DetailsView = ({fundis, user_data, tasks, navigation}) => {
   const dispatch = useDispatch();
   const [load, setLoad] = useState(false);
   const [trainedBy, set_trained_by] = useState([]);
@@ -262,16 +262,19 @@ const DetailsView = ({fundis, user_data, tasks}) => {
         {/* =================== component to show the request sending status =============== */}
         <PendingRequests onCancel={el => handleCancelRequest(el)} />
         {/* ============= ============================= */}
-        <View style={styles._border_line}></View>
       </View>
       {/* =========== handler attached to on accept of the module window from the adjacent activity =============  */}
       {fundis.sent_requests.length < 1 && (
-        <ServiceRequest sendRequest={handleSendRequest} />
+        <>
+          <View style={styles._border_line}></View>
+          <ServiceRequest
+            sendRequest={handleSendRequest}
+            current_project={current_project}
+            navigation={navigation}
+          />
+          <View style={styles._border_line}></View>
+        </>
       )}
-      <View style={styles._border_line}></View>
-      {/* <View style={styles._reviews}>
-        <ReviewContainer />
-      </View> */}
     </View>
   ) : (
     <LoadingNothing label={'No details available'} />

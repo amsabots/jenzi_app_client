@@ -125,7 +125,7 @@ const item_styles = StyleSheet.create({
 /**
  * =================== Main Component =================
  */
-const Projects = ({navigation, user_data}) => {
+const Projects = ({navigation, user_data, ui_settings}) => {
   //set project variables
   const [loading, setLoading] = useState(false);
   const [deletable, showDeletable] = useState(false);
@@ -149,7 +149,7 @@ const Projects = ({navigation, user_data}) => {
   useEffect(() => {
     loadProjects();
     dispatch(UISettingsActions.status_bar(false));
-  }, []);
+  }, [ui_settings.refresh_state]);
   return (
     <View style={styles.container}>
       <DefaultToolBar
@@ -202,8 +202,8 @@ const Projects = ({navigation, user_data}) => {
 };
 
 const mapStateToProps = state => {
-  const {tasks, user_data} = state;
-  return {tasks, user_data};
+  const {tasks, user_data, ui_settings} = state;
+  return {tasks, user_data, ui_settings};
 };
 
 const styles = StyleSheet.create({

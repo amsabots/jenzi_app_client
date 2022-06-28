@@ -145,7 +145,7 @@ const HomeDetailsPreview = ({navigation, route, ui_settings, fundis}) => {
     <ScrollView>
       <View>
         <DefaultToolBar navigation={navigation} title="Fundi Info" />
-        <FundiDetails />
+        <FundiDetails navigation={navigation} />
 
         {/* Some awesome modal stuff */}
         <Portal>
@@ -207,41 +207,3 @@ const styles = StyleSheet.create({
 });
 
 export default connect(mapStateToProps)(HomeDetailsPreview);
-
-// <Modal
-//   visible={project_success}
-//   onDismiss={() => {
-//     setSuccessModal(false);
-//     dispatch(UISettingsActions.update_project_tracker({}));
-//   }}
-//   contentContainerStyle={styles._modal_style}
-//   dismissable={false}>
-//   <View style={styles._modal_container_wrapper}>
-//     <LoaderSpinner.SuccessAnimation width={120} height={120} />
-//     <Text
-//       style={{
-//         ...FONTS.body_medium,
-//         marginHorizontal: SIZES.base,
-//       }}>
-//       Fundi accepted your request. We have initiated the project automatically
-//       for the period it will be active. Please remember to update project
-//       status.
-//     </Text>
-//     <View style={styles._modal_footer_container}>
-//       <Button>
-//         <Text
-//           style={{...FONTS.caption, color: COLORS.grey_dark}}
-//           onPress={}>
-//           Open project
-//         </Text>
-//       </Button>
-//       <Button>
-//         <Text
-//           style={{...FONTS.captionBold}}
-//           onPress={() => }>
-//           Open chats
-//         </Text>
-//       </Button>
-//     </View>
-//   </View>
-// </Modal>;

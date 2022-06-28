@@ -5,22 +5,21 @@ import {
   InteractionManager,
   StyleSheet,
   ScrollView,
-  FlatList,
 } from 'react-native';
 // Redux navigation
 import {useDispatch, connect} from 'react-redux';
 import {Button, Card} from 'react-native-paper';
 import {UISettingsActions, task_actions} from '../store-actions';
 
-import {DefaultToolBar, InfoChips, LoaderSpinner} from '../components';
+import {DefaultToolBar, LoaderSpinner, LoadingModal} from '../components';
 import {COLORS, FONTS, SIZES} from '../constants/themes';
 import {endpoints, axios_endpoint_error} from '../endpoints';
 import Entypo from 'react-native-vector-icons/Entypo';
-import assigneeInfo from './project-settings/assignee-info';
 //axios
 import axios from 'axios';
 import moment from 'moment';
 import AssigneeInfo from './project-settings/assignee-info';
+import Toast from 'react-native-toast-message';
 
 axios.defaults.baseURL = endpoints.jenzi_backend + '/jenzi/v1';
 
@@ -35,7 +34,7 @@ const ProjectInfo = ({navigation, route, user_data}) => {
   const [view_ready, setViewReady] = useState(false);
   const [loading, setLoading] = useState(false);
   //prettier-ignore
-  const {task_state, createdAt, title, requirements, text_info, task_id} =
+  const {task_state, createdAt, title, requirements, text_info, task_id, id} =
     project?.task_entry;
   const requirements_array = requirements
     ? requirements?.split('>').splice(0, 4)
@@ -43,6 +42,20 @@ const ProjectInfo = ({navigation, route, user_data}) => {
 
   // Redux handlers and hooks
   const dispatch = useDispatch();
+
+  const delete_project_entry = () => {
+    setLoading(true);
+    axios
+      .delete(`/tasks/${id}`)
+      .then(() => {
+        //prettier-ignore
+        Toast.show({type:"success", text2:"Successfully removed the job entry"})
+        dispatch(UISettingsActions.refresh_component());
+        navigation.goBack();
+      })
+      .catch(err => axios_endpoint_error(err))
+      .finally(() => setLoading(false));
+  };
 
   useCallback(
     InteractionManager.runAfterInteractions(() => {
@@ -76,7 +89,12 @@ const ProjectInfo = ({navigation, route, user_data}) => {
   return (
     <ScrollView>
       <View style={[styles.container]}>
-        <DefaultToolBar title="Project details" navigation={navigation} />
+        <DefaultToolBar
+          title="Project details"
+          navigation={navigation}
+          del={true}
+          onDeleteClicked={delete_project_entry}
+        />
         <View style={[styles.container]}>
           <Text style={styles._project_txt_title}>Project details</Text>
           {/* ============ PROJECT DETAILS ============== */}
@@ -131,15 +149,21 @@ const ProjectInfo = ({navigation, route, user_data}) => {
         <Text style={styles._project_txt_title}>
           Assignees {'&'} project status
         </Text>
-        {project?.assigned_to ? (
+        {project?.assigned_to.length ? (
           <AssigneeInfo fundis={project?.assigned_to} />
         ) : (
-          <Text style={{...FONTS.caption, textAlign: 'center'}}>
-            Project not to any one yet
+          <Text
+            style={{
+              ...FONTS.caption,
+              textAlign: 'center',
+              color: COLORS.blue_deep,
+            }}>
+            This project has not been assigned to any fundi
           </Text>
         )}
         <Text style={styles._project_txt_title}>Action center</Text>
       </View>
+      <LoadingModal show={loading} label={'Processing, Please wait....'} />
     </ScrollView>
   );
 };

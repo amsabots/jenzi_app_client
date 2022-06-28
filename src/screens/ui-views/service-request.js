@@ -3,10 +3,11 @@ import {Button, Portal, Modal} from 'react-native-paper';
 import {View, Text, StyleSheet} from 'react-native';
 import {connect} from 'react-redux';
 // constants
-import {SIZES} from '../../constants/themes';
+import {FONTS, SIZES} from '../../constants/themes';
 import {COLORS} from '../../constants/themes';
 //
 import _ from 'lodash';
+import {screens} from '../../constants';
 
 const mapStateToProps = state => {
   const {fundis} = state;
@@ -42,7 +43,7 @@ const RequestTitle = memo(({onAccept, show = false, onHide}) => {
   );
 });
 
-const ServiceRequestView = ({sendRequest, fundis}) => {
+const ServiceRequestView = ({sendRequest, current_project, navigation}) => {
   const [showModal, setShowModal] = useState(false);
   const [disableBtn, set_disable_button] = useState(false);
 
@@ -53,15 +54,25 @@ const ServiceRequestView = ({sendRequest, fundis}) => {
 
   return (
     <View style={{marginVertical: SIZES.padding_16}}>
-      <Button
-        mode="contained"
-        disabled={disableBtn}
-        style={{backgroundColor: COLORS.secondary}}
-        onPress={() => {
-          setShowModal(true);
-        }}>
-        request service
-      </Button>
+      {Object.keys(current_project).length ? (
+        <Button
+          mode="contained"
+          disabled={disableBtn}
+          style={{backgroundColor: COLORS.secondary}}
+          onPress={() => {
+            setShowModal(true);
+          }}>
+          request service
+        </Button>
+      ) : (
+        <Button
+          mode="outlined"
+          style={{borderColor: COLORS.blue_deep}}
+          labelStyle={{...FONTS.caption, textTransform: 'capitalize'}}
+          onPress={() => navigation.navigate(screens.project_creator_wizard)}>
+          Create project
+        </Button>
+      )}
       <RequestTitle
         show={showModal}
         onHide={() => setShowModal(false)}
