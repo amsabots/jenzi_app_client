@@ -4,46 +4,96 @@ import {
   View,
   InteractionManager,
   StyleSheet,
-  ToastAndroid,
+  ScrollView,
+  FlatList,
 } from 'react-native';
-
-//axios
-import axios from 'axios';
-axios.defaults.timeout = 10000;
-import moment from 'moment';
-
 // Redux navigation
 import {useDispatch, connect} from 'react-redux';
-import {Button, Chip, TextInput} from 'react-native-paper';
+import {Button, Card} from 'react-native-paper';
 import {UISettingsActions, task_actions} from '../store-actions';
 
-import {
-  DefaultToolBar,
-  InfoChips,
-  LoaderSpinner,
-  LoadingModal,
-  PlainFundiProfile,
-} from '../components';
+import {DefaultToolBar, InfoChips, LoaderSpinner} from '../components';
 import {COLORS, FONTS, SIZES} from '../constants/themes';
-import {endpoints, errorMessage} from '../endpoints';
-import {ScrollView} from 'react-native-gesture-handler';
+import {endpoints, axios_endpoint_error} from '../endpoints';
+import Entypo from 'react-native-vector-icons/Entypo';
+//axios
+import axios from 'axios';
+import moment from 'moment';
+
+axios.defaults.baseURL = endpoints.jenzi_backend + '/jenzi/v1';
 
 const mapStateToProps = state => {
   const {user_data} = state;
   return {user_data};
 };
 
+const AssignedTo = ({fundis}) => {
+  const [loading, set_loading] = useState(false);
+  if (loading)
+    return (
+      <View style={styles._section}>
+        <Text
+          style={{
+            ...FONTS.caption,
+            paddingVertical: SIZES.padding_16,
+            textAlign: 'center',
+          }}>
+          Fetching assignees.....
+        </Text>
+      </View>
+    );
+  if (!fundis.length)
+    return (
+      <View style={styles._section}>
+        <Text
+          style={{
+            ...FONTS.caption,
+            paddingVertical: SIZES.padding_16,
+            textAlign: 'center',
+          }}>
+          The project is not assigned to anybody yet
+        </Text>
+      </View>
+    );
+  return (
+    <View style={styles._section}>
+      <FlatList
+        data={fundis}
+        horizontal
+        style={{marginLeft: SIZES.base, paddingBottom: SIZES.base}}
+        keyExtractor={item => item.entryId}
+        renderItem={({item}) => {
+          return (
+            <Card style={[fundi_item._card_container]}>
+              <Text>Hello</Text>
+            </Card>
+          );
+        }}
+      />
+    </View>
+  );
+};
+
+const fundi_item = StyleSheet.create({
+  _card_container: {
+    minHeight: 150,
+    overflow: 'hidden',
+    padding: SIZES.padding_16,
+  },
+});
+
 const ProjectInfo = ({navigation, route, user_data}) => {
   const {project} = route.params;
-  const {LONG, SHORT, BOTTOM, TOP} = ToastAndroid;
-  const {pendingTaskStates, task_state: taskState, createdAt, title} = project;
   // application state variables
   const [view_ready, setViewReady] = useState(false);
-  const [fundi, setFundi] = useState();
   const [loading, setLoading] = useState(false);
-  const [reason, setReason] = useState('');
-  const [action, setAction] = useState('');
-  const [reason_getter, setReasonGette] = useState(false);
+  //prettier-ignore
+  const {task_state, createdAt, title, requirements, text_info, task_id} =
+    project?.task_entry;
+  const requirements_array = requirements
+    ? requirements?.split('>').splice(0, 4)
+    : ['No project requirements provided'];
+
   // Redux handlers and hooks
   const dispatch = useDispatch();
 
@@ -53,62 +103,6 @@ const ProjectInfo = ({navigation, route, user_data}) => {
     }),
     [],
   );
-
-  // component functions
-
-  const update_job = async task => {
-    try {
-      setLoading(true);
-      await axios.put(`${endpoints.client_service}/jobs/${project.id}`, task);
-      const obj = {...project, ...task};
-      dispatch(task_actions.update_job(obj));
-      ToastAndroid.showWithGravity(
-        'The task has been updated successfully, Exit to previous page to effect new changes',
-        LONG,
-        TOP,
-      );
-    } catch (error) {
-      console.log(error);
-      errorMessage(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  async function handleReasonSubmit() {
-    if (!reason)
-      return ToastAndroid.show(
-        'A brief reason must be provided',
-        ToastAndroid.SHORT,
-      );
-    let obj = project;
-    delete obj['id'];
-    if (action == 'cancel') {
-      if (pendingTaskStates !== 'CANCEL_PENDING')
-        return alert(
-          `You cannot cancel this action until the process is initiated by ${fundi.name}. Please contact them through chats  to initiate the process`,
-        );
-      obj = {...obj, pendingTaskStates: 'CANCELLED', taskState: 'CANCELLED'};
-    } else {
-      obj = {...obj, pendingTaskStates: 'DISPUTED', taskState: 'DISPUTED'};
-    }
-    await update_job(obj);
-  }
-
-  async function submitReason() {
-    if (pendingTaskStates !== 'COMPLETE_PENDING')
-      return alert(
-        `You cannot complete this action until the process is initiated by ${fundi.name}. Please contact them through chats  to initiate the process`,
-      );
-    const clone_proj = project;
-    delete clone_proj['id'];
-    await update_job({
-      ...clone_proj,
-      pendingTaskStates: 'COMPLETE',
-      taskState: 'COMPLETE',
-    });
-  }
-
   //effects functions
   useEffect(() => {
     dispatch(UISettingsActions.status_bar(false));
@@ -137,136 +131,58 @@ const ProjectInfo = ({navigation, route, user_data}) => {
       <View style={[styles.container]}>
         <DefaultToolBar title="Project details" navigation={navigation} />
         <View style={[styles.container]}>
-          {/* ==============   FUNDI PROFILE VIEWER ======= */}
-          <View style={[styles.center_in_view]}>
-            <PlainFundiProfile
-              fundiId={project.fundiId}
-              onFundiFinished={fundi_details => setFundi(fundi_details)}
-              navigation={navigation}
-            />
-          </View>
-          <Text
-            style={{
-              marginVertical: SIZES.padding_12,
-              ...FONTS.body_medium,
-              marginLeft: SIZES.base,
-            }}>
-            Project details
-          </Text>
+          <Text style={styles._project_txt_title}>Project details</Text>
           {/* ============ PROJECT DETAILS ============== */}
           <View style={[styles._section]}>
-            <Text style={{...FONTS.body_bold}}>{title}</Text>
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                marginTop: SIZES.base,
-              }}>
+            {/* body */}
+            <View style={{marginHorizontal: SIZES.padding_16}}>
+              <Text style={{...FONTS.body_bold, color: COLORS.blue_deep}}>
+                {title}
+              </Text>
+              <Text style={styles._project_time_start}>
+                Started: <Text>{moment(createdAt).fromNow()}</Text>
+              </Text>
+              <Text style={styles._project_txt_requirements}>Requirements</Text>
               <View>
-                <Text style={{...FONTS.caption}}>Your status</Text>
-                <InfoChips text={taskState} textColor={COLORS.secondary} />
-              </View>
-              {/*===== ============== ============ */}
-              <View>
-                <Text style={{...FONTS.caption}}>Fundi status</Text>
-                <InfoChips
-                  text={pendingTaskStates}
-                  textColor={COLORS.blue_deep}
-                />
+                {requirements_array.map((el, idx) => {
+                  return (
+                    <View
+                      style={{flexDirection: 'row', width: '100%'}}
+                      key={idx}>
+                      <Entypo
+                        name="dot-single"
+                        color={`#${task_id.substring(0, 6)}`}
+                        size={SIZES.padding_16}
+                      />
+                      <Text style={{...FONTS.body_light, fontSize: 12}}>
+                        {el}
+                      </Text>
+                    </View>
+                  );
+                })}
               </View>
             </View>
-            <Text style={{...FONTS.captionBold, marginTop: SIZES.base}}>
-              Started: <Text>{moment(createdAt).fromNow()}</Text>
-            </Text>
-          </View>
-          {/* =============  PROJECT ACTIONS ========== */}
-          <Text
-            style={{
-              marginVertical: SIZES.padding_12,
-              ...FONTS.body_medium,
-              marginLeft: SIZES.base,
-            }}>
-            Project actions
-          </Text>
-          <View style={[styles._section, styles._action]}>
-            {taskState !== 'COMPLETE' ? (
-              <Chip
-                style={{backgroundColor: COLORS.secondary}}
-                textStyle={styles._action_chip}
-                onPress={() => {
-                  setAction('complete');
-                  submitReason();
-                  setReasonGette(false);
-                }}>
-                Complete
-              </Chip>
-            ) : null}
-            <Chip
-              style={{backgroundColor: COLORS.blue_deep}}
-              textStyle={styles._action_chip}
-              onPress={() => {
-                setAction('cancel');
-                setReasonGette(true);
-              }}>
-              Cancel
-            </Chip>
-            <Chip
-              style={{backgroundColor: COLORS.primary}}
-              textStyle={styles._action_chip}
-              onPress={() => {
-                setAction('dispute');
-                setReasonGette(true);
-              }}>
-              Raise dispute
-            </Chip>
-          </View>
-
-          {/* =============  PROJECT ACTIONS EXECUTOR ========== */}
-          {reason_getter && (
-            <>
-              <Text
-                style={{
-                  marginVertical: SIZES.padding_12,
-                  ...FONTS.body_medium,
-                  marginLeft: SIZES.base,
-                }}></Text>
+            {/* footer */}
+            <View style={styles._project_info_bottom_section}>
               <View
-                style={[styles._section, {paddingBottom: SIZES.padding_32}]}>
-                <Text style={{...FONTS.caption, color: COLORS.secondary}}>
-                  Provide a brief explanation for your choice of Action
+                style={[
+                  styles._project_state_box,
+                  {backgroundColor: `#${task_id.substring(0, 6)}30`},
+                ]}>
+                <Text
+                  style={{
+                    ...FONTS.captionBold,
+                    color: `#${task_id.substring(0, 6)}`,
+                  }}>
+                  {task_state}
                 </Text>
-
-                <TextInput
-                  placeholder="Brief details"
-                  mode="outlined"
-                  dense={true}
-                  style={{marginTop: SIZES.base}}
-                  activeOutlineColor={COLORS.secondary}
-                  multiline={true}
-                  label={
-                    action === 'cancel'
-                      ? 'Why do you wanna cancel'
-                      : 'Why are you raising a dispute'
-                  }
-                  numberOfLines={3}
-                  onChangeText={txt => setReason(txt)}
-                />
-                <Button
-                  style={{marginTop: SIZES.padding_16}}
-                  mode={'contained'}
-                  onPress={() => handleReasonSubmit()}>
-                  Submit request
-                </Button>
               </View>
-            </>
-          )}
-          {/* ========== END OF CONTAINER WRAPPER ============= */}
-          <LoadingModal
-            onDismiss={() => setLoading(false)}
-            label={'Please wait......'}
-            show={loading}
-          />
+            </View>
+          </View>
+          {/* ====== END OF PROJECT DETAILS =========== */}
         </View>
+        <Text style={styles._project_txt_title}>Assignees</Text>
+        <AssignedTo fundis={project?.assigned_to} />
       </View>
     </ScrollView>
   );
@@ -277,16 +193,32 @@ const styles = StyleSheet.create({
   container: {flex: 1},
   _section: {
     backgroundColor: COLORS.white,
-    paddingHorizontal: SIZES.padding_16,
+    paddingTop: SIZES.base,
+  },
+  _project_txt_title: {
+    marginVertical: SIZES.base,
+    ...FONTS.body_medium,
+    marginLeft: SIZES.base,
+  },
+  _project_time_start: {
+    ...FONTS.body_light,
+    fontSize: 10,
+    marginVertical: SIZES.padding_4,
+  },
+  _project_txt_requirements: {
+    ...FONTS.body_light,
+    color: COLORS.secondary,
+    textDecorationLine: 'underline',
+    marginVertical: SIZES.base,
+  },
+  _project_info_bottom_section: {
+    marginTop: SIZES.base,
+    alignItems: 'flex-end',
+  },
+  _project_state_box: {
     paddingVertical: SIZES.base,
-  },
-  _action: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: SIZES.padding_32,
-  },
-  _action_chip: {
-    color: COLORS.white,
+    paddingHorizontal: SIZES.padding_12,
+    borderTopLeftRadius: SIZES.padding_16,
   },
 });
 

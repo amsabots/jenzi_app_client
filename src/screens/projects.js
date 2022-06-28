@@ -6,6 +6,7 @@ import {UISettingsActions} from '../store-actions/ui-settings';
 import {connect, useDispatch} from 'react-redux';
 import {COLORS, FONTS, SIZES} from '../constants/themes';
 import Iicons from 'react-native-vector-icons/Ionicons';
+import Entypo from 'react-native-vector-icons/Entypo';
 
 //ui components
 import {
@@ -24,7 +25,11 @@ import {screens} from '../constants';
 axios.defaults.baseURL = endpoints.jenzi_backend + '/jenzi/v1';
 
 const ProjectItem = ({project, onItemClicked}) => {
-  const {task_id, title, text_info, task_state, createdAt} = project;
+  const {task_id, title, text_info, task_state, createdAt, requirements} =
+    project?.task_entry;
+  const requirements_array = requirements
+    ? requirements?.split('>').splice(0, 4)
+    : ['No project requirements provided'];
   return (
     <Card
       onPress={() => onItemClicked(project)}
@@ -43,14 +48,22 @@ const ProjectItem = ({project, onItemClicked}) => {
         />
         <View style={item_styles._right_content_wrapper}>
           <Text style={{...FONTS.body_medium}}>{title}</Text>
-          <Text
-            style={{
-              ...FONTS.body_light,
-              fontSize: 12,
-              marginVertical: SIZES.base,
-            }}>
-            {text_info || 'Project information will show here'}
-          </Text>
+          <View style={{marginVertical: SIZES.base}}>
+            {/*  */}
+            {requirements_array.map((el, idx) => {
+              return (
+                <View style={{flexDirection: 'row', width: '100%'}} key={idx}>
+                  <Entypo
+                    name="dot-single"
+                    color={`#${task_id.substring(0, 6)}`}
+                    size={SIZES.padding_16}
+                  />
+                  <Text style={{...FONTS.body_light, fontSize: 12}}>{el}</Text>
+                </View>
+              );
+            })}
+            {/*  */}
+          </View>
           {/* bottom section */}
           <View style={item_styles._bottom_container}>
             {/* === left section =====*/}
@@ -65,7 +78,7 @@ const ProjectItem = ({project, onItemClicked}) => {
               </Text>
             </View>
             {/* ==== right section ==== */}
-            <View style={{flexDirection: 'row'}}>
+            <View>
               <InfoChips
                 text={task_state}
                 textColor={`#${task_id.substring(0, 6)}`}
@@ -170,7 +183,7 @@ const Projects = ({navigation, user_data}) => {
               paddingHorizontal: SIZES.padding_16,
               paddingTop: SIZES.base,
             }}
-            keyExtractor={item => item.task_id}
+            keyExtractor={item => item?.task_entry.task_id}
             renderItem={({item}) => {
               return (
                 <ProjectItem
