@@ -16,14 +16,7 @@ const mapStateToProps = state => {
 };
 
 const PendingRequestsView = memo(({onCancel, fundis}) => {
-  const dispatch = useDispatch();
-  const get_user_name = () => {
-    const s = store.getState();
-    const {selected_fundi} = s.fundis;
-    return selected_fundi;
-  };
-
-  const {sent_requests} = fundis;
+  const {sent_requests, selected_fundi} = fundis;
   return sent_requests.length ? (
     <View>
       <Text style={{...FONTS.body_medium, color: COLORS.secondary}}>
@@ -35,7 +28,7 @@ const PendingRequestsView = memo(({onCancel, fundis}) => {
             <Caption>
               Contacting{' '}
               <Text style={{fontWeight: 'bold'}}>
-                {get_user_name().account.name || 'Not Available'}
+                {selected_fundi.name || 'Not Available'}
               </Text>
             </Caption>
             <View style={styles._item_wrapper}>

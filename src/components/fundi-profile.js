@@ -21,6 +21,7 @@ import Toast from 'react-native-toast-message';
 //
 import {axios_endpoint_error, endpoints} from '../endpoints';
 import axios from 'axios';
+import _ from 'lodash';
 axios.defaults.timeout = 10000;
 axios.defaults.baseURL = endpoints.jenzi_backend + '/jenzi/v1';
 
@@ -118,12 +119,12 @@ const DetailsView = ({fundis, user_data, tasks, navigation}) => {
     const {user} = user_data;
     const payload = {
       payload: current_project,
-      user: user,
-      destination: fundi.account,
+      user: _.pick(user, 'id', 'client_id', 'name', 'username'),
+      destination: _.pick(fundi, 'account_id', 'id', 'name', 'username'),
       status: pusher_filters.request_user,
     };
+    console.log(payload);
     set_modal_loader(true);
-
     try {
       const res = await axios.post(
         `${endpoints.realtime_base_url}/jobs/requests`,
@@ -132,15 +133,11 @@ const DetailsView = ({fundis, user_data, tasks, navigation}) => {
       );
       payload.requestId = res.data.requestId;
       dispatch(fundiActions.get_all_Sent_requests([payload]));
-      return Toast.show({
-        type: 'success',
-        text2: 'Request sent, Please wait response.....',
-      });
+      //prettier-ignore
+      return Toast.show({type: 'success',text2: 'Request sent, Please wait response.....'});
     } catch (error) {
-      return Toast.show({
-        type: 'error',
-        text2: 'Failed Retry later.....',
-      });
+      //prettier-ignore
+      return Toast.show({type: 'error',text2: 'Failed Retry later.....',});
     } finally {
       set_modal_loader(false);
     }
@@ -148,11 +145,8 @@ const DetailsView = ({fundis, user_data, tasks, navigation}) => {
 
   //call the requests delete endpoint when the cancel icon has been clicked on the requests sent component
   const handleCancelRequest = el => {
-    ToastAndroid.showWithGravity(
-      'cancelling....',
-      ToastAndroid.CENTER,
-      ToastAndroid.LONG,
-    );
+    //prettier-ignore
+    Toast.show({type:"info", text2:"Cancelling the request, Please wait....", position:"bottom"})
     try {
       axios.delete(
         `${endpoints.realtime_base_url}/jobs/requests/${el.requestId}`,
