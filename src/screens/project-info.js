@@ -16,9 +16,11 @@ import {DefaultToolBar, InfoChips, LoaderSpinner} from '../components';
 import {COLORS, FONTS, SIZES} from '../constants/themes';
 import {endpoints, axios_endpoint_error} from '../endpoints';
 import Entypo from 'react-native-vector-icons/Entypo';
+import assigneeInfo from './project-settings/assignee-info';
 //axios
 import axios from 'axios';
 import moment from 'moment';
+import AssigneeInfo from './project-settings/assignee-info';
 
 axios.defaults.baseURL = endpoints.jenzi_backend + '/jenzi/v1';
 
@@ -26,61 +28,6 @@ const mapStateToProps = state => {
   const {user_data} = state;
   return {user_data};
 };
-
-const AssignedTo = ({fundis}) => {
-  const [loading, set_loading] = useState(false);
-  if (loading)
-    return (
-      <View style={styles._section}>
-        <Text
-          style={{
-            ...FONTS.caption,
-            paddingVertical: SIZES.padding_16,
-            textAlign: 'center',
-          }}>
-          Fetching assignees.....
-        </Text>
-      </View>
-    );
-  if (!fundis.length)
-    return (
-      <View style={styles._section}>
-        <Text
-          style={{
-            ...FONTS.caption,
-            paddingVertical: SIZES.padding_16,
-            textAlign: 'center',
-          }}>
-          The project is not assigned to anybody yet
-        </Text>
-      </View>
-    );
-  return (
-    <View style={styles._section}>
-      <FlatList
-        data={fundis}
-        horizontal
-        style={{marginLeft: SIZES.base, paddingBottom: SIZES.base}}
-        keyExtractor={item => item.entryId}
-        renderItem={({item}) => {
-          return (
-            <Card style={[fundi_item._card_container]}>
-              <Text>Hello</Text>
-            </Card>
-          );
-        }}
-      />
-    </View>
-  );
-};
-
-const fundi_item = StyleSheet.create({
-  _card_container: {
-    minHeight: 150,
-    overflow: 'hidden',
-    padding: SIZES.padding_16,
-  },
-});
 
 const ProjectInfo = ({navigation, route, user_data}) => {
   const {project} = route.params;
@@ -181,8 +128,17 @@ const ProjectInfo = ({navigation, route, user_data}) => {
           </View>
           {/* ====== END OF PROJECT DETAILS =========== */}
         </View>
-        <Text style={styles._project_txt_title}>Assignees</Text>
-        <AssignedTo fundis={project?.assigned_to} />
+        <Text style={styles._project_txt_title}>
+          Assignees {'&'} project status
+        </Text>
+        {project?.assigned_to ? (
+          <AssigneeInfo fundis={project?.assigned_to} />
+        ) : (
+          <Text style={{...FONTS.caption, textAlign: 'center'}}>
+            Project not to any one yet
+          </Text>
+        )}
+        <Text style={styles._project_txt_title}>Action center</Text>
       </View>
     </ScrollView>
   );
