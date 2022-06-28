@@ -15,11 +15,7 @@ import moment from 'moment';
 // Redux navigation
 import {useDispatch, connect} from 'react-redux';
 import {Button, Chip, TextInput} from 'react-native-paper';
-import {
-  UISettingsActions,
-  user_data_actions,
-  task_actions,
-} from '../store-actions';
+import {UISettingsActions, task_actions} from '../store-actions';
 
 import {
   DefaultToolBar,
@@ -40,8 +36,7 @@ const mapStateToProps = state => {
 const ProjectInfo = ({navigation, route, user_data}) => {
   const {project} = route.params;
   const {LONG, SHORT, BOTTOM, TOP} = ToastAndroid;
-  const {client, fundiId, pendingTaskStates, taskState, createdAt, title} =
-    project;
+  const {pendingTaskStates, task_state: taskState, createdAt, title} = project;
   // application state variables
   const [view_ready, setViewReady] = useState(false);
   const [fundi, setFundi] = useState();
