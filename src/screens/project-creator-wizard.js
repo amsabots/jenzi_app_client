@@ -24,13 +24,21 @@ import {
   Snackbar,
 } from 'react-native-paper';
 // ==== view components =======
-import {LoaderSpinner, LoadingNothing, DefaultToolBar} from '../components';
+import {
+  LoaderSpinner,
+  LoadingNothing,
+  DefaultToolBar,
+  LoadingModal,
+} from '../components';
 import {COLORS, FONTS, SIZES} from '../constants/themes';
 import {generate_random_hex, screens} from '../constants';
+import axios from 'axios';
+import {axios_endpoint_error, endpoints} from '../endpoints';
+axios.defaults.baseURL = endpoints.jenzi_backend + '/jenzi/v1';
 
 const mapStateToProps = state => {
-  const {tasks} = state;
-  return {tasks};
+  const {tasks, user_data} = state;
+  return {tasks, user_data};
 };
 
 const logger = console.log.bind(console, '[file: project-creator-wizard.js] ');
@@ -75,7 +83,7 @@ const InputBox = ({
   );
 };
 
-const ProjectCreatorWizard = ({navigation, tasks}) => {
+const ProjectCreatorWizard = ({navigation, tasks, user_data}) => {
   // destructure the props from the selected store state
   const {current_project} = tasks;
   const [title, setTitle] = useState('');
@@ -84,6 +92,7 @@ const ProjectCreatorWizard = ({navigation, tasks}) => {
   // contains an array of objects defined as {inputId:string, value:string}
   const [requirementsInputBoxes, setRequirementInputBox] = useState([]);
   const [is_view_ready, setViewReady] = useState(false);
+  const [loading, set_loading] = useState(false);
 
   // component hooks
   const dispatch = useDispatch();
@@ -117,8 +126,22 @@ const ProjectCreatorWizard = ({navigation, tasks}) => {
     for (const [key, value] of Object.entries(requirements)) {
       data.push({inputId: key, value});
     }
-    dispatch(task_actions.set_current_project(data, title));
-    setSnackVisible(true);
+    const requirements_string = data.map(el => el.value).join('>');
+    set_loading(true);
+    axios
+      .post(`/tasks`, {
+        title: 'Project test 4',
+        clientId: user_data?.user?.id,
+        completion_date: new Date(),
+        requirements: requirements_string,
+      })
+      .then(res => {
+        dispatch(task_actions.set_current_project(data, title));
+        dispatch(task_actions.set_project_data(res.data));
+        setSnackVisible(true);
+      })
+      .catch(err => axios_endpoint_error(err))
+      .finally(() => set_loading(false));
   };
 
   // update UI with the current project state from the store
@@ -158,6 +181,7 @@ const ProjectCreatorWizard = ({navigation, tasks}) => {
         del
         onDeleteClicked={() => dispatch(task_actions.unset_current_project())}
       />
+      <LoadingModal show={loading} label={'Creating new project....'} />
       <ScrollView>
         <View style={styles.body}>
           {/*  ================ TOP TITLE SECTION =============== */}
@@ -210,7 +234,13 @@ const ProjectCreatorWizard = ({navigation, tasks}) => {
             )}
 
             <View style={{marginVertical: SIZES.padding_32}}>
-              <Button mode="contained" onPress={initiateProject}>
+              <Button
+                mode="contained"
+                onPress={initiateProject}
+                labelStyle={{
+                  textTransform: 'capitalize',
+                  ...FONTS.captionBold,
+                }}>
                 {!title ? 'Create Project' : 'Update Project'}
               </Button>
             </View>

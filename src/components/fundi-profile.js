@@ -123,7 +123,6 @@ const DetailsView = ({fundis, user_data, tasks, navigation}) => {
       destination: _.pick(fundi, 'account_id', 'id', 'name', 'username'),
       status: pusher_filters.request_user,
     };
-    console.log(payload);
     set_modal_loader(true);
     try {
       const res = await axios.post(
@@ -174,7 +173,7 @@ const DetailsView = ({fundis, user_data, tasks, navigation}) => {
       .then(async res => {
         const {data} = res.data;
         const projects_data = data?.filter(el => {
-          if (el?.fundi_data?.state?.toLowerCase() === 'inprogress') return el;
+          if (el?.fundi_data?.state?.toLowerCase() === 'complete') return el;
         });
         const {data: d} = await axios.get(
           `/fundi-trained-by/fundi/${fundi.id}`,

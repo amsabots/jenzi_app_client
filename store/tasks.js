@@ -6,6 +6,7 @@ const initialState = {
   selected_job: {},
   // this variable state will keep track of client project
   current_project: {},
+  project_data: {},
 };
 
 const tasks = (state = initialState, action) => {
@@ -32,8 +33,10 @@ const tasks = (state = initialState, action) => {
       return {...state, selected_job: payload};
     case 'SET_CURRENT_PROJECT':
       return {...state, current_project: payload};
+    case 'SET_PROJECT_DATA':
+      return {...state, project_data: payload};
     case 'UNSET_CURRENT_PROJECT':
-      return {...state, current_project: {}};
+      return {...state, current_project: {}, project_data: {}};
     case 'RESET_TASKS':
       return initialState;
     default:

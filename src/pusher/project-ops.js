@@ -2,7 +2,7 @@ import {endpoints, firebase_db} from '../endpoints';
 import {popPushNotification} from '../notification';
 import axios from 'axios';
 import {store} from '../../App';
-import {clientActions, fundiActions, UISettingsActions} from '../store-actions';
+import {fundiActions, UISettingsActions} from '../store-actions';
 import {Vibration, ToastAndroid} from 'react-native';
 const logger = console.log.bind(console, `[file: fb-projects.js]`);
 

@@ -50,4 +50,11 @@ export const task_actions = {
       type: 'UNSET_CURRENT_PROJECT',
     };
   },
+  //SET_PROJECT_DATA
+  set_project_data: function (project_info) {
+    return {
+      type: 'SET_PROJECT_DATA',
+      payload: project_info,
+    };
+  },
 };
