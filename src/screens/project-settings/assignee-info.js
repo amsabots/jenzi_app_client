@@ -12,11 +12,17 @@ import {CircularImage, InfoChips, LoadingModal} from '../../components';
 import {COLORS, FONTS, SIZES} from '../../constants/themes';
 import {axios_endpoint_error, endpoints} from '../../endpoints';
 import AIcons from 'react-native-vector-icons/AntDesign';
+import {screens} from '../../constants';
+import {useDispatch} from 'react-redux';
+import {fundiActions} from '../../store-actions';
 axios.defaults.baseURL = endpoints.jenzi_backend + '/jenzi/v1';
 
-const Fundi_Info = ({prop_fundi}) => {
+const Fundi_Info = ({prop_fundi, navigation}) => {
   const [fundi, set_fundi] = useState(null);
   const [load, set_loading] = useState(false);
+
+  // hooks
+  const dispatch = useDispatch();
   const handle_unassign_request = () => {
     set_loading(true);
     axios
@@ -46,7 +52,14 @@ const Fundi_Info = ({prop_fundi}) => {
         {fundi?.name}
       </Text>
       <View style={sub_item._action}>
-        <Chip textStyle={{fontSize: 10}}>Open chats</Chip>
+        <Chip
+          textStyle={{fontSize: 10}}
+          onPress={() => {
+            dispatch(fundiActions.set_selected_fundi(fundi));
+            navigation.navigate(screens.conversation);
+          }}>
+          Open chats
+        </Chip>
         <Chip
           onPress={handle_unassign_request}
           textStyle={{fontSize: 10, color: COLORS.white}}
@@ -71,7 +84,7 @@ const sub_item = StyleSheet.create({
     flexDirection: 'row',
   },
 });
-const AssigneeInfo = ({fundis}) => {
+const AssigneeInfo = ({fundis, navigation}) => {
   const [loading, set_loading] = useState(false);
   return (
     <View style={styles.container}>
@@ -83,7 +96,7 @@ const AssigneeInfo = ({fundis}) => {
               {borderTopColor: `#${el.entryId.substring(0, 6)}`},
             ]}
             key={idx}>
-            <Fundi_Info prop_fundi={el} />
+            <Fundi_Info prop_fundi={el} navigation={navigation} />
             <Divider style={{marginVertical: SIZES.base}} />
             <View style={{alignItems: 'center', width: '100%'}}>
               <Text style={{...FONTS.caption}}>Current project status</Text>

@@ -150,7 +150,7 @@ const ProjectInfo = ({navigation, route, user_data}) => {
           Assignees {'&'} project status
         </Text>
         {project?.assigned_to.length ? (
-          <AssigneeInfo fundis={project?.assigned_to} />
+          <AssigneeInfo fundis={project?.assigned_to} navigation={navigation} />
         ) : (
           <Text
             style={{
