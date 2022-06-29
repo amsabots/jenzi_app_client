@@ -49,7 +49,9 @@ const RequestDeclinedAlert = ({show, onCancel, label}) => {
 const RequestAccepted = ({show, openProject, openChats, label}) => {
   return (
     <View>
-      <Dialog.Container visible={show}>
+      <Dialog.Container
+        visible={show}
+        contentStyle={{padding: SIZES.padding_32}}>
         <View>
           <Text style={{...FONTS.body_bold, color: COLORS.danger}}>
             Request Accepted
@@ -57,12 +59,12 @@ const RequestAccepted = ({show, openProject, openChats, label}) => {
           {/* Body  */}
           <View
             style={{
-              marginTop: SIZES.padding_16,
+              marginVertical: SIZES.padding_16,
               flexDirection: 'row',
               width: '80%',
             }}>
             <LoaderSpinner.SuccessAnimation width={32} height={32} />
-            <Text style={{...FONTS.caption, marginLeft: SIZES.padding_12}}>
+            <Text style={{...FONTS.body, marginLeft: SIZES.padding_12}}>
               {label}
             </Text>
           </View>
@@ -112,6 +114,7 @@ const HomeDetailsPreview = ({navigation, route, ui_settings, fundis}) => {
       const {action, payload} = project_tracker;
       switch (Number(action)) {
         case 1:
+          console.log(`+++++++ Fundi accepted request ++++++`);
           setSuccessModal(true);
           break;
         case 2:
@@ -119,10 +122,6 @@ const HomeDetailsPreview = ({navigation, route, ui_settings, fundis}) => {
           break;
       }
     }
-
-    return () => {
-      setSuccessModal(false);
-    };
   }, [ui_settings.project_tracker]);
 
   if (!is_ready)
@@ -169,7 +168,7 @@ const HomeDetailsPreview = ({navigation, route, ui_settings, fundis}) => {
               dispatch(UISettingsActions.update_project_tracker(null));
             }}
             label={
-              fundis?.selected_fundi?.account?.name +
+              fundis?.selected_fundi?.name +
               'Accepted your request. The project has been created and flagged as ONGOING. '
             }
           />

@@ -48,8 +48,8 @@ const MainActivity = ({user_data}) => {
 
   useEffect(() => {
     if (Object.values(user_data?.user || {}).length > 0) {
-      subscribe_to_chatroom(user_data.user.clientId);
-      subscribe_job_states(user_data.user.clientId);
+      subscribe_to_chatroom(user_data.user.client_id);
+      subscribe_job_states(user_data.user.client_id);
     }
   }, [user_data]);
 

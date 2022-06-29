@@ -2,9 +2,10 @@ import {endpoints, firebase_db} from '../endpoints';
 import {popPushNotification} from '../notification';
 import axios from 'axios';
 import {store} from '../../App';
-import {fundiActions, UISettingsActions} from '../store-actions';
+import {chat_actions, fundiActions, UISettingsActions} from '../store-actions';
 import {Vibration, ToastAndroid} from 'react-native';
 const logger = console.log.bind(console, `[file: fb-projects.js]`);
+axios.defaults.baseURL = endpoints.jenzi_backend + '/jenzi/v1';
 
 //request cancelled or it came in and expired
 // return popPushNotification(
@@ -26,13 +27,9 @@ export const subscribe_job_states = userId => {
 
 async function project_changes_handler(snapshot, userId, fundiId) {
   if (!snapshot?.user) return;
-  const {
-    user: {clientId},
-    createdAt,
-    event,
-    requestId,
-  } = snapshot;
-  if (clientId !== userId) return;
+  //prettier-ignore
+  const {user: {client_id}, createdAt, event, requestId} = snapshot;
+  if (client_id !== userId) return;
   const elapsed_seconds = Math.floor((new Date().getTime() - createdAt) / 1000);
   //delete the request and return
   if (Math.ceil(elapsed_seconds) > 120)
@@ -55,50 +52,35 @@ async function project_changes_handler(snapshot, userId, fundiId) {
       return await firebase_db.ref(`/jobalerts/${fundiId}`).remove();
     case 'REQUESTACCEPTED':
       if (!res.data) return;
-      const {
-        requestId: eventId,
-        ttl,
-        payload,
-        user,
-        destination: {accountId, name},
-      } = res.data;
-      //
-      const request_data = {
-        title: payload.title,
-        fundiId: accountId,
-        client: {
-          id: user.clientId,
-        },
-      };
+      const state = store.getState();
+      //prettier-ignore
+      const {fundis:{selected_fundi}, tasks:{project_data}} = state
       //this section should be executed after all the project pre & post handler calls have been completed - simply call it as the last action
-      await firebase_db.ref(`/jobalerts/${fundiId}`).update({event: 'ACK'});
       axios
-        .post(`/jobs`, request_data)
-        .then(res => {
-          console.log(res.data);
+        .post(`/fundi-tasks`, {
+          fundiId: selected_fundi.id,
+          taskId: project_data.id,
         })
-        // .then(async data => {
-        //   await axios.get(
-        //     endpoints.fundi_service +
-        //       `/projects/start/${accountId}/${data.taskId}`,
-        //   );
-        //   Vibration.vibrate();
-        //   helpers_notify(
-        //     `Project request accepted. - We have initiated a connection channel`,
-        //   );
-        //   store.dispatch(chat_actions.active_chat(res?.data?.destination));
-        // store.dispatch(
-        //   UISettingsActions.update_project_tracker({action: 1, payload: res?.data?.destination}),
-        // );
-        // ========== put the action to acknowledge the request here ============================
-        // })
+        .then(async res => {
+          Vibration.vibrate();
+          store.dispatch(
+            UISettingsActions.update_project_tracker({
+              action: 1,
+              payload: selected_fundi,
+            }),
+          );
+          store.dispatch(chat_actions.active_chat(selected_fundi));
+          //prettier-ignore
+          await firebase_db.ref(`/jobalerts/${selected_fundi.account_id}`).update({event: 'ACK'});
+        })
         .catch(err => {
-          console.log(err?.message);
+          console.log(err);
           Vibration.vibrate();
           popPushNotification(
             `Request error`,
             'The request could not be processed at this moment. Please try again later',
           );
+          return firebase_db.ref(`/jobalerts/${fundiId}`).remove();
         })
         .finally(() => {
           store.dispatch(fundiActions.delete_current_requests());
