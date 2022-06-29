@@ -3,7 +3,7 @@ import _ from 'lodash';
 const initialState = {
   user: {},
   coordinates: {},
-  scanRadius: 5,
+  scanRadius: 10,
 };
 
 const user_data = (state = initialState, action) => {

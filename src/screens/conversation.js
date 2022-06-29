@@ -91,7 +91,6 @@ const ConversationScreen = ({navigation, chats, user_data}) => {
   const [chat_room, set_chatroom] = useState('');
   const [message, setMessage] = useState('');
   const [isSendable, setSendable] = useState(false);
-  console.log(selected_chat);
 
   //hooks
   const dispatch = useDispatch();
@@ -100,8 +99,8 @@ const ConversationScreen = ({navigation, chats, user_data}) => {
     firebase_db
       .ref(`/chats/${chat_room}`)
       .push({
-        source: user.accountId,
-        destination: selected_chat.clientId,
+        source: user.client_id,
+        destination: selected_chat.account_id,
         chatroomId: chat_room,
         message: message,
       })
@@ -112,11 +111,11 @@ const ConversationScreen = ({navigation, chats, user_data}) => {
   const get_chat_room = () => {
     logger(`[message: get charooms for this user]`);
     firebase_db
-      .ref(`/chatrooms/${selected_chat.clientId}`)
+      .ref(`/chatrooms/${user.client_id}`)
       .once('value')
       .then(d => {
         for (const [key, value] of Object.entries(d.toJSON())) {
-          if (value.partyB === user.accountId) {
+          if (value.partyB === selected_chat.account_id) {
             set_chatroom(key);
             listen_for_chat_changes(key);
           }
@@ -159,8 +158,8 @@ const ConversationScreen = ({navigation, chats, user_data}) => {
           keyExtractor={(item, index) => index.toString()}
           renderItem={({item}) => {
             const {source} = item;
-            if (source === user.accountId) return <ChatItemRight item={item} />;
-            return <ChatItemLeft item={item} />;
+            if (source === user.client_id) return <ChatItemRight item={item} />;
+            return <ChatItemRight item={item} />;
           }}
         />
       </View>

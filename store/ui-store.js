@@ -1,6 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {offline_data} from '../src/constants';
-
 const state = {
   translucent: false,
   bg_color: null,

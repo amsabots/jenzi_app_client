@@ -2,7 +2,7 @@ import {store} from '../../App';
 import {endpoints, firebase_db} from '../endpoints';
 import {chat_actions} from '../store-actions';
 import axios from 'axios';
-axios.defaults.baseURL = endpoints.fundi_service;
+axios.defaults.baseURL = endpoints.jenzi_backend + '/jenzi/v1';
 
 const logger = console.log.bind(console, `[file: chats.js]`);
 
@@ -21,7 +21,7 @@ export const subscribe_to_chatrooms = current_user => {
           try {
             const chatroom = key;
             const partyB = value.partyB;
-            const req_fundi = await axios.get(`/accounts/${partyB}`);
+            const req_fundi = await axios.get(`/fundi/${partyB}`);
             chat_room.push({chatroom, client: req_fundi.data});
           } catch (error) {}
         }

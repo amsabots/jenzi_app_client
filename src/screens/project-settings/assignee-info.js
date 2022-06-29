@@ -14,7 +14,7 @@ import {axios_endpoint_error, endpoints} from '../../endpoints';
 import AIcons from 'react-native-vector-icons/AntDesign';
 import {screens} from '../../constants';
 import {useDispatch} from 'react-redux';
-import {fundiActions} from '../../store-actions';
+import {chat_actions, fundiActions} from '../../store-actions';
 axios.defaults.baseURL = endpoints.jenzi_backend + '/jenzi/v1';
 
 const Fundi_Info = ({prop_fundi, navigation}) => {
@@ -55,7 +55,7 @@ const Fundi_Info = ({prop_fundi, navigation}) => {
         <Chip
           textStyle={{fontSize: 10}}
           onPress={() => {
-            dispatch(fundiActions.set_selected_fundi(fundi));
+            dispatch(chat_actions.active_chat(fundi));
             navigation.navigate(screens.conversation);
           }}>
           Open chats

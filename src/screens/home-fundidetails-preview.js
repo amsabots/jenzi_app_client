@@ -152,7 +152,7 @@ const HomeDetailsPreview = ({navigation, route, ui_settings, fundis}) => {
             show={request_declined}
             onCancel={handle_user_declined}
             label={
-              fundis?.selected_fundi?.account?.name +
+              fundis?.selected_fundi?.name +
               ' Has declined your request. Exit and select another fundi or try again after some time'
             }
           />

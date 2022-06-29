@@ -129,23 +129,23 @@ const PageContent = ({fundis: f, navigation, user_data, ui_settings}) => {
 
   // axios calls
   const fetchNearbyFundis = async (filter = 'none') => {
-    // if (latitude && longitude) {
-    setLoading(true);
-    let fundi_req = `/utility/nearby-fundis?longitude=${0}&latitude=${0}&radius=${22000}`;
-    if (filter !== 'none') {
-      fundi_req = `/utility/nearby-fundis?longitude=${0}&latitude=${0}&radius=${22000}&filter=${filter}`;
+    if (latitude && longitude) {
+      setLoading(true);
+      let fundi_req = `/utility/nearby-fundis?longitude=${longitude}&latitude=${latitude}&radius=${scanRadius}`;
+      if (filter !== 'none') {
+        fundi_req = `/utility/nearby-fundis?longitude=${longitude}&latitude=${latitude}&radius=${scanRadius}&filter=${filter}`;
+      }
+      axios
+        .get(fundi_req)
+        .then(res => {
+          setAvailableFundis(res.data);
+        })
+        .catch(err => {
+          dispatch(fundiActions.add_fundi([]));
+          axios_endpoint_error(err);
+        })
+        .finally(() => setLoading(false));
     }
-    axios
-      .get(fundi_req)
-      .then(res => {
-        setAvailableFundis(res.data);
-      })
-      .catch(err => {
-        dispatch(fundiActions.add_fundi([]));
-        axios_endpoint_error(err);
-      })
-      .finally(() => setLoading(false));
-    // }
   };
 
   const fetch_categories = () => {

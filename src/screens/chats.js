@@ -84,7 +84,7 @@ const ChatItem = ({onItemClick, user, chat_room_id, current_user}) => {
       onPress={() => onItemClick(user)}
       activeOpacity={0.9}>
       <View>
-        <CircularImage size={SIZES.size_48} />
+        <CircularImage size={SIZES.size_48} url={user?.photo_url} />
       </View>
       <View style={styles._chat_item_text_area}>
         <Text style={{...FONTS.body_bold}}>{user?.name || 'Unknown user'}</Text>
@@ -199,7 +199,6 @@ const styles = StyleSheet.create({
   _footer_item: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: SIZES.base,
   },
   _divider: {
     marginTop: SIZES.base,

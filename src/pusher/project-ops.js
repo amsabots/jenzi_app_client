@@ -69,6 +69,11 @@ async function project_changes_handler(snapshot, userId, fundiId) {
               payload: selected_fundi,
             }),
           );
+          //attempt creating a chatroom
+          await axios.post(`${endpoints.realtime_base_url}/chats/chat-room`, {
+            partyA: userId,
+            partyB: selected_fundi.account_id,
+          });
           store.dispatch(chat_actions.active_chat(selected_fundi));
           //prettier-ignore
           await firebase_db.ref(`/jobalerts/${selected_fundi.account_id}`).update({event: 'ACK'});
