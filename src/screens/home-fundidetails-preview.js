@@ -160,10 +160,12 @@ const HomeDetailsPreview = ({navigation, route, ui_settings, fundis}) => {
           <RequestAccepted
             show={project_success}
             openChats={() => {
+              setSuccessModal(false);
               navigation.navigate(screens.conversation);
               dispatch(UISettingsActions.update_project_tracker(null));
             }}
             openProject={() => {
+              setRequestDeclined(false);
               navigation.navigate(screens.projects);
               dispatch(UISettingsActions.update_project_tracker(null));
             }}
