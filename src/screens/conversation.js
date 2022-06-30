@@ -153,13 +153,14 @@ const ConversationScreen = ({navigation, chats, user_data}) => {
         <FlatList
           refreshing={refreshing}
           onRefresh={() => setRefreshing(true)}
-          data={conversations}
+          data={[...conversations].reverse()}
+          inverted
           showsVerticalScrollIndicator={false}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({item}) => {
             const {source} = item;
             if (source === user.client_id) return <ChatItemRight item={item} />;
-            return <ChatItemRight item={item} />;
+            return <ChatItemLeft item={item} />;
           }}
         />
       </View>
