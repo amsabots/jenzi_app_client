@@ -15,6 +15,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import {offline_data, screens} from '../constants';
 import {endpoints, axios_endpoint_error} from '../endpoints';
+
+// Firebase FCM
+import fcm from '@react-native-firebase/messaging';
 // data validation
 import {auth_validator} from '../utils';
 axios.defaults.baseURL = endpoints.jenzi_backend + '/jenzi/v1';
@@ -52,6 +55,8 @@ const Login = ({navigation}) => {
         password,
       })
       .then(async res => {
+        const fcm_token = await fcm().getToken();
+        fcm_token && (await axios.put(`/clients/${res.data.id}`, {fcm_token}));
         await AsyncStorage.setItem(offline_data.user, JSON.stringify(res.data));
         dispatch(user_data_actions.create_user(res.data));
         ToastAndroid.show('Welcome to Jenzi', ToastAndroid.LONG);

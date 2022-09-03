@@ -15,6 +15,9 @@ import {TextInput, Button} from 'react-native-paper';
 import {axios_endpoint_error, endpoints, errorMessage} from '../endpoints';
 //input validations
 import {auth_validator} from '../utils';
+
+//fcm
+import fcm from '@react-native-firebase/messaging';
 //axios
 import axios from 'axios';
 axios.defaults.baseURL = endpoints.jenzi_backend + '/jenzi/v1';
@@ -58,6 +61,9 @@ const Register = ({navigation}) => {
     axios
       .post(`/clients`, {name, username, password})
       .then(async res => {
+        const fcm_token = await fcm().getToken();
+        fcm_token && (await axios.put(`/clients/${res.data.id}`, {fcm_token}));
+        //
         dispatch(user_data_actions.create_user(res.data));
         await AsyncStorage.setItem(offline_data.user, JSON.stringify(res.data));
         ToastAndroid.show('Welcome to Jenzi', ToastAndroid.LONG);

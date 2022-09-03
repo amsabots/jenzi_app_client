@@ -11,7 +11,7 @@ buildscript {
         // playServicesVersion = "+" // or find latest version
         androidMapsUtilsVersion = "2.3.0"
         androidXCore = "1.7.0"
-        // firebaseMessagingVersion = "21.1.0"
+        firebaseMessagingVersion = "23.0.7"
     }
     repositories {
         google()

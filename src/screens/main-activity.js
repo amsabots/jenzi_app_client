@@ -11,6 +11,8 @@ import {offline_data, screens} from '../constants';
 import {useNavigation} from '@react-navigation/native';
 import {LoadingNothing, LoaderSpinner} from '../components';
 import {SIZES} from '../constants/themes';
+// Firebase messaging
+import fcm from '@react-native-firebase/messaging';
 import {
   jobUtils,
   subscribe_job_states,

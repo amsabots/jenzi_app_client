@@ -3,7 +3,7 @@ export function popPushNotification(title, message) {
   PushNotification.createChannel(
     {
       channelId: 'jenzi.client.com', // (required)
-      channelName: 'Jenzi smart client', // (required)
+      channelName: 'Jenzi_client_mainactivity', // (required)
       channelDescription: 'Default', // (optional) default: undefined.
       importance: 4, // (optional) default: 4. Int value of the Android notification importance
       vibrate: true, // (optional) default: true. Creates the default vibration patten if true.

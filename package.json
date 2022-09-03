@@ -16,6 +16,7 @@
     "@react-native-community/netinfo": "^7.1.7",
     "@react-native-firebase/app": "^14.7.0",
     "@react-native-firebase/database": "^14.7.0",
+    "@react-native-firebase/messaging": "^15.3.0",
     "@react-native-picker/picker": "^2.2.1",
     "@react-navigation/drawer": "^6.1.8",
     "@react-navigation/native": "^6.0.6",
